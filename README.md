@@ -33,6 +33,20 @@ Aplikacja treningowa na telefon. Instaluje się na ekranie głównym Androida ja
 
 ---
 
+## Alternatywa: Cloudflare Pages (działa z **prywatnym** repo, za darmo)
+
+GitHub Pages na darmowym koncie wymaga repo publicznego. Cloudflare Pages obsługuje prywatne repozytoria na darmowym planie.
+
+1. Wrzuć pliki do **prywatnego** repo na GitHubie
+2. dash.cloudflare.com → **Workers & Pages** → `Create` → zakładka **Pages** → `Connect to Git`
+3. Autoryzuj GitHuba, wybierz repo
+4. Framework preset: **None**. Build command: **zostaw puste**. Output directory: `/`
+5. `Save and Deploy` → dostajesz adres `https://cos.pages.dev`
+
+> Uwaga: prywatne repo ukrywa **kod**, nie stronę — adres `.pages.dev` jest publiczny. Jeśli chcesz też bramkę logowania, dołóż Cloudflare Access (Zero Trust, darmowy do 50 użytkowników).
+
+---
+
 ## Alternatywa: Netlify Drop (bez gita, ~2 min)
 
 1. Wejdź na **app.netlify.com/drop**
@@ -47,19 +61,74 @@ Konto założysz później, jeśli będziesz chciał zmienić nazwę adresu.
 
 **Dziś**
 - Status SKB — zielone / żółte / czerwone. **Zmienia to, co widzisz.** Przy żółtym plyometria znika z listy i nie dostajesz podpowiedzi progresji ciężaru. Przy czerwonym apka przełącza na sesję D i ostrzega, jeśli wybierzesz co innego.
-- Wybór jednostki: A, B, C, D, siatkówka, padel. Kropka przy chipie = sugestia na dany dzień tygodnia.
+- **Adaptacyjna sugestia kolejnej jednostki** — nie sztywny kalendarz, tylko decyzja z tego, co faktycznie zrobiłeś (patrz niżej).
+- Wybór jednostki: A, B, C, D, siatkówka, padel. Kropka przy chipie = dzisiejsza sugestia.
 - Checklista z odznaczaniem, pasek postępu, wibracja przy odznaczeniu.
 - Przy ćwiczeniach siłowych: pola na ciężar i powtórzenia + podpowiedź typu *„Ostatnio: 45 kg × 8 → dziś spróbuj 50 kg"*.
+- **Zakończ i zapisz w historii** — dopiero to zapisuje jednostkę i przelicza sugestię na kolejny dzień.
 
 **Postęp**
+- **Historia treningów** — co i kiedy, ile procent listy odhaczone, licznik ostatnich 30 dni.
 - Waga: wykres, ostatni pomiar, średnia z 7 dni, ile zostało do 85 kg.
 - Obwód pasa.
 - Testy sprawnościowe co 4 tygodnie — wyskok dosiężny, CMJ, skok w dal, side plank L/P, plank na piłce. Pokazuje różnicę względem pierwszego pomiaru.
 - Rekordy siłowe.
 
+---
+
+## Jak działa sugestia kolejnego treningu
+
+Apka nie trzyma się kalendarza. Patrzy na **ruchome okno 7 dni** i liczy, czego brakuje:
+
+| Jednostka | Cel / 7 dni |
+|---|---|
+| A — dolne / moc | 1 |
+| B — góra / core | 1 |
+| C — atletyczny | 1 |
+| D — rehab | 1 |
+| Siatkówka | 2 |
+| Padel | 1 |
+
+Na to nakłada twarde reguły bezpieczeństwa:
+
+- **A i C nigdy bliżej niż 48 h od siebie**
+- **Nigdy dwa dni skoków z rzędu** — A, C i siatkówka liczą się jako dni skoków
+- **Czerwone światło → tylko D**, reszta odpada niezależnie od zaległości
+
+Wybiera jednostkę z największą zaległością, która nie łamie żadnej reguły. W karcie widzisz **dlaczego** — co brakuje i co dziś odpada z jakiego powodu. Jak pojedziesz w tygodniu inaczej niż planowałeś, wystarczy odhaczyć co zrobiłeś, a kolejne sugestie same się przestawią.
+
+Cele i reguły zmienisz w `data.js`: stałe `CELE_TYG`, `SKOKI` i `PRIORYTET`.
+
 **Plan** — tydzień, fazy, zasady przy rozsypanym tygodniu, makro.
 
 **Więcej** — zasady bezpieczeństwa L5/S1 i SKB, czerwone flagi, eksport i import danych.
+
+---
+
+## Import wag z zewnątrz
+
+Więcej → *Import wag z zewnątrz*. Wrzucasz plik **CSV albo JSON**, apka sama szuka kolumny z datą i kolumny z masą. Rozumie:
+
+- daty w formatach `2026-08-18`, `18.08.2026` i timestampy uniksowe
+- masę w kilogramach z kropką albo przecinkiem, a także w gramach (`90400` → 90,4 kg)
+- zagnieżdżony JSON — przechodzi przez całą strukturę i wyłuskuje pary data + waga
+
+Pomiary z tych samych dni są nadpisywane, więc możesz wgrywać ten sam eksport wielokrotnie bez duplikatów.
+
+### O wadze Huawei — stan faktyczny
+
+**Nie da się tego podpiąć automatycznie do tej apki i nie jest to kwestia mojego lenistwa.**
+
+- Huawei Health **nie zapisuje danych do Health Connect** — HMS to ekosystem osobny od Google'owego. Oficjalnej synchronizacji nie ma.
+- Nawet gdyby była: **PWA nie ma dostępu do Health Connect**. To natywne API Androida, niedostępne ze strony internetowej. Potrzebna byłaby prawdziwa aplikacja natywna.
+- Google Fit REST API, które kiedyś było obejściem, **jest wygaszane z końcem 2026 i nie ma następcy**.
+
+Zostają dwie realne drogi:
+
+1. **Wpisywać ręcznie** — 5 sekund rano. Przy dziennym ważeniu i tak stoisz na wadze, więc różnica to jedno stuknięcie.
+2. **Raz na miesiąc eksport z Huawei Health** (Ja → Ustawienia → Prywatność → eksport danych; przychodzi archiwum) i wrzucić plik przez import powyżej. Wtedy uzupełniasz historię hurtem.
+
+Rekomendacja: wpisuj ręcznie na bieżąco, bo średnia 7-dniowa działa tylko przy codziennym pomiarze, a eksport traktuj jako uzupełnienie zaległości.
 
 ---
 
@@ -97,6 +166,7 @@ Data startu programu: stała `PLAN_START` na górze `data.js` — od niej liczy 
 - **Nie wysyła powiadomień push.** Zaplanowane przypomnienia w PWA działają zawodnie na Androidzie. Na kobrę co 90 minut w pracy użyj alarmów w telefonie albo kalendarza.
 - **Nie ma stoperów** — świadomie pominięte w wersji 1. Da się dołożyć.
 - **Nie synchronizuje się** między telefonem a laptopem. Do tego potrzebny byłby backend.
+- **Nie czyta wagi z Huawei Health ani z Health Connect** — szczegóły wyżej.
 
 ---
 

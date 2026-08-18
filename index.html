@@ -169,6 +169,7 @@ section{display:none}section.on{display:block}
   <div id="lightMsg"></div>
 
   <h2>Jednostka na dziś</h2>
+  <div id="sugBox"></div>
   <div class="chips" id="chips"></div>
 
   <div id="sessBody"></div>
@@ -176,6 +177,12 @@ section{display:none}section.on{display:block}
 
 <!-- ================= POSTĘP ================= -->
 <section id="s-postep">
+  <h2>Historia treningów</h2>
+  <div class="card">
+    <div id="histStat" class="small" style="margin-bottom:10px"></div>
+    <table id="histTable"></table>
+  </div>
+
   <h2>Masa ciała</h2>
   <div class="card">
     <div class="kpis">
@@ -271,6 +278,14 @@ section{display:none}section.on{display:block}
     <button class="btn sec" id="btnImp" style="margin-top:8px">Wczytaj kopię</button>
     <input type="file" id="fileImp" accept="application/json" class="hide">
   </div>
+
+  <h2>Import wag z zewnątrz</h2>
+  <div class="card">
+    <p class="muted">Wrzuć plik CSV lub JSON z eksportu wagi (Huawei Health, Google Takeout, dowolny arkusz). Apka sama znajdzie kolumnę z datą i kolumnę z masą w kilogramach. Pomiary z tych samych dni zostaną nadpisane.</p>
+    <button class="btn sec" id="btnImpW" style="margin-top:11px">Wybierz plik z wagami</button>
+    <input type="file" id="fileImpW" accept=".csv,.json,.txt,text/csv,application/json" class="hide">
+    <p class="small" id="impWMsg" style="margin-top:9px"></p>
+  </div>
   <p class="small" style="text-align:center;margin:18px 0">
     Plan opracowany 17.08.2026 · start 18.08.2026<br>Nie zastępuje konsultacji z fizjoterapeutą.
   </p>
@@ -290,10 +305,10 @@ section{display:none}section.on{display:block}
 const KEY = 'trening-v1';
 let ST = load();
 function load(){
-  try{ return JSON.parse(localStorage.getItem(KEY)) || blank(); }
+  try{ const o = JSON.parse(localStorage.getItem(KEY)) || blank(); return Object.assign(blank(), o); }
   catch(e){ return blank(); }
 }
-function blank(){ return { dni:{}, lifty:{}, pomiary:[], testy:[] }; }
+function blank(){ return { dni:{}, lifty:{}, pomiary:[], testy:[], historia:[] }; }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(ST)); }catch(e){ alert('Nie udało się zapisać. Sprawdź, czy nie jesteś w trybie incognito.'); } }
 
 const iso = d => d.toISOString().slice(0,10);
@@ -307,6 +322,77 @@ function tydzien(){
   return Math.max(1, Math.floor(diff/7) + 1);
 }
 function faza(){ const t = tydzien(); return FAZY.find(f => t>=f.od && t<=f.do) || FAZY[FAZY.length-1]; }
+
+
+/* ============ historia i silnik sugestii ============ */
+function hist(){ return (ST.historia||[]).slice().sort((a,b)=> a.d < b.d ? -1 : 1); }
+function dniTemu(data){ return Math.round((new Date(TODAY) - new Date(data)) / 86400000); }
+function dniOd(k){ const h = hist().filter(x => x.k === k); return h.length ? dniTemu(h[h.length-1].d) : 999; }
+function licz7(k){
+  const g = new Date(new Date(TODAY) - 6*86400000).toISOString().slice(0,10);
+  return hist().filter(x => x.k === k && x.d >= g).length;
+}
+function nazwaK(k){ return k === 'VB' ? 'siatkówka' : k === 'PADEL' ? 'padel' : k === 'D' ? 'rehab (D)' : 'sesja ' + k; }
+
+function blokady(){
+  const b = {};
+  const dA = dniOd('A'), dC = dniOd('C');
+  if(dA < 1) b.A = 'A było dziś';
+  else if(dA < 2 && CELE_TYG.A <= 1) b.A = 'A było wczoraj';
+  if(dC < 1) b.C = 'C było dziś';
+  else if(dC < 2) b.C = 'C było wczoraj';
+  if(dA < 2 && !b.C) b.C = 'C potrzebuje 48 h od sesji A';
+  if(dC < 2 && !b.A) b.A = 'A potrzebuje 48 h od sesji C';
+  const wczoraj = hist().filter(x => dniTemu(x.d) === 1).map(x => x.k);
+  const skokWczoraj = wczoraj.find(k => SKOKI.includes(k));
+  if(skokWczoraj) SKOKI.forEach(k => { if(!b[k]) b[k] = 'wczoraj był dzień skoków (' + nazwaK(skokWczoraj) + ')'; });
+  const dzis = hist().filter(x => dniTemu(x.d) === 0).map(x => x.k);
+  dzis.forEach(k => { if(!b[k]) b[k] = 'zrobione dziś'; });
+  return b;
+}
+
+function sugeruj(){
+  if(dzien().swiatlo === 'red')
+    return { k: 'D', powod: 'Czerwone światło — dziś tylko rehab, sport i siłownia wypadają.' };
+  const b = blokady();
+  const kand = PRIORYTET.map(k => ({ k, def: CELE_TYG[k] - licz7(k), blok: b[k] }));
+  const wolne = kand.filter(x => !x.blok && x.def > 0).sort((x,y) => y.def - x.def);
+  if(wolne.length){
+    const w = wolne[0];
+    const zablokowane = kand.filter(x => x.blok && x.def > 0);
+    const brak = wolne.slice(1).map(x => nazwaK(x.k));
+    let p = 'W oknie 7 dni brakuje: <b>' + nazwaK(w.k) + '</b>' +
+            (brak.length ? ', dalej ' + brak.join(', ') : '') + '.';
+    if(zablokowane.length) p += '<br>Dziś odpada: ' + zablokowane.map(x => nazwaK(x.k) + ' — ' + x.blok).join('; ') + '.';
+    return { k: w.k, powod: p };
+  }
+  if(!b['D']) return { k: 'D',
+    powod: 'Wszystkie cele tygodnia odhaczone. Zostaje rehab albo dzień wolny — regeneracja też jest częścią planu.' };
+  return { k: 'D', wolne: true,
+    powod: 'Wszystko z tego tygodnia zrobione, dzisiejsza jednostka też. Odpocznij — jutro wraca normalny rytm.' };
+}
+
+function tally(){
+  return PRIORYTET.map(k => {
+    const c = licz7(k), t = CELE_TYG[k];
+    const ok = c >= t;
+    return '<span style="color:' + (ok ? 'var(--ok)' : 'var(--dim)') + '">' +
+           (k === 'VB' ? 'Siatk.' : k === 'PADEL' ? 'Padel' : k) + ' ' + c + '/' + t + '</span>';
+  }).join('<span style="color:var(--line)"> · </span>');
+}
+
+function zakonczTrening(){
+  const d = dzien();
+  const k = d.sesja || sugeruj().k;
+  const pct = d.__pct || 0;
+  ST.historia = (ST.historia || []).filter(x => !(x.d === TODAY && x.k === k));
+  ST.historia.push({ d: TODAY, k, pct });
+  save();
+  if(navigator.vibrate) navigator.vibrate([20,50,20]);
+  renderAll();
+  const s = sugeruj();
+  alert('Zapisane w historii.\n\nNastępnie: ' + SESJE[s.k].nazwa);
+}
 
 /* ============ render nagłówka ============ */
 function renderHead(){
@@ -336,9 +422,13 @@ function renderLights(){
 }
 
 /* ============ wybór sesji ============ */
-function sugestia(){ return TYDZIEN[new Date(TODAY).getDay()]; }
+function sugestia(){ return sugeruj().k; }
 function renderChips(){
-  const d = dzien(), sug = sugestia(), red = d.swiatlo === 'red';
+  const d = dzien(), s = sugeruj(), sug = s.k, red = d.swiatlo === 'red';
+  document.getElementById('sugBox').innerHTML =
+    `<div class="alert ${s.wolne ? '' : 'g'}" style="margin-bottom:11px">
+      <b>${s.wolne ? 'Sugestia: dzień wolny' : 'Sugestia: ' + SESJE[sug].nazwa}</b><br>${s.powod}
+      <div style="margin-top:9px;font-size:12.5px">Ostatnie 7 dni — ${tally()}</div></div>`;
   const wyb = d.sesja || (red ? 'D' : sug);
   document.getElementById('chips').innerHTML = Object.keys(SESJE).map(k =>
     `<button class="chip ${k===wyb?'on':''} ${k===sug?'sug':''}" data-k="${k}">${k==='VB'?'Siatkówka':k==='PADEL'?'Padel':k}</button>`).join('');
@@ -413,7 +503,9 @@ function renderSession(){
       <div class="prog"><i style="width:${pct}%"></i></div>
       <div class="small">${S.dur}${DELOADY.includes(tydzien()) ? ' · deload: 60% ciężarów, plyometria wypada' : ''}</div>
     </div>` + h +
-    `<button class="btn sec" style="margin-top:14px" onclick="resetDnia()">Wyczyść odznaczenia</button>`;
+    `<button class="btn" style="margin-top:14px" onclick="zakonczTrening()">Zakończ i zapisz w historii</button>
+     <button class="btn sec" style="margin-top:8px" onclick="resetDnia()">Wyczyść odznaczenia</button>`;
+  d.__pct = pct;
 
   document.querySelectorAll('.ex').forEach(e => e.onclick = () => {
     const dd = dzien(), id = e.dataset.id, i = dd.zrobione.indexOf(id);
@@ -533,6 +625,131 @@ document.getElementById('fileImp').onchange = e => {
   r.readAsText(f);
 };
 
+
+/* ============ historia ============ */
+function renderHistoria(){
+  const h = hist().slice().reverse();
+  const el = document.getElementById('histTable');
+  const st = document.getElementById('histStat');
+  if(!h.length){
+    st.textContent = '';
+    el.innerHTML = '<tr><td class="small">Brak wpisów. Po treningu naciśnij „Zakończ i zapisz w historii”.</td></tr>';
+    return;
+  }
+  const g30 = new Date(new Date(TODAY) - 29*86400000).toISOString().slice(0,10);
+  const m = h.filter(x => x.d >= g30).length;
+  const odm = n => n === 1 ? 'jednostka' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) ? 'jednostki' : 'jednostek';
+  st.innerHTML = `Ostatnie 7 dni — ${tally()}<br><span style="color:var(--dim2)">${m} ${odm(m)} w ostatnich 30 dniach · ${h.length} łącznie</span>`;
+  el.innerHTML = h.slice(0, 40).map(x => {
+    const dt = dniTemu(x.d);
+    const kiedy = dt === 0 ? 'dziś' : dt === 1 ? 'wczoraj' : dt + ' dni temu';
+    return `<tr><td>${SESJE[x.k] ? SESJE[x.k].nazwa : x.k}<br><span class="small">${x.d} · ${kiedy}</span></td>
+            <td class="r">${x.pct}%</td></tr>`;
+  }).join('');
+}
+
+/* ============ import wag ============ */
+document.getElementById('btnImpW').onclick = () => document.getElementById('fileImpW').click();
+document.getElementById('fileImpW').onchange = e => {
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    let rekordy = [];
+    const txt = String(r.result).trim();
+    try{
+      if(txt[0] === '{' || txt[0] === '['){
+        rekordy = zJson(JSON.parse(txt));
+      } else {
+        rekordy = zCsv(txt);
+      }
+    }catch(x){ rekordy = []; }
+    const msg = document.getElementById('impWMsg');
+    if(!rekordy.length){
+      msg.style.color = 'var(--bad)';
+      msg.textContent = 'Nie znalazłem w tym pliku par data + waga. Sprawdź, czy jest kolumna z datą i kolumna z kilogramami.';
+      return;
+    }
+    let nowe = 0;
+    rekordy.forEach(x => {
+      const byl = ST.pomiary.some(p => p.d === x.d);
+      ST.pomiary = ST.pomiary.filter(p => p.d !== x.d);
+      ST.pomiary.push({ d: x.d, kg: x.kg, pas: null });
+      if(!byl) nowe++;
+    });
+    ST.pomiary.sort((a,b) => a.d < b.d ? -1 : 1);
+    save(); renderPostep();
+    msg.style.color = 'var(--ok)';
+    msg.textContent = `Wczytano ${rekordy.length} pomiarów (${nowe} nowych dni). Zakres ${rekordy[0].d} → ${rekordy[rekordy.length-1].d}.`;
+  };
+  r.readAsText(f);
+};
+
+function normData(v){
+  if(v == null) return null;
+  if(typeof v === 'number'){                       // timestamp ms lub s
+    const ms = v > 1e12 ? v : v > 1e9 ? v*1000 : null;
+    if(!ms) return null;
+    return new Date(ms).toISOString().slice(0,10);
+  }
+  const s = String(v).trim();
+  let m = s.match(/(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);      // 2026-08-18
+  if(m) return `${m[1]}-${m[2].padStart(2,'0')}-${m[3].padStart(2,'0')}`;
+  m = s.match(/(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})/);          // 18.08.2026
+  if(m) return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;
+  if(/^\d{10,13}$/.test(s)) return normData(Number(s));
+  return null;
+}
+function normKg(v){
+  if(v == null) return null;
+  const n = parseFloat(String(v).replace(',', '.'));
+  if(isNaN(n)) return null;
+  if(n > 300 && n < 300000) return Math.round(n/100)/10;   // gramy
+  if(n < 30 || n > 250) return null;
+  return Math.round(n*10)/10;
+}
+function zCsv(txt){
+  const linie = txt.split(/\r?\n/).filter(x => x.trim());
+  if(linie.length < 2) return [];
+  const sep = (linie[0].match(/;/g)||[]).length > (linie[0].match(/,/g)||[]).length ? ';' : ',';
+  const nag = linie[0].split(sep).map(x => x.replace(/["']/g,'').trim().toLowerCase());
+  let iD = nag.findIndex(x => /date|data|time|czas|dzie/.test(x));
+  let iW = nag.findIndex(x => /weight|waga|masa|kg|bodyweight/.test(x));
+  const out = [];
+  const start = (iD >= 0 && iW >= 0) ? 1 : 0;
+  for(let i = start; i < linie.length; i++){
+    const c = linie[i].split(sep).map(x => x.replace(/["']/g,'').trim());
+    let d = null, kg = null;
+    if(iD >= 0 && iW >= 0){ d = normData(c[iD]); kg = normKg(c[iW]); }
+    else { for(const v of c){ if(!d) d = normData(v); }
+           for(const v of c){ const k = normKg(v); if(k && normData(v) === null){ kg = k; break; } } }
+    if(d && kg) out.push({ d, kg });
+  }
+  return dedup(out);
+}
+function zJson(o){
+  const out = [];
+  (function chodz(x){
+    if(Array.isArray(x)) return x.forEach(chodz);
+    if(x && typeof x === 'object'){
+      const kl = Object.keys(x);
+      const kD = kl.find(k => /date|time|czas|data/i.test(k));
+      const kW = kl.find(k => /^(weight|waga|masa|bodyweight|weight_?kg|value)$/i.test(k))
+              || kl.find(k => /weight|waga|masa/i.test(k));
+      if(kD && kW){
+        const d = normData(x[kD]), kg = normKg(x[kW]);
+        if(d && kg) out.push({ d, kg });
+      }
+      kl.forEach(k => chodz(x[k]));
+    }
+  })(o);
+  return dedup(out);
+}
+function dedup(a){
+  const m = {};
+  a.forEach(x => { m[x.d] = x.kg; });
+  return Object.keys(m).sort().map(d => ({ d, kg: m[d] }));
+}
+
 /* ============ nawigacja ============ */
 const TYT = { dzis:'Dziś', postep:'Postęp', plan:'Plan', wiecej:'Więcej' };
 document.querySelectorAll('.nb').forEach(b => b.onclick = () => {
@@ -545,7 +762,7 @@ document.querySelectorAll('.nb').forEach(b => b.onclick = () => {
 });
 
 /* ============ start ============ */
-function renderAll(){ renderHead(); renderLights(); renderChips(); renderSession(); renderPostep(); renderPlan(); }
+function renderAll(){ renderHead(); renderLights(); renderChips(); renderSession(); renderPostep(); renderHistoria(); renderPlan(); }
 renderAll();
 
 if('serviceWorker' in navigator){

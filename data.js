@@ -230,8 +230,17 @@ const SESJE = {
   },
 };
 
-/* Domyślny tydzień: 0 = niedziela */
+/* Domyślny tydzień: 0 = niedziela. Używany tylko w zakładce Plan jako szkic. */
 const TYDZIEN = { 1: 'A', 2: 'VB', 3: 'B', 4: 'VB', 5: 'C', 6: 'PADEL', 0: 'D' };
+
+/* Ile razy w ruchomym oknie 7 dni. To steruje sugestiami. */
+const CELE_TYG = { A: 1, B: 1, C: 1, D: 1, VB: 2, PADEL: 1 };
+
+/* Jednostki liczone jako "dzień skoków" — nigdy dwa z rzędu. */
+const SKOKI = ['A', 'C', 'VB'];
+
+/* Priorytet, gdy kilka jednostek ma zaległość. */
+const PRIORYTET = ['A', 'C', 'VB', 'B', 'PADEL', 'D'];
 
 /* Ćwiczenia siłowe — punkty startowe i cele (do ekranu Postęp) */
 const LIFTY = {
