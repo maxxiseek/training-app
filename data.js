@@ -19,8 +19,16 @@ const FAZY = [
 const DELOADY = [8, 16];
 
 /* Sesje.
-   item: { n: nazwa, d: dawka, u: uwaga, lift: klucz-loga, krok: przyrost kg, cel: górny próg powt., plyo: true }
-   plyo:true  → ukrywane przy żółtym świetle
+   item: {
+     n: nazwa, d: dawka wyświetlana, u: uwaga,
+     lift:   klucz loga ciężarów,
+     krok:   o ile kg podbić przy progresji,
+     serie:  ile serii trzeba zaliczyć,
+     zakres: [min, max] powtórzeń — podwójna progresja:
+             najpierw dochodzisz do max powtórzeń we WSZYSTKICH seriach,
+             dopiero potem apka podbija ciężar i wracasz do min,
+     plyo:   true → ukrywane przy żółtym świetle
+   }
 */
 const SESJE = {
   A: {
@@ -39,10 +47,10 @@ const SESJE = {
         { n: 'Zeskok z lądowaniem (stick landing)', d: '3 × 4', u: 'Skrzynia 30–40 cm, cichy lądunek, hold 2 s. Od tyg. 4', plyo: true },
       ]},
       { t: 'Siła · przerwy 2–3 min', items: [
-        { n: 'Martwy ciąg z trap barem', d: '4 × 5', u: 'Uchwyty wysokie, plecy neutralne', lift: 'trapbar', krok: 5, cel: 5 },
-        { n: 'Hip thrust ze sztangą', d: '4 × 8', u: 'Podbródek do klatki, żebra w dół, bez przeprostu', lift: 'hipthrust', krok: 5, cel: 8 },
-        { n: 'Bułgarski przysiad z hantlami', d: '3 × 8/nogę', u: 'Tułów lekko pochylony do przodu', lift: 'rfess', krok: 2.5, cel: 8 },
-        { n: 'RDL jednonóż / uginanie nóg', d: '3 × 8', u: 'Dwugłowe — ochrona kolana i prędkość', lift: 'rdl', krok: 2.5, cel: 8 },
+        { n: 'Martwy ciąg z trap barem', d: '4 × 5', u: 'Uchwyty wysokie, plecy neutralne', lift: 'trapbar', krok: 5, serie: 4, zakres: [5, 6] },
+        { n: 'Hip thrust ze sztangą', d: '4 × 8', u: 'Podbródek do klatki, żebra w dół, bez przeprostu', lift: 'hipthrust', krok: 5, serie: 4, zakres: [8, 10] },
+        { n: 'Bułgarski przysiad z hantlami', d: '3 × 8/nogę', u: 'Tułów lekko pochylony do przodu', lift: 'rfess', krok: 2.5, serie: 3, zakres: [8, 10] },
+        { n: 'RDL jednonóż / uginanie nóg', d: '3 × 8', u: 'Dwugłowe — ochrona kolana i prędkość', lift: 'rdl', krok: 2.5, serie: 3, zakres: [8, 10] },
       ]},
       { t: 'Akcesoria · superserie, 60 s', items: [
         { n: 'Wspięcia na palce jednonóż', d: '3 × 12 + izo 30 s' },
@@ -63,10 +71,10 @@ const SESJE = {
         { n: 'Open book', d: '2 × 8/str' },
       ]},
       { t: 'Główne · przerwy 2 min', items: [
-        { n: 'Wyciskanie hantli na ławce', d: '4 × 8', lift: 'benchdb', krok: 2.5, cel: 10 },
-        { n: 'Podciąganie / ściąganie drążka', d: '4 × 8', lift: 'pullup', krok: 2.5, cel: 10 },
-        { n: 'Wyciskanie hantli nad głowę, siedząc', d: '3 × 10', u: 'Z oparciem — nie stojąc', lift: 'ohp', krok: 2.5, cel: 10 },
-        { n: 'Wiosłowanie hantlem', d: '3 × 10/str', lift: 'row', krok: 2.5, cel: 12 },
+        { n: 'Wyciskanie hantli na ławce', d: '4 × 8', lift: 'benchdb', krok: 2.5, serie: 4, zakres: [8, 10] },
+        { n: 'Podciąganie / ściąganie drążka', d: '4 × 8', lift: 'pullup', krok: 2.5, serie: 4, zakres: [8, 10] },
+        { n: 'Wyciskanie hantli nad głowę, siedząc', d: '3 × 10', u: 'Z oparciem — nie stojąc', lift: 'ohp', krok: 2.5, serie: 3, zakres: [10, 12] },
+        { n: 'Wiosłowanie hantlem', d: '3 × 10/str', lift: 'row', krok: 2.5, serie: 3, zakres: [10, 12] },
       ]},
       { t: 'Ramiona i barki · 60 s', items: [
         { n: 'Wznosy bokiem', d: '3 × 15' },
@@ -98,8 +106,8 @@ const SESJE = {
         { n: 'Slam piłką o podłoże', d: '3 × 8' },
       ]},
       { t: 'Siła · przerwy 90 s', items: [
-        { n: 'Przysiad goblet / przedni', d: '3 × 8', u: 'Bez sztangi na plecach w fazie 0–1', lift: 'squat', krok: 2.5, cel: 8 },
-        { n: 'Zakroki z hantlami po bokach', d: '3 × 10/nogę', lift: 'lunge', krok: 2.5, cel: 10 },
+        { n: 'Przysiad goblet / przedni', d: '3 × 8', u: 'Bez sztangi na plecach w fazie 0–1', lift: 'squat', krok: 2.5, serie: 3, zakres: [8, 10] },
+        { n: 'Zakroki z hantlami po bokach', d: '3 × 10/nogę', lift: 'lunge', krok: 2.5, serie: 3, zakres: [10, 12] },
         { n: 'Podciąganie', d: '3 × max' },
         { n: 'Pompki z podwyższeniem nóg', d: '3 × 12' },
       ]},

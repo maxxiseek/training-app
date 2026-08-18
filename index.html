@@ -95,6 +95,9 @@ h2:first-child{margin-top:6px}
   border-radius:9px;padding:9px 14px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer}
 .liftrow button:active{background:var(--acc);border-color:var(--acc)}
 
+.sety{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.set{background:rgba(63,185,80,.12);border:1px solid rgba(63,185,80,.35);color:var(--ok);
+  border-radius:7px;padding:5px 9px;font-size:12.5px;font-weight:600;font-family:inherit;cursor:pointer}
 .prog{height:5px;background:var(--surf2);border-radius:99px;overflow:hidden;margin:10px 0 2px}
 .prog i{display:block;height:100%;background:var(--acc);border-radius:99px;transition:width .25s}
 
@@ -440,17 +443,78 @@ function renderChips(){
 }
 
 /* ============ sesja ============ */
-function ostatni(k){ const a = ST.lifty[k]; return a && a.length ? a[a.length-1] : null; }
-function podpowiedz(it){
-  const o = ostatni(it.lift);
-  if(!o) return LIFTY[it.lift] && LIFTY[it.lift].start ? `Punkt startowy: ${LIFTY[it.lift].start} kg` : null;
-  const zolte = dzien().swiatlo === 'yellow';
-  let s = `Ostatnio: ${o.kg} kg × ${o.p}`;
-  if(zolte) return s + ' — dziś bez progresji';
-  if(it.cel && o.p >= it.cel) s += ` → dziś spróbuj ${(o.kg + (it.krok||2.5))} kg`;
-  else s += ` → dziś ${o.kg} kg, dołóż powtórzenie`;
-  return s;
+function serieDnia(kl, data){ return (ST.lifty[kl] || []).filter(x => x.d === data); }
+function dniLiftu(kl){
+  const a = (ST.lifty[kl] || []);
+  const g = {};
+  a.forEach(x => { (g[x.d] = g[x.d] || []).push(x); });
+  return Object.keys(g).sort().map(d => {
+    const sety = g[d];
+    const kg = Math.max(...sety.map(x => x.kg));
+    const wTop = sety.filter(x => x.kg === kg);
+    return { d, kg, sety: wTop.length, min: Math.min(...wTop.map(x => x.p)),
+             powt: wTop.map(x => x.p), wszystkie: sety };
+  });
 }
+
+/* Podwójna progresja: najpierw powtórzenia do góry zakresu we wszystkich seriach,
+   potem dopiero ciężar w górę i powrót do dołu zakresu. */
+function analiza(it){
+  const kl = it.lift, L = LIFTY[kl] || {};
+  const serie = it.serie || 3, zak = it.zakres || [8, 10], krok = it.krok || 2.5;
+  const hist = dniLiftu(kl);
+  const dzisiaj = serieDnia(kl, TODAY);
+  const deload = DELOADY.includes(tydzien());
+  const zolte = dzien().swiatlo === 'yellow';
+
+  if(!hist.length){
+    return { cel: `${serie} × ${zak[0]}–${zak[1]}`,
+      tekst: L.start ? `Start: <b>${L.start} kg</b> — zrób ${serie} × ${zak[0]}, zostaw 2 powt. zapasu.`
+                     : `Pierwszy raz — dobierz ciężar tak, żeby ${zak[0]} powt. wyszło z 2 powt. zapasu. Zapisz, a od następnego razu policzę progresję.` };
+  }
+
+  const ost = hist[hist.length - 1];
+  const poprz = hist.length > 1 ? hist[hist.length - 2] : null;
+  const opis = `${ost.d === TODAY ? 'Dziś' : ost.d} · <b>${pl0(ost.kg)} kg</b> — ${ost.powt.join(' / ')}`;
+
+  if(deload) return { cel: `deload`, tekst:
+    `${opis}<br>Tydzień deload: weź <b>${pl0(Math.round(ost.kg * 0.6 / 2.5) * 2.5)} kg</b> (60%), ${serie} × ${zak[0]}, bez szukania maksów.` };
+
+  if(zolte) return { cel: `${serie} × ${zak[0]}–${zak[1]}`, tekst:
+    `${opis}<br>Żółte światło — zostań na <b>${pl0(ost.kg)} kg</b>, bez podbijania.` };
+
+  // stagnacja: 3 sesje z rzędu ten sam ciężar bez zaliczenia górnego zakresu
+  let stag = 0;
+  for(let i = hist.length - 1; i >= 0; i--){
+    if(hist[i].kg === ost.kg && !(hist[i].sety >= serie && hist[i].min >= zak[1])) stag++;
+    else break;
+  }
+  if(stag >= 3){
+    const niz = Math.max(krok, Math.round(ost.kg * 0.1 / krok) * krok);
+    return { cel: 'reset', tekst:
+      `${opis}<br><b>${stag} sesje w miejscu na ${pl0(ost.kg)} kg.</b> Zejdź do <b>${pl0(ost.kg - niz)} kg</b>, zrób ${serie} × ${zak[1]} czysto i wracaj w górę. Stanie w miejscu to nie upór, tylko sygnał, że ciężar wyprzedził technikę albo regenerację.` };
+  }
+
+  // zaliczone wszystkie serie w górnym zakresie → ciężar w górę
+  if(ost.sety >= serie && ost.min >= zak[1]){
+    return { cel: `${serie} × ${zak[0]}`, tekst:
+      `${opis}<br>Zaliczone ${serie} × ${zak[1]} — dziś <b>${pl0(ost.kg + krok)} kg</b>, wracasz do ${zak[0]} powt.` };
+  }
+
+  // za mało serii na tym ciężarze
+  if(ost.sety < serie){
+    return { cel: `${serie} × ${ost.min}`, tekst:
+      `${opis}<br>Zostań na <b>${pl0(ost.kg)} kg</b> — brakuje serii do ${serie}. Cel: ${serie} × ${Math.max(zak[0], ost.min)}.` };
+  }
+
+  // rośnij powtórzeniami
+  const nast = Math.min(zak[1], ost.min + 1);
+  const trend = poprz && poprz.kg === ost.kg && ost.min > poprz.min ? ' Idzie w górę.' : '';
+  return { cel: `${serie} × ${nast}`, tekst:
+    `${opis}<br>Zostań na <b>${pl0(ost.kg)} kg</b>, celuj w ${serie} × ${nast}. Ciężar podbiję, gdy zrobisz ${serie} × ${zak[1]}.${trend}` };
+}
+const pl0 = n => String(n).replace('.', ',');
+
 function renderSession(){
   const d = dzien();
   const k = d.sesja || (d.swiatlo === 'red' ? 'D' : sugestia());
@@ -477,18 +541,24 @@ function renderSession(){
       const id = `${k}-${bi}-${it.n}`;
       widoczne.push(id);
       const done = d.zrobione.includes(id);
-      const pod = it.lift ? podpowiedz(it) : null;
+      const an = it.lift ? analiza(it) : null;
+      const dzisS = it.lift ? serieDnia(it.lift, TODAY) : [];
       h += `<div class="ex ${done?'done':''}" data-id="${id}">
         <div class="box">✓</div>
         <div class="exb">
           <div class="exn">${it.n}</div>
           <div class="exd">${it.d}</div>
           ${it.u ? `<div class="exu">${it.u}</div>` : ''}
-          ${pod ? `<div class="last">${pod}</div>` : ''}
-          ${it.lift ? `<div class="liftrow" onclick="event.stopPropagation()">
-              <input type="number" step="0.5" inputmode="decimal" placeholder="kg" id="kg-${it.lift}">
-              <input type="number" inputmode="numeric" placeholder="powt." id="p-${it.lift}">
-              <button onclick="zapiszLift('${it.lift}')">Zapisz</button>
+          ${an ? `<div class="last">${an.tekst}</div>` : ''}
+          ${it.lift ? `<div onclick="event.stopPropagation()">
+              ${dzisS.length ? `<div class="sety">Dziś: ${dzisS.map((x,si) =>
+                  `<button class="set" onclick="usunSet('${it.lift}',${si})">${pl0(x.kg)}×${x.p} ✕</button>`).join('')}</div>` : ''}
+              <div class="liftrow">
+                <input type="number" step="0.5" inputmode="decimal" placeholder="kg" id="kg-${it.lift}"
+                  value="${dzisS.length ? dzisS[dzisS.length-1].kg : ''}">
+                <input type="number" inputmode="numeric" placeholder="powt." id="p-${it.lift}">
+                <button onclick="zapiszLift('${it.lift}')">+ seria</button>
+              </div>
             </div>` : ''}
         </div></div>`;
     });
@@ -517,7 +587,7 @@ function renderSession(){
 function resetDnia(){ dzien().zrobione = []; save(); renderSession(); }
 
 function zapiszLift(kl){
-  const kg = parseFloat(document.getElementById('kg-'+kl).value);
+  const kg = parseFloat(String(document.getElementById('kg-'+kl).value).replace(',','.'));
   const p  = parseInt(document.getElementById('p-'+kl).value);
   if(!kg || !p){ alert('Podaj ciężar i liczbę powtórzeń.'); return; }
   if(!ST.lifty[kl]) ST.lifty[kl] = [];
@@ -525,6 +595,14 @@ function zapiszLift(kl){
   save();
   if(navigator.vibrate) navigator.vibrate([15,40,15]);
   renderSession(); renderPostep();
+}
+function usunSet(kl, i){
+  const dzisS = serieDnia(kl, TODAY);
+  const cel = dzisS[i];
+  if(!cel) return;
+  const idx = ST.lifty[kl].findIndex(x => x.d === cel.d && x.kg === cel.kg && x.p === cel.p);
+  if(idx >= 0) ST.lifty[kl].splice(idx, 1);
+  save(); renderSession(); renderPostep();
 }
 
 /* ============ postęp ============ */

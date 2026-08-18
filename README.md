@@ -64,7 +64,7 @@ Konto założysz później, jeśli będziesz chciał zmienić nazwę adresu.
 - **Adaptacyjna sugestia kolejnej jednostki** — nie sztywny kalendarz, tylko decyzja z tego, co faktycznie zrobiłeś (patrz niżej).
 - Wybór jednostki: A, B, C, D, siatkówka, padel. Kropka przy chipie = dzisiejsza sugestia.
 - Checklista z odznaczaniem, pasek postępu, wibracja przy odznaczeniu.
-- Przy ćwiczeniach siłowych: pola na ciężar i powtórzenia + podpowiedź typu *„Ostatnio: 45 kg × 8 → dziś spróbuj 50 kg"*.
+- Przy ćwiczeniach siłowych: logujesz **każdą serię osobno** (przycisk *+ seria*), a apka liczy progresję (patrz niżej). Stuknięcie w zapisaną serię ją usuwa.
 - **Zakończ i zapisz w historii** — dopiero to zapisuje jednostkę i przelicza sugestię na kolejny dzień.
 
 **Postęp**
@@ -102,6 +102,34 @@ Cele i reguły zmienisz w `data.js`: stałe `CELE_TYG`, `SKOKI` i `PRIORYTET`.
 **Plan** — tydzień, fazy, zasady przy rozsypanym tygodniu, makro.
 
 **Więcej** — zasady bezpieczeństwa L5/S1 i SKB, czerwone flagi, eksport i import danych.
+
+---
+
+## Jak działa podpowiedź ciężarów — podwójna progresja
+
+Każde ćwiczenie siłowe ma w `data.js` liczbę serii i **zakres powtórzeń**, np. hip thrust: `serie: 4, zakres: [8, 10]`.
+
+Zasada: **najpierw rosną powtórzenia, dopiero potem ciężar.**
+
+1. Wchodzisz ciężarem, z którym robisz 4 × 8
+2. Co trening dokładasz powtórzenie: 4 × 9, potem 4 × 10
+3. Gdy zrobisz **4 × 10 we wszystkich seriach**, apka podbija ciężar o `krok` i wracasz do 8 powtórzeń
+
+Apka patrzy na **całą historię ćwiczenia**, nie tylko ostatni wpis, i rozpoznaje sytuacje:
+
+| Sytuacja | Co powie |
+|---|---|
+| Brak historii | Punkt startowy albo „dobierz ciężar z 2 powt. zapasu" |
+| Zaliczony górny zakres we wszystkich seriach | *Zaliczone 4 × 10 — dziś 65 kg, wracasz do 8 powt.* |
+| Zaliczone, ale nie górny zakres | *Zostań na 60 kg, celuj w 4 × 9* |
+| Za mało serii na tym ciężarze | *Brakuje serii do 4* |
+| **3 sesje w miejscu na tym samym ciężarze** | *Zejdź do 65 kg, zrób 4 × 10 czysto i wracaj w górę* |
+| Żółte światło | *Zostań na 60 kg, bez podbijania* |
+| Tydzień deload (8 i 16) | *Weź 60% = 40 kg, bez szukania maksów* |
+
+Automatyczny **reset przy stagnacji** to nie kaprys: trzy sesje bez postępu przy twojej objętości treningowej i deficycie kalorycznym oznaczają zwykle, że ciężar wyprzedził technikę albo regenerację, a nie że trzeba mocniej cisnąć. Cofnięcie o 10% i czyste dojście z powrotem daje zwykle nowy rekord w 3–4 tygodnie.
+
+Progi i przyrosty zmienisz w `data.js` przy każdym ćwiczeniu: `serie`, `zakres`, `krok`.
 
 ---
 
