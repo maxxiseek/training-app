@@ -64,15 +64,36 @@ Konto założysz później, jeśli będziesz chciał zmienić nazwę adresu.
 - **Adaptacyjna sugestia kolejnej jednostki** — nie sztywny kalendarz, tylko decyzja z tego, co faktycznie zrobiłeś (patrz niżej).
 - Wybór jednostki: A, B, C, D, siatkówka, padel. Kropka przy chipie = dzisiejsza sugestia.
 - Checklista z odznaczaniem, pasek postępu, wibracja przy odznaczeniu.
-- Przy ćwiczeniach siłowych: logujesz **każdą serię osobno** (przycisk *+ seria*), a apka liczy progresję (patrz niżej). Stuknięcie w zapisaną serię ją usuwa.
-- **Zakończ i zapisz w historii** — dopiero to zapisuje jednostkę i przelicza sugestię na kolejny dzień.
+- Przy ćwiczeniach siłowych **wszystkie serie z planu są od razu otwarte**, z wpisanym z góry sugerowanym ciężarem. Wpisujesz tylko powtórzenia; ciężar zmieniasz, jeśli bierzesz inny. Komplet serii = ćwiczenie odhacza się samo.
+- **Pomiń** przy każdym ćwiczeniu — ćwiczenie zostaje oznaczone jako świadomie odpuszczone i trafia pod tą nazwą do historii.
+- Trening **nie musi być kompletny**, żeby go zapisać. Zapisujesz ile zrobiłeś, a apka odnotowuje resztę.
+- **Zakończ i zapisz w historii** — zapisuje jednostkę wraz z tym, co pominięte, i od razu przelicza sugestię na kolejny dzień. Po zapisie u góry pojawia się zielona ramka z podsumowaniem, a przycisk zmienia się w *Zaktualizuj wpis w historii* — możesz dopisać coś później i zapisać ponownie.
 
 **Postęp**
-- **Historia treningów** — co i kiedy, ile procent listy odhaczone, licznik ostatnich 30 dni.
+- **Historia treningów** — co, kiedy, ile z ilu punktów zrobione i **imiennie co zostało pominięte**. Licznik ostatnich 30 dni.
 - Waga: wykres, ostatni pomiar, średnia z 7 dni, ile zostało do 85 kg.
 - Obwód pasa.
 - Testy sprawnościowe co 4 tygodnie — wyskok dosiężny, CMJ, skok w dal, side plank L/P, plank na piłce. Pokazuje różnicę względem pierwszego pomiaru.
 - Rekordy siłowe.
+
+---
+
+## Edycja treningów wstecz
+
+Na górze ekranu **Dziś** jest pasek daty: strzałki ‹ ›, kalendarz i przycisk *dziś*. Ustawiasz dowolny miniony dzień i poprawiasz go tak samo, jak bieżący — odhaczenia, pominięte, ciężary, powtórzenia, status SKB, a nawet którą jednostkę tego dnia zrobiłeś.
+
+Szybsza droga: **Postęp → Historia treningów → kliknij wpis**. Przeskakuje prosto w tryb edycji tego dnia.
+
+W trybie edycji:
+
+- nagłówek zmienia się na **Edycja**, pojawia się żółta ramka z datą
+- **sugestia jednostki znika** — dotyczy dzisiaj, nie dnia sprzed tygodnia
+- podpowiedzi ciężarów liczą się z sesji **sprzed tego dnia**, nie z najnowszych
+- przycisk to *Zapisz zmiany* (albo *Dodaj do historii*, jeśli tego dnia nic nie było)
+- dochodzi **Usuń ten trening z historii**
+- **w przód nie wejdziesz** — kalendarz kończy się na dzisiaj
+
+Jeśli wpis w historii istnieje, ale szczegółowe odhaczenia z tamtego dnia nie są dostępne (np. wpis z importu kopii), apka ostrzega żółtym tekstem, że zapis nadpisze licznik tym, co widzisz na liście. Listę pominiętych ćwiczeń odtwarza automatycznie z wpisu.
 
 ---
 
@@ -120,6 +141,7 @@ Apka patrzy na **całą historię ćwiczenia**, nie tylko ostatni wpis, i rozpoz
 | Sytuacja | Co powie |
 |---|---|
 | Brak historii | Punkt startowy albo „dobierz ciężar z 2 powt. zapasu" |
+| Dzisiejsze serie | **Nie wpływają na podpowiedź** — liczy się poprzednia sesja, żeby ciężar w polach nie skakał w trakcie treningu |
 | Zaliczony górny zakres we wszystkich seriach | *Zaliczone 4 × 10 — dziś 65 kg, wracasz do 8 powt.* |
 | Zaliczone, ale nie górny zakres | *Zostań na 60 kg, celuj w 4 × 9* |
 | Za mało serii na tym ciężarze | *Brakuje serii do 4* |

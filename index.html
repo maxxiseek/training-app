@@ -95,9 +95,34 @@ h2:first-child{margin-top:6px}
   border-radius:9px;padding:9px 14px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer}
 .liftrow button:active{background:var(--acc);border-color:var(--acc)}
 
-.sety{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
-.set{background:rgba(63,185,80,.12);border:1px solid rgba(63,185,80,.35);color:var(--ok);
-  border-radius:7px;padding:5px 9px;font-size:12.5px;font-weight:600;font-family:inherit;cursor:pointer}
+.datebar{display:flex;gap:7px;align-items:center;margin-bottom:12px}
+.datebar button{background:var(--surf2);border:1px solid var(--line);color:var(--txt);
+  border-radius:9px;padding:9px 13px;font-size:15px;font-family:inherit;cursor:pointer;flex:0 0 auto}
+.datebar button:active{background:var(--acc);border-color:var(--acc)}
+.datebar #dToday{font-size:13px;font-weight:600}
+.datebar input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);color:var(--txt);
+  border-radius:9px;padding:9px 10px;font-size:14.5px;font-family:inherit;-webkit-appearance:none}
+.datebar input:focus{outline:none;border-color:var(--acc)}
+.histr{cursor:pointer}
+.histr:active{background:var(--surf2)}
+.delb{background:none;border:1px solid var(--line);color:var(--dim2);border-radius:7px;
+  padding:3px 8px;font-size:11.5px;font-family:inherit;cursor:pointer;margin-top:5px}
+.exhead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.skipb{flex:0 0 auto;background:none;border:1px solid var(--line);color:var(--dim2);
+  border-radius:7px;padding:3px 9px;font-size:11.5px;font-family:inherit;cursor:pointer;margin-top:1px}
+.skipb:active{background:var(--surf2)}
+.ex.skip{opacity:.55;border-style:dashed}
+.ex.skip .exn{text-decoration:line-through;color:var(--dim2)}
+.ex.skip .box{border-color:var(--warn);color:var(--warn)}
+.ex.skip .setg,.ex.skip .last{display:none}
+.setg{margin-top:10px}
+.setr{display:flex;gap:7px;align-items:center;margin-bottom:6px}
+.setr:last-child{margin-bottom:0}
+.setl{width:16px;flex:0 0 auto;font-size:12px;color:var(--dim2);text-align:center}
+.setr input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);color:var(--txt);
+  border-radius:9px;padding:9px 10px;font-size:15px;font-family:inherit;-webkit-appearance:none}
+.setr input:focus{outline:none;border-color:var(--acc)}
+.setr.ok input{border-color:rgba(63,185,80,.45);background:rgba(63,185,80,.06)}
 .prog{height:5px;background:var(--surf2);border-radius:99px;overflow:hidden;margin:10px 0 2px}
 .prog i{display:block;height:100%;background:var(--acc);border-radius:99px;transition:width .25s}
 
@@ -163,7 +188,15 @@ section{display:none}section.on{display:block}
 
 <!-- ================= DZIŚ ================= -->
 <section id="s-dzis" class="on">
-  <h2>Jak się dziś czujesz — SKB</h2>
+  <div class="datebar">
+    <button id="dPrev" aria-label="Poprzedni dzień">‹</button>
+    <input type="date" id="dPick">
+    <button id="dNext" aria-label="Następny dzień">›</button>
+    <button id="dToday">dziś</button>
+  </div>
+  <div id="editBox"></div>
+
+  <h2>Jak się czujesz — SKB</h2>
   <div class="lights">
     <button class="light" data-v="green"><div class="dot"></div>Zielone<br><span class="small">bez bólu</span></button>
     <button class="light" data-v="yellow"><div class="dot"></div>Żółte<br><span class="small">lekkie napięcie</span></button>
@@ -316,7 +349,21 @@ function save(){ try{ localStorage.setItem(KEY, JSON.stringify(ST)); }catch(e){ 
 
 const iso = d => d.toISOString().slice(0,10);
 const pl = n => (n==null||isNaN(n)) ? '—' : Number(n).toFixed(1).replace('.', ',');
-const TODAY = iso(new Date());
+const DZIS = iso(new Date());          // realne dziś — punkt odniesienia dla sugestii
+let   TODAY = DZIS;                    // dzień aktualnie edytowany
+const edycja = () => TODAY !== DZIS;
+function ustawDate(d){
+  if(!d) return;
+  TODAY = d > DZIS ? DZIS : d;
+  renderAll();
+  document.querySelectorAll('.nb').forEach(x => x.classList.remove('on'));
+  document.querySelectorAll('section').forEach(x => x.classList.remove('on'));
+  document.querySelector('.nb[data-s="dzis"]').classList.add('on');
+  document.getElementById('s-dzis').classList.add('on');
+  document.getElementById('hTitle').textContent = edycja() ? 'Edycja' : 'Dziś';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function przesunDate(n){ ustawDate(iso(new Date(new Date(TODAY).getTime() + n*86400000))); }
 function dzien(){ if(!ST.dni[TODAY]) ST.dni[TODAY] = { sesja:null, zrobione:[], swiatlo:null }; return ST.dni[TODAY]; }
 
 /* ============ faza / tydzień ============ */
@@ -329,10 +376,10 @@ function faza(){ const t = tydzien(); return FAZY.find(f => t>=f.od && t<=f.do) 
 
 /* ============ historia i silnik sugestii ============ */
 function hist(){ return (ST.historia||[]).slice().sort((a,b)=> a.d < b.d ? -1 : 1); }
-function dniTemu(data){ return Math.round((new Date(TODAY) - new Date(data)) / 86400000); }
+function dniTemu(data){ return Math.round((new Date(DZIS) - new Date(data)) / 86400000); }
 function dniOd(k){ const h = hist().filter(x => x.k === k); return h.length ? dniTemu(h[h.length-1].d) : 999; }
 function licz7(k){
-  const g = new Date(new Date(TODAY) - 6*86400000).toISOString().slice(0,10);
+  const g = new Date(new Date(DZIS) - 6*86400000).toISOString().slice(0,10);
   return hist().filter(x => x.k === k && x.d >= g).length;
 }
 function nazwaK(k){ return k === 'VB' ? 'siatkówka' : k === 'PADEL' ? 'padel' : k === 'D' ? 'rehab (D)' : 'sesja ' + k; }
@@ -375,6 +422,10 @@ function sugeruj(){
     powod: 'Wszystko z tego tygodnia zrobione, dzisiejsza jednostka też. Odpocznij — jutro wraca normalny rytm.' };
 }
 
+function usunWpis(data, k){
+  ST.historia = (ST.historia || []).filter(x => !(x.d === data && x.k === k));
+  save(); renderAll();
+}
 function tally(){
   return PRIORYTET.map(k => {
     const c = licz7(k), t = CELE_TYG[k];
@@ -386,19 +437,32 @@ function tally(){
 
 function zakonczTrening(){
   const d = dzien();
-  const k = d.sesja || sugeruj().k;
-  const pct = d.__pct || 0;
+  const wpisDnia = (ST.historia || []).find(x => x.d === TODAY);
+  const k = d.sesja || (edycja() ? (wpisDnia ? wpisDnia.k : 'A') : sugeruj().k);
+  const widoczne = d.__widoczne || [];
+  const pominiete = widoczne.filter(x => (d.pominiete || []).includes(x.id)).map(x => x.n);
+  const zrobione = widoczne.filter(x => d.zrobione.includes(x.id)).length;
   ST.historia = (ST.historia || []).filter(x => !(x.d === TODAY && x.k === k));
-  ST.historia.push({ d: TODAY, k, pct });
+  ST.historia.push({ d: TODAY, k, pct: d.__pct || 0, zrob: zrobione, total: widoczne.length, pom: pominiete });
   save();
   if(navigator.vibrate) navigator.vibrate([20,50,20]);
   renderAll();
-  const s = sugeruj();
-  alert('Zapisane w historii.\n\nNastępnie: ' + SESJE[s.k].nazwa);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
 
 /* ============ render nagłówka ============ */
 function renderHead(){
+  document.getElementById('dPick').value = TODAY;
+  document.getElementById('dPick').max = DZIS;
+  const eb = document.getElementById('editBox');
+  if(edycja()){
+    const w = (ST.historia || []).find(x => x.d === TODAY);
+    const st = ST.dni[TODAY];
+    const brak = w && w.zrob > 0 && (!st || !st.zrobione || !st.zrobione.length);
+    eb.innerHTML = `<div class="alert w"><b>Tryb edycji — ${TODAY}.</b> Poprawiasz dzień sprzed ${dniTemu(TODAY)} dni: odhaczenia, pominięte, ciężary i powtórzenia. Sugestia jednostki wyłączona, bo dotyczy dzisiaj.` +
+      (brak ? `<br><br><b>Uwaga:</b> ten wpis mówi ${w.zrob}/${w.total}, ale szczegółowe odhaczenia nie są dostępne. Jeśli zapiszesz teraz, licznik nadpisze się tym, co widzisz na liście.` : '') + `</div>`;
+  } else eb.innerHTML = '';
   const d = new Date(TODAY);
   const dni = ['niedziela','poniedziałek','wtorek','środa','czwartek','piątek','sobota'];
   const msc = ['stycznia','lutego','marca','kwietnia','maja','czerwca','lipca','sierpnia','września','października','listopada','grudnia'];
@@ -427,11 +491,19 @@ function renderLights(){
 /* ============ wybór sesji ============ */
 function sugestia(){ return sugeruj().k; }
 function renderChips(){
-  const d = dzien(), s = sugeruj(), sug = s.k, red = d.swiatlo === 'red';
-  document.getElementById('sugBox').innerHTML =
-    `<div class="alert ${s.wolne ? '' : 'g'}" style="margin-bottom:11px">
-      <b>${s.wolne ? 'Sugestia: dzień wolny' : 'Sugestia: ' + SESJE[sug].nazwa}</b><br>${s.powod}
-      <div style="margin-top:9px;font-size:12.5px">Ostatnie 7 dni — ${tally()}</div></div>`;
+  const d = dzien(), red = d.swiatlo === 'red';
+  let sug;
+  if(edycja()){
+    const wpis = (ST.historia || []).find(x => x.d === TODAY);
+    sug = d.sesja || (wpis ? wpis.k : 'A');
+    document.getElementById('sugBox').innerHTML = '';
+  } else {
+    const s = sugeruj(); sug = s.k;
+    document.getElementById('sugBox').innerHTML =
+      `<div class="alert ${s.wolne ? '' : 'g'}" style="margin-bottom:11px">
+        <b>${s.wolne ? 'Sugestia: dzień wolny' : 'Sugestia: ' + SESJE[sug].nazwa}</b><br>${s.powod}
+        <div style="margin-top:9px;font-size:12.5px">Ostatnie 7 dni — ${tally()}</div></div>`;
+  }
   const wyb = d.sesja || (red ? 'D' : sug);
   document.getElementById('chips').innerHTML = Object.keys(SESJE).map(k =>
     `<button class="chip ${k===wyb?'on':''} ${k===sug?'sug':''}" data-k="${k}">${k==='VB'?'Siatkówka':k==='PADEL'?'Padel':k}</button>`).join('');
@@ -442,168 +514,235 @@ function renderChips(){
   });
 }
 
-/* ============ sesja ============ */
-function serieDnia(kl, data){ return (ST.lifty[kl] || []).filter(x => x.d === data); }
-function dniLiftu(kl){
-  const a = (ST.lifty[kl] || []);
-  const g = {};
-  a.forEach(x => { (g[x.d] = g[x.d] || []).push(x); });
-  return Object.keys(g).sort().map(d => {
-    const sety = g[d];
-    const kg = Math.max(...sety.map(x => x.kg));
-    const wTop = sety.filter(x => x.kg === kg);
-    return { d, kg, sety: wTop.length, min: Math.min(...wTop.map(x => x.p)),
-             powt: wTop.map(x => x.p), wszystkie: sety };
-  });
+/* Gdy edytujesz stary dzień, którego odhaczenia nie zostały zapisane,
+   odtwórz przynajmniej listę pominiętych z wpisu w historii. */
+function odtworzPominiete(d){
+  if(d.__odtworzone) return;
+  const w = (ST.historia || []).find(x => x.d === TODAY);
+  if(!w || !w.pom || !w.pom.length){ d.__odtworzone = true; return; }
+  if(d.pominiete.length || d.zrobione.length){ d.__odtworzone = true; return; }
+  const S = SESJE[d.sesja || w.k];
+  if(!S){ d.__odtworzone = true; return; }
+  S.bloki.forEach((b, bi) => b.items.forEach(it => {
+    if(w.pom.includes(it.n)) d.pominiete.push(`${d.sesja || w.k}-${bi}-${it.n}`);
+  }));
+  d.__odtworzone = true;
+  save();
 }
 
-/* Podwójna progresja: najpierw powtórzenia do góry zakresu we wszystkich seriach,
-   potem dopiero ciężar w górę i powrót do dołu zakresu. */
+/* ============ sesja ============ */
+/* ============ log serii ============ */
+function migrujLifty(){
+  let zm = false;
+  Object.keys(ST.lifty || {}).forEach(kl => {
+    const g = {};
+    ST.lifty[kl].forEach(x => { (g[x.d] = g[x.d] || []).push(x); });
+    Object.keys(g).forEach(d => g[d].forEach((x, i) => { if(x.i == null){ x.i = i; zm = true; } }));
+  });
+  if(zm) save();
+}
+function setyDnia(kl, data){
+  return (ST.lifty[kl] || []).filter(x => x.d === data).sort((a,b) => (a.i||0) - (b.i||0));
+}
+function setDnia(kl, i){ return (ST.lifty[kl] || []).find(x => x.d === TODAY && x.i === i); }
+function dniLiftu(kl){
+  const g = {};
+  (ST.lifty[kl] || []).forEach(x => { if(x.p > 0) (g[x.d] = g[x.d] || []).push(x); });
+  return Object.keys(g).sort().map(d => {
+    const sety = g[d], kg = Math.max(...sety.map(x => x.kg)), top = sety.filter(x => x.kg === kg);
+    return { d, kg, sety: top.length, min: Math.min(...top.map(x => x.p)),
+             powt: sety.sort((a,b)=>(a.i||0)-(b.i||0)).map(x => x.p) };
+  });
+}
+const pl0 = n => (n == null ? '' : String(n).replace('.', ','));
+
+/* Podwójna progresja — patrzy na poprzednie sesje, nie na dzisiejszą. */
 function analiza(it){
   const kl = it.lift, L = LIFTY[kl] || {};
   const serie = it.serie || 3, zak = it.zakres || [8, 10], krok = it.krok || 2.5;
-  const hist = dniLiftu(kl);
-  const dzisiaj = serieDnia(kl, TODAY);
+  const h = dniLiftu(kl).filter(x => x.d < TODAY);
   const deload = DELOADY.includes(tydzien());
   const zolte = dzien().swiatlo === 'yellow';
 
-  if(!hist.length){
-    return { cel: `${serie} × ${zak[0]}–${zak[1]}`,
-      tekst: L.start ? `Start: <b>${L.start} kg</b> — zrób ${serie} × ${zak[0]}, zostaw 2 powt. zapasu.`
-                     : `Pierwszy raz — dobierz ciężar tak, żeby ${zak[0]} powt. wyszło z 2 powt. zapasu. Zapisz, a od następnego razu policzę progresję.` };
+  if(!h.length) return { kg: L.start || null, powt: zak[0], serie, tekst:
+    L.start ? `Start: <b>${pl0(L.start)} kg</b> — ${serie} × ${zak[0]}, zostaw 2 powt. zapasu.`
+            : `Pierwszy raz — dobierz ciężar tak, żeby ${zak[0]} powt. wyszło z 2 powt. zapasu. Od następnego razu policzę progresję.` };
+
+  const ost = h[h.length - 1], poprz = h.length > 1 ? h[h.length - 2] : null;
+  const opis = `${ost.d} · <b>${pl0(ost.kg)} kg</b> — ${ost.powt.join(' / ')}`;
+
+  if(deload){
+    const kg = Math.round(ost.kg * 0.6 / 2.5) * 2.5;
+    return { kg, powt: zak[0], serie, tekst: `${opis}<br>Tydzień deload — <b>${pl0(kg)} kg</b> (60%), bez szukania maksów.` };
   }
-
-  const ost = hist[hist.length - 1];
-  const poprz = hist.length > 1 ? hist[hist.length - 2] : null;
-  const opis = `${ost.d === TODAY ? 'Dziś' : ost.d} · <b>${pl0(ost.kg)} kg</b> — ${ost.powt.join(' / ')}`;
-
-  if(deload) return { cel: `deload`, tekst:
-    `${opis}<br>Tydzień deload: weź <b>${pl0(Math.round(ost.kg * 0.6 / 2.5) * 2.5)} kg</b> (60%), ${serie} × ${zak[0]}, bez szukania maksów.` };
-
-  if(zolte) return { cel: `${serie} × ${zak[0]}–${zak[1]}`, tekst:
+  if(zolte) return { kg: ost.kg, powt: Math.max(zak[0], ost.min), serie, tekst:
     `${opis}<br>Żółte światło — zostań na <b>${pl0(ost.kg)} kg</b>, bez podbijania.` };
 
-  // stagnacja: 3 sesje z rzędu ten sam ciężar bez zaliczenia górnego zakresu
   let stag = 0;
-  for(let i = hist.length - 1; i >= 0; i--){
-    if(hist[i].kg === ost.kg && !(hist[i].sety >= serie && hist[i].min >= zak[1])) stag++;
-    else break;
+  for(let i = h.length - 1; i >= 0; i--){
+    if(h[i].kg === ost.kg && !(h[i].sety >= serie && h[i].min >= zak[1])) stag++; else break;
   }
   if(stag >= 3){
     const niz = Math.max(krok, Math.round(ost.kg * 0.1 / krok) * krok);
-    return { cel: 'reset', tekst:
-      `${opis}<br><b>${stag} sesje w miejscu na ${pl0(ost.kg)} kg.</b> Zejdź do <b>${pl0(ost.kg - niz)} kg</b>, zrób ${serie} × ${zak[1]} czysto i wracaj w górę. Stanie w miejscu to nie upór, tylko sygnał, że ciężar wyprzedził technikę albo regenerację.` };
+    return { kg: ost.kg - niz, powt: zak[1], serie, tekst:
+      `${opis}<br><b>${stag} sesje w miejscu na ${pl0(ost.kg)} kg.</b> Zejdź do <b>${pl0(ost.kg - niz)} kg</b>, zrób ${serie} × ${zak[1]} czysto i wracaj w górę.` };
   }
-
-  // zaliczone wszystkie serie w górnym zakresie → ciężar w górę
-  if(ost.sety >= serie && ost.min >= zak[1]){
-    return { cel: `${serie} × ${zak[0]}`, tekst:
+  if(ost.sety >= serie && ost.min >= zak[1])
+    return { kg: ost.kg + krok, powt: zak[0], serie, tekst:
       `${opis}<br>Zaliczone ${serie} × ${zak[1]} — dziś <b>${pl0(ost.kg + krok)} kg</b>, wracasz do ${zak[0]} powt.` };
-  }
-
-  // za mało serii na tym ciężarze
-  if(ost.sety < serie){
-    return { cel: `${serie} × ${ost.min}`, tekst:
-      `${opis}<br>Zostań na <b>${pl0(ost.kg)} kg</b> — brakuje serii do ${serie}. Cel: ${serie} × ${Math.max(zak[0], ost.min)}.` };
-  }
-
-  // rośnij powtórzeniami
+  if(ost.sety < serie)
+    return { kg: ost.kg, powt: Math.max(zak[0], ost.min), serie, tekst:
+      `${opis}<br>Zostań na <b>${pl0(ost.kg)} kg</b> — ostatnio brakło serii do ${serie}.` };
   const nast = Math.min(zak[1], ost.min + 1);
   const trend = poprz && poprz.kg === ost.kg && ost.min > poprz.min ? ' Idzie w górę.' : '';
-  return { cel: `${serie} × ${nast}`, tekst:
-    `${opis}<br>Zostań na <b>${pl0(ost.kg)} kg</b>, celuj w ${serie} × ${nast}. Ciężar podbiję, gdy zrobisz ${serie} × ${zak[1]}.${trend}` };
+  return { kg: ost.kg, powt: nast, serie, tekst:
+    `${opis}<br>Zostań na <b>${pl0(ost.kg)} kg</b>, celuj w ${serie} × ${nast}. Podbiję ciężar po ${serie} × ${zak[1]}.${trend}` };
 }
-const pl0 = n => String(n).replace('.', ',');
 
+function zapiszSet(kl, i, exId){
+  const eKg = document.getElementById(`kg-${kl}-${i}`), eP = document.getElementById(`p-${kl}-${i}`);
+  const kg = parseFloat(String(eKg.value).replace(',', '.'));
+  const p  = parseInt(eP.value);
+  ST.lifty[kl] = ST.lifty[kl] || [];
+  const idx = ST.lifty[kl].findIndex(x => x.d === TODAY && x.i === i);
+  if(!kg || !p){ if(idx >= 0) ST.lifty[kl].splice(idx, 1); }
+  else if(idx >= 0) ST.lifty[kl][idx] = { d: TODAY, i, kg, p };
+  else ST.lifty[kl].push({ d: TODAY, i, kg, p });
+  save();
+  if(navigator.vibrate) navigator.vibrate(10);
+  renderSession(); renderPostep(); renderHistoria();
+}
+
+function pomin(id){
+  const d = dzien();
+  d.pominiete = d.pominiete || [];
+  const i = d.pominiete.indexOf(id);
+  if(i < 0){ d.pominiete.push(id); const j = d.zrobione.indexOf(id); if(j >= 0) d.zrobione.splice(j, 1); }
+  else d.pominiete.splice(i, 1);
+  save(); renderSession();
+}
+
+/* Gdy edytujesz stary dzień, którego odhaczenia nie zostały zapisane,
+   odtwórz przynajmniej listę pominiętych z wpisu w historii. */
+function odtworzPominiete(d){
+  if(d.__odtworzone) return;
+  const w = (ST.historia || []).find(x => x.d === TODAY);
+  if(!w || !w.pom || !w.pom.length){ d.__odtworzone = true; return; }
+  if(d.pominiete.length || d.zrobione.length){ d.__odtworzone = true; return; }
+  const S = SESJE[d.sesja || w.k];
+  if(!S){ d.__odtworzone = true; return; }
+  S.bloki.forEach((b, bi) => b.items.forEach(it => {
+    if(w.pom.includes(it.n)) d.pominiete.push(`${d.sesja || w.k}-${bi}-${it.n}`);
+  }));
+  d.__odtworzone = true;
+  save();
+}
+
+/* ============ sesja ============ */
 function renderSession(){
   const d = dzien();
-  const k = d.sesja || (d.swiatlo === 'red' ? 'D' : sugestia());
+  d.pominiete = d.pominiete || [];
+  odtworzPominiete(d);
+  const wpisDnia = (ST.historia || []).find(x => x.d === TODAY);
+  const k = d.sesja || (edycja() ? (wpisDnia ? wpisDnia.k : 'A')
+                                 : (d.swiatlo === 'red' ? 'D' : sugeruj().k));
   const S = SESJE[k];
   const zolte = d.swiatlo === 'yellow';
   const box = document.getElementById('sessBody');
-
-  let widoczne = [];
+  const widoczne = [];
   let h = '';
 
-  if(d.swiatlo === 'red' && k !== 'D'){
+  // auto-zaliczenie ćwiczeń siłowych z kompletem serii
+  S.bloki.forEach((b, bi) => b.items.forEach(it => {
+    if(!it.lift) return;
+    const id = `${k}-${bi}-${it.n}`;
+    if(d.pominiete.includes(id)) return;
+    const komplet = setyDnia(it.lift, TODAY).filter(x => x.p > 0).length >= (it.serie || 3);
+    const jest = d.zrobione.includes(id);
+    if(komplet && !jest) d.zrobione.push(id);
+  }));
+
+  if(d.swiatlo === 'red' && k !== 'D')
     h += '<div class="alert d" style="margin-top:14px"><b>Uwaga:</b> przy czerwonym świetle ta jednostka nie powinna się dziś odbyć. Przełącz na D.</div>';
-  }
 
   S.bloki.forEach((b, bi) => {
     const items = b.items.filter(it => !(zolte && it.plyo));
     const ukryte = b.items.length - items.length;
-    h += `<div class="blkh">${b.t}${ukryte?`<span>${ukryte} ukryte — żółte światło</span>`:''}</div>`;
+    h += `<div class="blkh">${b.t}${ukryte ? `<span>${ukryte} ukryte — żółte światło</span>` : ''}</div>`;
     if(!items.length){
       h += `<div class="alert w" style="margin-bottom:7px">Cały blok wypada przy żółtym świetle. Plyometria wraca, gdy przez pełne 3 dni nie poczujesz napięcia w prawym pośladku.</div>`;
       return;
     }
-    items.forEach((it, ii) => {
+    items.forEach(it => {
       const id = `${k}-${bi}-${it.n}`;
-      widoczne.push(id);
-      const done = d.zrobione.includes(id);
+      widoczne.push({ id, n: it.n });
+      const pom = d.pominiete.includes(id);
+      const done = !pom && d.zrobione.includes(id);
       const an = it.lift ? analiza(it) : null;
-      const dzisS = it.lift ? serieDnia(it.lift, TODAY) : [];
-      h += `<div class="ex ${done?'done':''}" data-id="${id}">
-        <div class="box">✓</div>
+      let setyHtml = '';
+      if(it.lift){
+        const n = an.serie;
+        setyHtml = `<div class="setg" onclick="event.stopPropagation()">` +
+          Array.from({ length: n }, (_, i) => {
+            const z = setDnia(it.lift, i);
+            return `<div class="setr${z ? ' ok' : ''}">
+              <span class="setl">${i + 1}</span>
+              <input id="kg-${it.lift}-${i}" type="number" step="0.5" inputmode="decimal" placeholder="kg"
+                value="${z ? z.kg : (an.kg != null ? an.kg : '')}" onchange="zapiszSet('${it.lift}',${i},'${id}')">
+              <input id="p-${it.lift}-${i}" type="number" inputmode="numeric" placeholder="${an.powt}"
+                value="${z ? z.p : ''}" onchange="zapiszSet('${it.lift}',${i},'${id}')">
+            </div>`;
+          }).join('') + `</div>`;
+      }
+      h += `<div class="ex ${done ? 'done' : ''} ${pom ? 'skip' : ''}" data-id="${id}">
+        <div class="box">${pom ? '–' : '✓'}</div>
         <div class="exb">
-          <div class="exn">${it.n}</div>
+          <div class="exhead">
+            <div class="exn">${it.n}</div>
+            <button class="skipb" onclick="event.stopPropagation();pomin('${id}')">${pom ? 'cofnij' : 'pomiń'}</button>
+          </div>
           <div class="exd">${it.d}</div>
           ${it.u ? `<div class="exu">${it.u}</div>` : ''}
           ${an ? `<div class="last">${an.tekst}</div>` : ''}
-          ${it.lift ? `<div onclick="event.stopPropagation()">
-              ${dzisS.length ? `<div class="sety">Dziś: ${dzisS.map((x,si) =>
-                  `<button class="set" onclick="usunSet('${it.lift}',${si})">${pl0(x.kg)}×${x.p} ✕</button>`).join('')}</div>` : ''}
-              <div class="liftrow">
-                <input type="number" step="0.5" inputmode="decimal" placeholder="kg" id="kg-${it.lift}"
-                  value="${dzisS.length ? dzisS[dzisS.length-1].kg : ''}">
-                <input type="number" inputmode="numeric" placeholder="powt." id="p-${it.lift}">
-                <button onclick="zapiszLift('${it.lift}')">+ seria</button>
-              </div>
-            </div>` : ''}
+          ${setyHtml}
         </div></div>`;
     });
   });
 
-  const zrob = d.zrobione.filter(x => widoczne.includes(x)).length;
-  const pct = widoczne.length ? Math.round(zrob / widoczne.length * 100) : 0;
+  const ids = widoczne.map(x => x.id);
+  const zrob = d.zrobione.filter(x => ids.includes(x)).length;
+  const pomN = d.pominiete.filter(x => ids.includes(x)).length;
+  const pct = ids.length ? Math.round(zrob / ids.length * 100) : 0;
+  d.__widoczne = widoczne; d.__pct = pct;
+
+  const zapisane = (ST.historia || []).some(x => x.d === TODAY && x.k === k);
+  const nast = (zapisane && !edycja()) ? sugeruj() : null;
+
   box.innerHTML = `<div class="card" style="margin-top:14px">
       <div style="display:flex;justify-content:space-between;align-items:baseline">
-        <b>${S.nazwa}</b><span class="small">${zrob}/${widoczne.length}</span>
+        <b>${S.nazwa}</b><span class="small">${zrob}/${ids.length}${pomN ? ` · ${pomN} pominięte` : ''}</span>
       </div>
       <div class="prog"><i style="width:${pct}%"></i></div>
       <div class="small">${S.dur}${DELOADY.includes(tydzien()) ? ' · deload: 60% ciężarów, plyometria wypada' : ''}</div>
-    </div>` + h +
-    `<button class="btn" style="margin-top:14px" onclick="zakonczTrening()">Zakończ i zapisz w historii</button>
-     <button class="btn sec" style="margin-top:8px" onclick="resetDnia()">Wyczyść odznaczenia</button>`;
-  d.__pct = pct;
+    </div>` +
+    (zapisane ? `<div class="alert g" style="margin-top:12px"><b>Zapisane w historii — ${zrob}/${ids.length}${pomN ? `, ${pomN} pominięte` : ''}.</b>${
+        edycja() ? ' Zmiany nadpiszą ten wpis.' : `<br>Następnie: ${SESJE[nast.k].nazwa}. Możesz dalej odhaczać i zapisać ponownie.`}</div>` : '') +
+    h +
+    `<button class="btn" style="margin-top:14px" onclick="zakonczTrening()">${zapisane ? 'Zapisz zmiany' : (edycja() ? 'Dodaj do historii' : 'Zakończ i zapisz w historii')}</button>
+     <button class="btn sec" style="margin-top:8px" onclick="resetDnia()">Wyczyść odznaczenia</button>
+     ${zapisane ? `<button class="btn sec" style="margin-top:8px" onclick="usunWpis('${TODAY}','${k}')">Usuń ten trening z historii</button>` : ''}`;
 
   document.querySelectorAll('.ex').forEach(e => e.onclick = () => {
-    const dd = dzien(), id = e.dataset.id, i = dd.zrobione.indexOf(id);
+    const dd = dzien(), id = e.dataset.id;
+    if(dd.pominiete.includes(id)) return;
+    const i = dd.zrobione.indexOf(id);
     if(i < 0){ dd.zrobione.push(id); if(navigator.vibrate) navigator.vibrate(12); }
     else dd.zrobione.splice(i, 1);
     save(); renderSession();
   });
-}
-function resetDnia(){ dzien().zrobione = []; save(); renderSession(); }
-
-function zapiszLift(kl){
-  const kg = parseFloat(String(document.getElementById('kg-'+kl).value).replace(',','.'));
-  const p  = parseInt(document.getElementById('p-'+kl).value);
-  if(!kg || !p){ alert('Podaj ciężar i liczbę powtórzeń.'); return; }
-  if(!ST.lifty[kl]) ST.lifty[kl] = [];
-  ST.lifty[kl].push({ d: TODAY, kg, p });
   save();
-  if(navigator.vibrate) navigator.vibrate([15,40,15]);
-  renderSession(); renderPostep();
 }
-function usunSet(kl, i){
-  const dzisS = serieDnia(kl, TODAY);
-  const cel = dzisS[i];
-  if(!cel) return;
-  const idx = ST.lifty[kl].findIndex(x => x.d === cel.d && x.kg === cel.kg && x.p === cel.p);
-  if(idx >= 0) ST.lifty[kl].splice(idx, 1);
-  save(); renderSession(); renderPostep();
-}
+function resetDnia(){ const d = dzien(); d.zrobione = []; d.pominiete = []; save(); renderSession(); }
 
 /* ============ postęp ============ */
 function renderPostep(){
@@ -711,7 +850,7 @@ function renderHistoria(){
   const st = document.getElementById('histStat');
   if(!h.length){
     st.textContent = '';
-    el.innerHTML = '<tr><td class="small">Brak wpisów. Po treningu naciśnij „Zakończ i zapisz w historii”.</td></tr>';
+    el.innerHTML = '<tr><td class="small">Brak wpisów. Po treningu naciśnij „Zakończ i zapisz w historii”. Później możesz kliknąć wpis na tej liście i go poprawić.</td></tr>';
     return;
   }
   const g30 = new Date(new Date(TODAY) - 29*86400000).toISOString().slice(0,10);
@@ -721,8 +860,12 @@ function renderHistoria(){
   el.innerHTML = h.slice(0, 40).map(x => {
     const dt = dniTemu(x.d);
     const kiedy = dt === 0 ? 'dziś' : dt === 1 ? 'wczoraj' : dt + ' dni temu';
-    return `<tr><td>${SESJE[x.k] ? SESJE[x.k].nazwa : x.k}<br><span class="small">${x.d} · ${kiedy}</span></td>
-            <td class="r">${x.pct}%</td></tr>`;
+    const pom = (x.pom && x.pom.length)
+      ? `<br><span class="small" style="color:var(--warn)">pominięte: ${x.pom.join(', ')}</span>` : '';
+    const licz = x.total ? `${x.zrob}/${x.total}` : `${x.pct}%`;
+    return `<tr class="histr" onclick="ustawDate('${x.d}')">
+            <td>${SESJE[x.k] ? SESJE[x.k].nazwa : x.k}<br><span class="small">${x.d} · ${kiedy} · <span style="color:var(--info)">edytuj</span></span>${pom}</td>
+            <td class="r">${licz}<br><span class="g">${x.pct}%</span></td></tr>`;
   }).join('');
 }
 
@@ -839,7 +982,13 @@ document.querySelectorAll('.nb').forEach(b => b.onclick = () => {
   window.scrollTo(0,0);
 });
 
+document.getElementById('dPrev').onclick  = () => przesunDate(-1);
+document.getElementById('dNext').onclick  = () => przesunDate(1);
+document.getElementById('dToday').onclick = () => ustawDate(DZIS);
+document.getElementById('dPick').onchange = e => ustawDate(e.target.value);
+
 /* ============ start ============ */
+migrujLifty();
 function renderAll(){ renderHead(); renderLights(); renderChips(); renderSession(); renderPostep(); renderHistoria(); renderPlan(); }
 renderAll();
 
