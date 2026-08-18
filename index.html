@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0e1012">
+<title>Trening</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{
+  --bg:#0e1012;--surf:#16191d;--surf2:#1d2126;--line:#2a2f36;
+  --txt:#e8eaed;--dim:#9aa3ad;--dim2:#6b747e;
+  --acc:#f0632f;--ok:#3fb950;--info:#58a6ff;--warn:#e3b341;--bad:#f85149;
+  --nav:76px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--txt);
+  font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+  overscroll-behavior-y:contain}
+body{padding-bottom:calc(var(--nav) + env(safe-area-inset-bottom) + 16px)}
+.wrap{max-width:640px;margin:0 auto;padding:0 15px}
+
+header{padding:calc(env(safe-area-inset-top) + 16px) 0 12px}
+.hrow{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+h1{margin:0;font-size:21px;letter-spacing:-.02em}
+.hsub{color:var(--dim2);font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+.phase{background:var(--surf2);border:1px solid var(--line);border-radius:8px;
+  padding:6px 10px;font-size:11.5px;color:var(--dim);text-align:right;flex:0 0 auto;line-height:1.35}
+.phase b{color:var(--acc);display:block;font-size:12.5px}
+
+h2{font-size:12.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--dim2);
+  margin:26px 0 10px;font-weight:700}
+h2:first-child{margin-top:6px}
+
+.card{background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:15px;margin-bottom:12px}
+.muted{color:var(--dim);font-size:14px;margin:0}
+.small{font-size:13px;color:var(--dim2)}
+
+/* światła */
+.lights{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.light{background:var(--surf2);border:1.5px solid var(--line);border-radius:11px;padding:11px 6px;
+  text-align:center;cursor:pointer;font-size:12.5px;color:var(--dim);font-family:inherit;line-height:1.3}
+.light .dot{width:11px;height:11px;border-radius:50%;margin:0 auto 6px;background:var(--dim2)}
+.light[data-v=green] .dot{background:var(--ok)}
+.light[data-v=yellow] .dot{background:var(--warn)}
+.light[data-v=red] .dot{background:var(--bad)}
+.light.on{color:var(--txt);background:#242a31}
+.light.on[data-v=green]{border-color:var(--ok)}
+.light.on[data-v=yellow]{border-color:var(--warn)}
+.light.on[data-v=red]{border-color:var(--bad)}
+
+.alert{border-left:3px solid var(--info);background:rgba(88,166,255,.07);padding:11px 13px;
+  border-radius:0 9px 9px 0;font-size:13.5px;color:var(--dim);margin-bottom:12px}
+.alert.w{border-color:var(--warn);background:rgba(227,179,65,.08)}
+.alert.d{border-color:var(--bad);background:rgba(248,81,73,.08)}
+.alert.g{border-color:var(--ok);background:rgba(63,185,80,.07)}
+.alert b{color:var(--txt)}
+
+/* wybór sesji */
+.chips{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;background:var(--surf2);border:1px solid var(--line);color:var(--dim);
+  padding:9px 15px;border-radius:999px;font-size:14px;font-weight:600;cursor:pointer;
+  white-space:nowrap;font-family:inherit}
+.chip.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.chip.sug::after{content:"•";color:var(--acc);margin-left:6px}
+.chip.on.sug::after{color:#fff}
+
+/* bloki ćwiczeń */
+.blk{margin-bottom:8px}
+.blkh{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--acc);
+  font-weight:700;margin:20px 0 8px;display:flex;justify-content:space-between;align-items:center}
+.blkh span{color:var(--dim2);font-weight:600;letter-spacing:0;text-transform:none;font-size:12px}
+
+.ex{display:flex;gap:12px;padding:12px 13px;background:var(--surf);border:1px solid var(--line);
+  border-radius:12px;margin-bottom:7px;cursor:pointer;align-items:flex-start;transition:.12s}
+.ex.done{background:rgba(63,185,80,.07);border-color:rgba(63,185,80,.3)}
+.ex.done .exn{color:var(--dim2);text-decoration:line-through}
+.box{flex:0 0 auto;width:22px;height:22px;border-radius:7px;border:1.5px solid var(--line);
+  margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent}
+.ex.done .box{background:var(--ok);border-color:var(--ok);color:#0e1012;font-weight:700}
+.exb{flex:1;min-width:0}
+.exn{font-size:14.5px;font-weight:500;line-height:1.35}
+.exd{font-size:13px;color:var(--acc);font-weight:600;margin-top:2px}
+.ex.done .exd{color:var(--dim2)}
+.exu{font-size:12.5px;color:var(--dim2);margin-top:3px;line-height:1.4}
+.last{font-size:12px;color:var(--info);margin-top:4px}
+
+.liftrow{display:flex;gap:7px;margin-top:9px}
+.liftrow input{flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);color:var(--txt);
+  border-radius:9px;padding:9px 10px;font-size:15px;font-family:inherit;-webkit-appearance:none}
+.liftrow input:focus{outline:none;border-color:var(--acc)}
+.liftrow button{flex:0 0 auto;background:var(--surf2);border:1px solid var(--line);color:var(--txt);
+  border-radius:9px;padding:9px 14px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer}
+.liftrow button:active{background:var(--acc);border-color:var(--acc)}
+
+.prog{height:5px;background:var(--surf2);border-radius:99px;overflow:hidden;margin:10px 0 2px}
+.prog i{display:block;height:100%;background:var(--acc);border-radius:99px;transition:width .25s}
+
+/* formularze */
+.frow{display:flex;gap:9px;align-items:center;margin-bottom:9px}
+.frow label{flex:1;font-size:14px;color:var(--dim)}
+.frow input{width:96px;flex:0 0 auto;background:var(--bg);border:1px solid var(--line);color:var(--txt);
+  border-radius:9px;padding:9px;font-size:15px;font-family:inherit;text-align:right;-webkit-appearance:none}
+.frow input:focus{outline:none;border-color:var(--acc)}
+.btn{width:100%;background:var(--acc);border:none;color:#fff;border-radius:11px;padding:13px;
+  font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;margin-top:4px}
+.btn.sec{background:var(--surf2);border:1px solid var(--line);color:var(--txt)}
+
+/* statystyki */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px}
+.kpi{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:12px 10px;text-align:center}
+.kpi b{display:block;font-size:20px;letter-spacing:-.02em;color:var(--acc)}
+.kpi span{font-size:11px;color:var(--dim2);text-transform:uppercase;letter-spacing:.04em;line-height:1.3;display:block;margin-top:3px}
+svg.spark{width:100%;height:88px;display:block;margin-top:6px}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+td{padding:9px 4px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:none}
+td.r{text-align:right;color:var(--acc);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.g{text-align:right;color:var(--dim2);white-space:nowrap;font-size:12.5px}
+
+details{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:13px 15px;margin-bottom:9px}
+summary{cursor:pointer;font-weight:600;font-size:14.5px;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";color:var(--acc);margin-right:8px;display:inline-block;transition:.15s}
+details[open] summary::before{transform:rotate(90deg)}
+details ul{margin:11px 0 0;padding-left:19px;color:var(--dim);font-size:13.5px}
+details li{margin-bottom:6px}
+details b{color:var(--txt)}
+
+/* nawigacja */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(14,16,18,.96);
+  backdrop-filter:blur(12px);border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom)}
+.navin{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.nb{background:none;border:none;color:var(--dim2);padding:11px 4px 13px;font-size:11px;
+  font-family:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
+.nb svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.9;
+  stroke-linecap:round;stroke-linejoin:round}
+.nb.on{color:var(--acc)}
+
+section{display:none}section.on{display:block}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <div class="hrow">
+    <div>
+      <h1 id="hTitle">Dziś</h1>
+      <div class="hsub" id="hDate">—</div>
+    </div>
+    <div class="phase" id="hPhase"></div>
+  </div>
+</header>
+
+<!-- ================= DZIŚ ================= -->
+<section id="s-dzis" class="on">
+  <h2>Jak się dziś czujesz — SKB</h2>
+  <div class="lights">
+    <button class="light" data-v="green"><div class="dot"></div>Zielone<br><span class="small">bez bólu</span></button>
+    <button class="light" data-v="yellow"><div class="dot"></div>Żółte<br><span class="small">lekkie napięcie</span></button>
+    <button class="light" data-v="red"><div class="dot"></div>Czerwone<br><span class="small">ból</span></button>
+  </div>
+  <div id="lightMsg"></div>
+
+  <h2>Jednostka na dziś</h2>
+  <div class="chips" id="chips"></div>
+
+  <div id="sessBody"></div>
+</section>
+
+<!-- ================= POSTĘP ================= -->
+<section id="s-postep">
+  <h2>Masa ciała</h2>
+  <div class="card">
+    <div class="kpis">
+      <div class="kpi"><b id="kW">—</b><span>ostatnia (kg)</span></div>
+      <div class="kpi"><b id="kA">—</b><span>średnia 7 dni (kg)</span></div>
+      <div class="kpi"><b id="kD">—</b><span>kg do celu 85</span></div>
+    </div>
+    <div id="sparkBox"></div>
+    <div class="frow" style="margin-top:14px">
+      <label>Waga dziś (kg)</label><input id="inW" type="number" step="0.1" inputmode="decimal" placeholder="91.0">
+    </div>
+    <div class="frow">
+      <label>Obwód pasa (cm)</label><input id="inWaist" type="number" step="0.5" inputmode="decimal" placeholder="—">
+    </div>
+    <button class="btn" id="btnW">Zapisz pomiar</button>
+  </div>
+
+  <h2>Testy sprawnościowe — co 4 tygodnie</h2>
+  <div class="card" id="testBox"></div>
+
+  <h2>Rekordy siłowe</h2>
+  <div class="card"><table id="prTable"></table></div>
+</section>
+
+<!-- ================= PLAN ================= -->
+<section id="s-plan">
+  <h2>Tydzień</h2>
+  <div class="card"><table id="weekTable"></table></div>
+
+  <h2>Zasady, gdy tydzień się sypie</h2>
+  <div class="card">
+    <ul style="margin:0;padding-left:19px;color:var(--dim);font-size:13.5px">
+      <li>Ciężka sesja nóg minimum <b>48 h przed meczem</b></li>
+      <li><b>A i C nigdy dzień po dniu</b></li>
+      <li><b>Nigdy dwa dni skoków z rzędu</b> — siatkówka liczy się jako dzień skoków</li>
+      <li>Kolejność cięcia: akcesoria B → blok siłowy C → blok mocy zostaje do końca</li>
+      <li>Wypada jedna sesja? Niech to będzie <b>B, nigdy A</b></li>
+      <li>Sen poniżej 6,5 h przez kilka dni → tnij siłownię, nie sport</li>
+    </ul>
+  </div>
+
+  <h2>Fazy</h2>
+  <div id="phaseBox"></div>
+
+  <h2>Żywienie</h2>
+  <div class="card">
+    <table>
+      <tr><td>Dzień treningowy</td><td class="r">2 700 kcal</td></tr>
+      <tr><td>Dzień wolny</td><td class="r">2 250 kcal</td></tr>
+      <tr><td>Białko codziennie</td><td class="r">180 g</td></tr>
+      <tr><td>Kreatyna</td><td class="r">5 g</td></tr>
+    </table>
+    <p class="small" style="margin:11px 0 0">Catering 2000 kcal + przedtreningowy + potreningowy + kazeina wieczorem. Tempo −0,4 do −0,5 kg/tydz.</p>
+  </div>
+</section>
+
+<!-- ================= WIĘCEJ ================= -->
+<section id="s-wiecej">
+  <h2>Bezpieczeństwo — L5/S1 i prawy SKB</h2>
+  <details><summary>Czego unikać</summary>
+    <ul>
+      <li><b>Klasyczny martwy ciąg ze sztangi z podłogi</b> — trap bar zamiast niego</li>
+      <li><b>Przysiad ze sztangą na plecach</b> w fazie 0–1</li>
+      <li><b>Brzuszki, skłony, rosyjskie skręty</b> — fleksja i rotacja pod obciążeniem</li>
+      <li><b>Wyciskanie żołnierskie stojąc</b> — siadaj z oparciem</li>
+      <li><b>Fleksja kręgosłupa w pierwszej godzinie po wstaniu</b></li>
+      <li><b>Plyometria na zmęczonych nogach</b> — blok mocy zawsze na początku</li>
+      <li><b>Rolowanie lędźwi i okolicy SKB</b> — roluj wokół, nie na</li>
+    </ul>
+  </details>
+  <details><summary>Czerwone flagi — przerwij i dzwoń do fizjo</summary>
+    <ul>
+      <li>Powrót „prądu" do stopy lub promieniowania poniżej kolana — natychmiast</li>
+      <li>Drętwienie, mrowienie lub osłabienie siły w nodze</li>
+      <li>Ból SKB utrzymujący się <b>ponad 48 h</b> po treningu</li>
+      <li>Sztywność poranna <b>ponad 15 min</b> przez 3 dni z rzędu</li>
+      <li>Ból narastający w trakcie sesji zamiast ustępować po rozgrzewce</li>
+      <li><b>Pilne medycznie:</b> objawy pęcherza lub jelit, drętwienie krocza, obustronne osłabienie nóg</li>
+    </ul>
+  </details>
+  <details><summary>Biuro — 10 h dziennie</summary>
+    <ul>
+      <li>Wstawaj co <b>45–60 min</b>, ustaw timer</li>
+      <li>Kobra ×5 przy każdej przerwie — 30 sekund</li>
+      <li>Nieprzerwane siedzenie powyżej 90 min to główny czynnik nawrotów</li>
+    </ul>
+  </details>
+
+  <h2>Dane</h2>
+  <div class="card">
+    <p class="muted">Wszystko zapisuje się lokalnie w tym telefonie. Zrób kopię przed czyszczeniem danych przeglądarki.</p>
+    <button class="btn sec" id="btnExp" style="margin-top:11px">Eksportuj kopię (JSON)</button>
+    <button class="btn sec" id="btnImp" style="margin-top:8px">Wczytaj kopię</button>
+    <input type="file" id="fileImp" accept="application/json" class="hide">
+  </div>
+  <p class="small" style="text-align:center;margin:18px 0">
+    Plan opracowany 17.08.2026 · start 18.08.2026<br>Nie zastępuje konsultacji z fizjoterapeutą.
+  </p>
+</section>
+</div>
+
+<nav><div class="navin">
+  <button class="nb on" data-s="dzis"><svg viewBox="0 0 24 24"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg>Dziś</button>
+  <button class="nb" data-s="postep"><svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 4 8-8"/><path d="M16 8h4v4"/></svg>Postęp</button>
+  <button class="nb" data-s="plan"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Plan</button>
+  <button class="nb" data-s="wiecej"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/></svg>Więcej</button>
+</div></nav>
+
+<script src="data.js"></script>
+<script>
+/* ============ stan ============ */
+const KEY = 'trening-v1';
+let ST = load();
+function load(){
+  try{ return JSON.parse(localStorage.getItem(KEY)) || blank(); }
+  catch(e){ return blank(); }
+}
+function blank(){ return { dni:{}, lifty:{}, pomiary:[], testy:[] }; }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(ST)); }catch(e){ alert('Nie udało się zapisać. Sprawdź, czy nie jesteś w trybie incognito.'); } }
+
+const iso = d => d.toISOString().slice(0,10);
+const pl = n => (n==null||isNaN(n)) ? '—' : Number(n).toFixed(1).replace('.', ',');
+const TODAY = iso(new Date());
+function dzien(){ if(!ST.dni[TODAY]) ST.dni[TODAY] = { sesja:null, zrobione:[], swiatlo:null }; return ST.dni[TODAY]; }
+
+/* ============ faza / tydzień ============ */
+function tydzien(){
+  const diff = (new Date(TODAY) - new Date(PLAN_START)) / 86400000;
+  return Math.max(1, Math.floor(diff/7) + 1);
+}
+function faza(){ const t = tydzien(); return FAZY.find(f => t>=f.od && t<=f.do) || FAZY[FAZY.length-1]; }
+
+/* ============ render nagłówka ============ */
+function renderHead(){
+  const d = new Date(TODAY);
+  const dni = ['niedziela','poniedziałek','wtorek','środa','czwartek','piątek','sobota'];
+  const msc = ['stycznia','lutego','marca','kwietnia','maja','czerwca','lipca','sierpnia','września','października','listopada','grudnia'];
+  document.getElementById('hDate').textContent = `${dni[d.getDay()]}, ${d.getDate()} ${msc[d.getMonth()]}`;
+  const t = tydzien(), f = faza();
+  const dl = DELOADY.includes(t) ? '<br>DELOAD' : '';
+  document.getElementById('hPhase').innerHTML = `<b>Tydzień ${t}</b>${f.nazwa.split('—')[0].trim()}${dl}`;
+}
+
+/* ============ światła ============ */
+document.querySelectorAll('.light').forEach(b => b.onclick = () => {
+  const d = dzien();
+  d.swiatlo = (d.swiatlo === b.dataset.v) ? null : b.dataset.v;
+  save(); renderLights(); renderSession();
+});
+function renderLights(){
+  const v = dzien().swiatlo;
+  document.querySelectorAll('.light').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  const m = document.getElementById('lightMsg');
+  if(v === 'yellow') m.innerHTML = '<div class="alert w"><b>Żółte światło.</b> Trenujesz, ale bez plyometrii i bez progresji ciężaru w tym tygodniu. Skoki są ukryte poniżej. Podwój dawkę odwodzenia z gumą i Pallof press.</div>';
+  else if(v === 'red') m.innerHTML = '<div class="alert d"><b>Czerwone światło.</b> Dziś tylko sesja D i kobra. Sport wypada. Jeśli tak jest trzeci dzień z rzędu albo ból promieniuje poniżej kolana — kontakt z fizjoterapeutą.</div>';
+  else if(v === 'green') m.innerHTML = '<div class="alert g"><b>Zielone.</b> Trenujesz zgodnie z planem, progresujesz ciężary.</div>';
+  else m.innerHTML = '<div class="alert">Zaznacz status, zanim zaczniesz — dostosuję plan na dziś.</div>';
+}
+
+/* ============ wybór sesji ============ */
+function sugestia(){ return TYDZIEN[new Date(TODAY).getDay()]; }
+function renderChips(){
+  const d = dzien(), sug = sugestia(), red = d.swiatlo === 'red';
+  const wyb = d.sesja || (red ? 'D' : sug);
+  document.getElementById('chips').innerHTML = Object.keys(SESJE).map(k =>
+    `<button class="chip ${k===wyb?'on':''} ${k===sug?'sug':''}" data-k="${k}">${k==='VB'?'Siatkówka':k==='PADEL'?'Padel':k}</button>`).join('');
+  document.querySelectorAll('.chip').forEach(b => b.onclick = () => {
+    const dd = dzien();
+    if(dd.sesja !== b.dataset.k){ dd.sesja = b.dataset.k; dd.zrobione = []; }
+    save(); renderChips(); renderSession();
+  });
+}
+
+/* ============ sesja ============ */
+function ostatni(k){ const a = ST.lifty[k]; return a && a.length ? a[a.length-1] : null; }
+function podpowiedz(it){
+  const o = ostatni(it.lift);
+  if(!o) return LIFTY[it.lift] && LIFTY[it.lift].start ? `Punkt startowy: ${LIFTY[it.lift].start} kg` : null;
+  const zolte = dzien().swiatlo === 'yellow';
+  let s = `Ostatnio: ${o.kg} kg × ${o.p}`;
+  if(zolte) return s + ' — dziś bez progresji';
+  if(it.cel && o.p >= it.cel) s += ` → dziś spróbuj ${(o.kg + (it.krok||2.5))} kg`;
+  else s += ` → dziś ${o.kg} kg, dołóż powtórzenie`;
+  return s;
+}
+function renderSession(){
+  const d = dzien();
+  const k = d.sesja || (d.swiatlo === 'red' ? 'D' : sugestia());
+  const S = SESJE[k];
+  const zolte = d.swiatlo === 'yellow';
+  const box = document.getElementById('sessBody');
+
+  let widoczne = [];
+  let h = '';
+
+  if(d.swiatlo === 'red' && k !== 'D'){
+    h += '<div class="alert d" style="margin-top:14px"><b>Uwaga:</b> przy czerwonym świetle ta jednostka nie powinna się dziś odbyć. Przełącz na D.</div>';
+  }
+
+  S.bloki.forEach((b, bi) => {
+    const items = b.items.filter(it => !(zolte && it.plyo));
+    const ukryte = b.items.length - items.length;
+    h += `<div class="blkh">${b.t}${ukryte?`<span>${ukryte} ukryte — żółte światło</span>`:''}</div>`;
+    if(!items.length){
+      h += `<div class="alert w" style="margin-bottom:7px">Cały blok wypada przy żółtym świetle. Plyometria wraca, gdy przez pełne 3 dni nie poczujesz napięcia w prawym pośladku.</div>`;
+      return;
+    }
+    items.forEach((it, ii) => {
+      const id = `${k}-${bi}-${it.n}`;
+      widoczne.push(id);
+      const done = d.zrobione.includes(id);
+      const pod = it.lift ? podpowiedz(it) : null;
+      h += `<div class="ex ${done?'done':''}" data-id="${id}">
+        <div class="box">✓</div>
+        <div class="exb">
+          <div class="exn">${it.n}</div>
+          <div class="exd">${it.d}</div>
+          ${it.u ? `<div class="exu">${it.u}</div>` : ''}
+          ${pod ? `<div class="last">${pod}</div>` : ''}
+          ${it.lift ? `<div class="liftrow" onclick="event.stopPropagation()">
+              <input type="number" step="0.5" inputmode="decimal" placeholder="kg" id="kg-${it.lift}">
+              <input type="number" inputmode="numeric" placeholder="powt." id="p-${it.lift}">
+              <button onclick="zapiszLift('${it.lift}')">Zapisz</button>
+            </div>` : ''}
+        </div></div>`;
+    });
+  });
+
+  const zrob = d.zrobione.filter(x => widoczne.includes(x)).length;
+  const pct = widoczne.length ? Math.round(zrob / widoczne.length * 100) : 0;
+  box.innerHTML = `<div class="card" style="margin-top:14px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <b>${S.nazwa}</b><span class="small">${zrob}/${widoczne.length}</span>
+      </div>
+      <div class="prog"><i style="width:${pct}%"></i></div>
+      <div class="small">${S.dur}${DELOADY.includes(tydzien()) ? ' · deload: 60% ciężarów, plyometria wypada' : ''}</div>
+    </div>` + h +
+    `<button class="btn sec" style="margin-top:14px" onclick="resetDnia()">Wyczyść odznaczenia</button>`;
+
+  document.querySelectorAll('.ex').forEach(e => e.onclick = () => {
+    const dd = dzien(), id = e.dataset.id, i = dd.zrobione.indexOf(id);
+    if(i < 0){ dd.zrobione.push(id); if(navigator.vibrate) navigator.vibrate(12); }
+    else dd.zrobione.splice(i, 1);
+    save(); renderSession();
+  });
+}
+function resetDnia(){ dzien().zrobione = []; save(); renderSession(); }
+
+function zapiszLift(kl){
+  const kg = parseFloat(document.getElementById('kg-'+kl).value);
+  const p  = parseInt(document.getElementById('p-'+kl).value);
+  if(!kg || !p){ alert('Podaj ciężar i liczbę powtórzeń.'); return; }
+  if(!ST.lifty[kl]) ST.lifty[kl] = [];
+  ST.lifty[kl].push({ d: TODAY, kg, p });
+  save();
+  if(navigator.vibrate) navigator.vibrate([15,40,15]);
+  renderSession(); renderPostep();
+}
+
+/* ============ postęp ============ */
+function renderPostep(){
+  const p = ST.pomiary.slice().sort((a,b) => a.d < b.d ? -1 : 1);
+  const wagi = p.filter(x => x.kg);
+  const last = wagi.length ? wagi[wagi.length-1].kg : null;
+  const sr7 = wagi.slice(-7);
+  const avg = sr7.length ? sr7.reduce((s,x) => s + x.kg, 0) / sr7.length : null;
+  document.getElementById('kW').textContent = last ? pl(last) : '—';
+  document.getElementById('kA').textContent = avg ? pl(avg) : '—';
+  document.getElementById('kD').textContent = avg ? pl(avg - 85) : '—';
+  document.getElementById('sparkBox').innerHTML = spark(wagi.map(x => x.kg));
+
+  document.getElementById('testBox').innerHTML =
+    TESTY.map(t => {
+      const h = ST.testy.filter(x => x[t.k] != null);
+      const l = h.length ? h[h.length-1] : null;
+      const f = h.length ? h[0] : null;
+      const delta = (l && f && l !== f) ? ` (${l[t.k]-f[t.k] > 0 ? '+' : ''}${(l[t.k]-f[t.k]).toFixed(0)})` : '';
+      return `<div class="frow"><label>${t.n}<br><span class="small">cel: ${t.cel}${delta}</span></label>
+        <input type="number" step="0.5" inputmode="decimal" id="t-${t.k}" placeholder="${l ? l[t.k] : t.j}"></div>`;
+    }).join('') + `<button class="btn" onclick="zapiszTesty()">Zapisz wyniki testów</button>`;
+
+  const rows = Object.keys(LIFTY).map(k => {
+    const a = ST.lifty[k];
+    if(!a || !a.length) return null;
+    const best = a.reduce((m,x) => x.kg > m.kg ? x : m, a[0]);
+    const o = a[a.length-1];
+    return `<tr><td>${LIFTY[k].n}<br><span class="small">ostatnio ${o.kg} × ${o.p}</span></td>
+            <td class="r">${best.kg} kg<br><span class="g">${best.p} powt.</span></td></tr>`;
+  }).filter(Boolean);
+  document.getElementById('prTable').innerHTML = rows.length ? rows.join('')
+    : '<tr><td class="small">Brak zapisów. Wpisz ciężary przy ćwiczeniach w zakładce Dziś.</td></tr>';
+}
+
+function spark(v){
+  if(v.length < 2) return '<p class="small" style="margin:10px 0 0">Wpisuj wagę codziennie rano — wykres pojawi się po drugim pomiarze.</p>';
+  const w = 320, h = 88, pad = 6;
+  const mn = Math.min(...v), mx = Math.max(...v), rng = (mx - mn) || 1;
+  const pts = v.map((y,i) => [pad + i*(w-2*pad)/(v.length-1), h-pad - (y-mn)/rng*(h-2*pad)]);
+  const line = pts.map((p,i) => (i?'L':'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
+  const area = line + ` L${(w-pad)} ${h} L${pad} ${h} Z`;
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-label="Waga w czasie">
+    <path d="${area}" fill="rgba(240,99,47,.13)"/>
+    <path d="${line}" fill="none" stroke="#f0632f" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${pts[pts.length-1][0].toFixed(1)}" cy="${pts[pts.length-1][1].toFixed(1)}" r="3.5" fill="#f0632f"/>
+  </svg><div class="small" style="display:flex;justify-content:space-between">
+    <span>start ${pl(v[0])} kg</span><span>${v.length} pomiarów</span><span>teraz ${pl(v[v.length-1])} kg</span></div>`;
+}
+
+document.getElementById('btnW').onclick = () => {
+  const kg = parseFloat(document.getElementById('inW').value);
+  const pas = parseFloat(document.getElementById('inWaist').value);
+  if(!kg && !pas){ alert('Wpisz wagę albo obwód.'); return; }
+  ST.pomiary = ST.pomiary.filter(x => x.d !== TODAY);
+  ST.pomiary.push({ d: TODAY, kg: kg || null, pas: pas || null });
+  save();
+  document.getElementById('inW').value = ''; document.getElementById('inWaist').value = '';
+  if(navigator.vibrate) navigator.vibrate([15,40,15]);
+  renderPostep();
+};
+function zapiszTesty(){
+  const r = { d: TODAY };
+  let any = false;
+  TESTY.forEach(t => { const v = parseFloat(document.getElementById('t-'+t.k).value); if(v){ r[t.k] = v; any = true; } });
+  if(!any){ alert('Wpisz przynajmniej jeden wynik.'); return; }
+  ST.testy = ST.testy.filter(x => x.d !== TODAY);
+  ST.testy.push(r); ST.testy.sort((a,b) => a.d < b.d ? -1 : 1);
+  save(); renderPostep(); alert('Zapisane.');
+}
+
+/* ============ plan ============ */
+function renderPlan(){
+  const n = ['niedziela','poniedziałek','wtorek','środa','czwartek','piątek','sobota'];
+  document.getElementById('weekTable').innerHTML = [1,2,3,4,5,6,0].map(i => {
+    const s = SESJE[TYDZIEN[i]];
+    return `<tr><td>${n[i]}</td><td class="r">${s.nazwa}</td></tr>`;
+  }).join('');
+  const t = tydzien();
+  document.getElementById('phaseBox').innerHTML = FAZY.map(f =>
+    `<details ${t>=f.od && t<=f.do ? 'open' : ''}><summary>${f.nazwa} · tyg. ${f.od}–${f.do===99?'∞':f.do}</summary>
+     <p class="muted" style="margin-top:9px">${f.opis}</p></details>`).join('');
+}
+
+/* ============ eksport / import ============ */
+document.getElementById('btnExp').onclick = () => {
+  const b = new Blob([JSON.stringify(ST, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(b); a.download = `trening-${TODAY}.json`; a.click();
+};
+document.getElementById('btnImp').onclick = () => document.getElementById('fileImp').click();
+document.getElementById('fileImp').onchange = e => {
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = () => { try{ ST = JSON.parse(r.result); save(); renderAll(); alert('Wczytane.'); }
+                     catch(x){ alert('Nieprawidłowy plik.'); } };
+  r.readAsText(f);
+};
+
+/* ============ nawigacja ============ */
+const TYT = { dzis:'Dziś', postep:'Postęp', plan:'Plan', wiecej:'Więcej' };
+document.querySelectorAll('.nb').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.nb').forEach(x => x.classList.remove('on'));
+  document.querySelectorAll('section').forEach(x => x.classList.remove('on'));
+  b.classList.add('on');
+  document.getElementById('s-' + b.dataset.s).classList.add('on');
+  document.getElementById('hTitle').textContent = TYT[b.dataset.s];
+  window.scrollTo(0,0);
+});
+
+/* ============ start ============ */
+function renderAll(){ renderHead(); renderLights(); renderChips(); renderSession(); renderPostep(); renderPlan(); }
+renderAll();
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
