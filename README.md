@@ -65,6 +65,7 @@ Konto założysz później, jeśli będziesz chciał zmienić nazwę adresu.
 - Wybór jednostki: A, B, C, D, siatkówka, padel. Kropka przy chipie = dzisiejsza sugestia.
 - Checklista z odznaczaniem, pasek postępu, wibracja przy odznaczeniu.
 - Przy ćwiczeniach siłowych **wszystkie serie z planu są od razu otwarte**, z wpisanym z góry sugerowanym ciężarem. Wpisujesz tylko powtórzenia; ciężar zmieniasz, jeśli bierzesz inny. Komplet serii = ćwiczenie odhacza się samo.
+- **Siatkówka i padel działają inaczej niż siłownia** — patrz niżej.
 - **Pomiń** przy każdym ćwiczeniu — ćwiczenie zostaje oznaczone jako świadomie odpuszczone i trafia pod tą nazwą do historii.
 - Trening **nie musi być kompletny**, żeby go zapisać. Zapisujesz ile zrobiłeś, a apka odnotowuje resztę.
 - **Stopery** przy ćwiczeniach czasowych — apka sama czyta czas z opisu („30 s", „45 s/str", „1 min") i pokazuje przycisk ⏱. Stuknięcie startuje odliczanie, koniec sygnalizuje wibracją. Ponowne stuknięcie anuluje.
@@ -81,6 +82,20 @@ Konto założysz później, jeśli będziesz chciał zmienić nazwę adresu.
 - Obwód pasa.
 - Testy sprawnościowe co 4 tygodnie — wyskok dosiężny, CMJ, skok w dal, side plank L/P, plank na piłce. Pokazuje różnicę względem pierwszego pomiaru.
 - Rekordy siłowe.
+
+---
+
+## Siatkówka i padel — jedno zatwierdzenie
+
+Sport to nie trening do odhaczania punkt po punkcie. Rozgrzewka i schłodzenie są tam **rozpiską poglądową** — czytasz kolejność, nie klikasz każdej pozycji. Brak checkboxów, brak paska postępu, brak „pomiń".
+
+Na dole jest jeden przycisk: **Zagrane — zapisz w historii**. Wpis idzie do historii jako ✓ za cały dzień, razem ze statusem SKB i notatką.
+
+Dzięki temu widzisz potem, **jak często realnie grasz**: Postęp → *Jak często grasz* pokazuje średnią siatkówek i padli na tydzień, liczbę gier w 30 dniach i rozkład ostatnich 8 tygodni (● siatkówka, ▪ padel).
+
+Ta karta też komentuje wynik: jeśli siatkówka wychodzi poniżej ~1,5×/tydz., apka przypomni, że plan siłowy zakłada więcej skoków z gry i warto przesunąć trochę plyometrii z powrotem na siłownię. Jeśli wychodzi powyżej ~3,2×/tydz. — że blok mocy w sesji A można ciąć o połowę, bo objętość skokową masz już z boiska.
+
+Chcesz, żeby jakaś jednostka działała w tym trybie? Ustaw jej `typ: 'sport'` w `data.js`.
 
 ---
 

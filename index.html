@@ -95,6 +95,9 @@ h2:first-child{margin-top:6px}
   border-radius:9px;padding:9px 14px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer}
 .liftrow button:active{background:var(--acc);border-color:var(--acc)}
 
+.ref{padding:9px 13px;background:var(--surf);border:1px solid var(--line);border-radius:11px;margin-bottom:6px}
+.refn{font-size:14.5px;font-weight:500;line-height:1.35}
+.refd{font-size:13px;color:var(--acc);font-weight:600;margin-top:2px}
 .tmb{background:var(--surf2);border:1px solid var(--line);color:var(--dim);border-radius:7px;
   padding:2px 8px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;margin-left:7px;
   vertical-align:1px;min-width:52px}
@@ -107,6 +110,12 @@ textarea:focus{outline:none;border-color:var(--acc)}
 .strip{display:flex;gap:3px;flex-wrap:wrap}
 .strip i{width:9px;height:16px;border-radius:2px;background:var(--surf2);display:block}
 .strip i.green{background:var(--ok)} .strip i.yellow{background:var(--warn)} .strip i.red{background:var(--bad)}
+.graw{display:flex;align-items:center;gap:9px;padding:5px 0;border-bottom:1px solid var(--line);font-size:14px}
+.graw:last-of-type{border-bottom:none}
+.gral{width:62px;flex:0 0 auto;font-size:12px;color:var(--dim2)}
+.grad{color:var(--acc);letter-spacing:2px}
+.grap{color:var(--info);letter-spacing:2px}
+.gran{margin-left:auto;color:var(--dim2);font-size:12px}
 .bars{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
 .bars div b{display:block;font-size:18px;color:var(--acc)}
 .bars div span{font-size:11px;color:var(--dim2)}
@@ -229,6 +238,9 @@ section{display:none}section.on{display:block}
 
 <!-- ================= POSTĘP ================= -->
 <section id="s-postep">
+  <h2>Jak często grasz</h2>
+  <div class="card" id="graBox"></div>
+
   <h2>Regularność i SKB</h2>
   <div class="card">
     <div id="adher"></div>
@@ -468,8 +480,11 @@ function zakonczTrening(){
   const pominiete = widoczne.filter(x => (d.pominiete || []).includes(x.id)).map(x => x.n);
   const zrobione = widoczne.filter(x => d.zrobione.includes(x.id)).length;
   ST.historia = (ST.historia || []).filter(x => !(x.d === TODAY && x.k === k));
-  ST.historia.push({ d: TODAY, k, pct: d.__pct || 0, zrob: zrobione, total: widoczne.length,
-                     pom: pominiete, sw: d.swiatlo || null, notka: (d.notatka || '').slice(0, 300) });
+  const sport = SESJE[k] && SESJE[k].typ === 'sport';
+  ST.historia.push(sport
+    ? { d: TODAY, k, pct: 100, sport: true, sw: d.swiatlo || null, notka: (d.notatka || '').slice(0, 300) }
+    : { d: TODAY, k, pct: d.__pct || 0, zrob: zrobione, total: widoczne.length,
+        pom: pominiete, sw: d.swiatlo || null, notka: (d.notatka || '').slice(0, 300) });
   save();
   if(navigator.vibrate) navigator.vibrate([20,50,20]);
   renderAll();
@@ -733,12 +748,13 @@ function renderSession(){
                                  : (d.swiatlo === 'red' ? 'D' : sugeruj().k));
   const S = SESJE[k];
   const zolte = d.swiatlo === 'yellow';
+  const sport = S.typ === 'sport';
   const box = document.getElementById('sessBody');
   const widoczne = [];
   let h = '';
 
   // auto-zaliczenie ćwiczeń siłowych z kompletem serii
-  S.bloki.forEach((b, bi) => b.items.forEach(it => {
+  if(!sport) S.bloki.forEach((b, bi) => b.items.forEach(it => {
     if(!it.lift) return;
     const id = `${k}-${bi}-${it.n}`;
     if(d.pominiete.includes(id)) return;
@@ -756,6 +772,14 @@ function renderSession(){
     h += `<div class="blkh">${b.t}${ukryte ? `<span>${ukryte} ukryte — żółte światło</span>` : ''}</div>`;
     if(!items.length){
       h += `<div class="alert w" style="margin-bottom:7px">Cały blok wypada przy żółtym świetle. Plyometria wraca, gdy przez pełne 3 dni nie poczujesz napięcia w prawym pośladku.</div>`;
+      return;
+    }
+    if(sport){
+      h += items.map(it => `<div class="ref">
+          <div class="refn">${it.n}</div>
+          <div class="refd">${it.d}</div>
+          ${it.u ? `<div class="exu">${it.u}</div>` : ''}
+        </div>`).join('');
       return;
     }
     items.forEach(it => {
@@ -813,16 +837,21 @@ function renderSession(){
 
   box.innerHTML = `<div class="card" style="margin-top:14px">
       <div style="display:flex;justify-content:space-between;align-items:baseline">
-        <b>${S.nazwa}</b><span class="small" id="licznik">${zrob}/${ids.length}${pomN ? ` · ${pomN} pominięte` : ''}</span>
+        <b>${S.nazwa}</b>${sport ? `<span class="small">${zapisane ? 'zapisane' : 'do zatwierdzenia'}</span>`
+          : `<span class="small" id="licznik">${zrob}/${ids.length}${pomN ? ` · ${pomN} pominięte` : ''}</span>`}
       </div>
-      <div class="prog"><i id="pasek" style="width:${pct}%"></i></div>
-      <div class="small">${S.dur}${DELOADY.includes(tydzien()) ? ' · deload: 60% ciężarów, plyometria wypada' : ''}</div>
+      ${sport ? '' : `<div class="prog"><i id="pasek" style="width:${pct}%"></i></div>`}
+      <div class="small">${sport ? 'Rozpiska poglądowa — odhaczasz cały dzień jednym przyciskiem na dole'
+        : S.dur + (DELOADY.includes(tydzien()) ? ' · deload: 60% ciężarów, plyometria wypada' : '')}</div>
     </div>` +
-    (zapisane ? `<div class="alert g" style="margin-top:12px"><b>Zapisane w historii — ${zrob}/${ids.length}${pomN ? `, ${pomN} pominięte` : ''}.</b>${
-        edycja() ? ' Zmiany nadpiszą ten wpis.' : `<br>Następnie: ${SESJE[nast.k].nazwa}. Możesz dalej odhaczać i zapisać ponownie.`}</div>` : '') +
+    (zapisane ? `<div class="alert g" style="margin-top:12px"><b>${sport ? 'Zapisane w historii.' : `Zapisane w historii — ${zrob}/${ids.length}${pomN ? `, ${pomN} pominięte` : ''}.`}</b>${
+        edycja() ? ' Zmiany nadpiszą ten wpis.'
+                 : `<br>Następnie: ${SESJE[nast.k].nazwa}.${sport ? '' : ' Możesz dalej odhaczać i zapisać ponownie.'}`}</div>` : '') +
     h +
-    `<button class="btn" style="margin-top:14px" onclick="zakonczTrening()">${zapisane ? 'Zapisz zmiany' : (edycja() ? 'Dodaj do historii' : 'Zakończ i zapisz w historii')}</button>
-     <button class="btn sec" style="margin-top:8px" onclick="resetDnia()">Wyczyść odznaczenia</button>
+    `<button class="btn" style="margin-top:14px" onclick="zakonczTrening()">${
+        sport ? (zapisane ? 'Zapisano ✓ — zapisz ponownie' : (k === 'VB' ? 'Zagrane — zapisz w historii' : 'Zagrane — zapisz w historii'))
+              : (zapisane ? 'Zapisz zmiany' : (edycja() ? 'Dodaj do historii' : 'Zakończ i zapisz w historii'))}</button>
+     ${sport ? '' : `<button class="btn sec" style="margin-top:8px" onclick="resetDnia()">Wyczyść odznaczenia</button>`}
      ${zapisane ? `<button class="btn sec" style="margin-top:8px" onclick="usunWpis('${TODAY}','${k}')">Usuń ten trening z historii</button>` : ''}
      <div class="card" style="margin-top:12px"><label class="small" style="display:block;margin-bottom:7px">Notatka z treningu — jak się czuło, co bolało, co odpuściłeś</label>
        <textarea id="notka" rows="3" placeholder="np. lewe biodro sztywne w rozgrzewce, po monster walk przeszło">${(d.notatka || '').replace(/</g,'&lt;')}</textarea></div>`;
@@ -962,12 +991,12 @@ function renderHistoria(){
     const kiedy = dt === 0 ? 'dziś' : dt === 1 ? 'wczoraj' : dt + ' dni temu';
     const pom = (x.pom && x.pom.length)
       ? `<br><span class="small" style="color:var(--warn)">pominięte: ${x.pom.join(', ')}</span>` : '';
-    const licz = x.total ? `${x.zrob}/${x.total}` : `${x.pct}%`;
+    const licz = x.sport ? '✓' : (x.total ? `${x.zrob}/${x.total}` : `${x.pct}%`);
     const kropka = x.sw ? `<span class="kropka ${x.sw}"></span>` : '';
     const nota = x.notka ? `<br><span class="small" style="color:var(--dim)">„${x.notka.replace(/</g,'&lt;')}"</span>` : '';
     return `<tr class="histr" onclick="ustawDate('${x.d}')">
             <td>${kropka}${SESJE[x.k] ? SESJE[x.k].nazwa : x.k}<br><span class="small">${x.d} · ${kiedy} · <span style="color:var(--info)">edytuj</span></span>${pom}${nota}</td>
-            <td class="r">${licz}<br><span class="g">${x.pct}%</span></td></tr>`;
+            <td class="r">${licz}${x.sport ? '' : `<br><span class="g">${x.pct}%</span>`}</td></tr>`;
   }).join('');
 }
 
@@ -1075,6 +1104,52 @@ function dedup(a){
 
 
 /* ============ regularność, światła, tempo ============ */
+
+function renderGra(){
+  const el = document.getElementById('graBox'); if(!el) return;
+  const tyg = [];
+  for(let w = 0; w < 8; w++){
+    const koniec = new Date(new Date(DZIS) - w*7*86400000);
+    const a = iso(new Date(koniec - 6*86400000)), b = iso(koniec);
+    tyg.push({
+      w,
+      vb:    hist().filter(x => x.k === 'VB'    && x.d >= a && x.d <= b).length,
+      padel: hist().filter(x => x.k === 'PADEL' && x.d >= a && x.d <= b).length,
+    });
+  }
+  const peln = tyg.slice(1);   // pełne tygodnie, bez bieżącego niedokończonego
+  const srVb = peln.length ? peln.reduce((s,x) => s + x.vb, 0) / peln.length : 0;
+  const srPd = peln.length ? peln.reduce((s,x) => s + x.padel, 0) / peln.length : 0;
+  const g30 = iso(new Date(new Date(DZIS) - 29*86400000));
+  const m = k => hist().filter(x => x.k === k && x.d >= g30).length;
+
+  const wiersze = tyg.slice().reverse().map(x => `
+    <div class="graw">
+      <span class="gral">${x.w === 0 ? 'ten tydz.' : '−' + x.w}</span>
+      <span class="grad">${'●'.repeat(x.vb) || '<span style="color:var(--dim2)">—</span>'}</span>
+      <span class="grap">${'▪'.repeat(x.padel) || ''}</span>
+      <span class="gran">${x.vb + x.padel || ''}</span>
+    </div>`).join('');
+
+  const ost = tyg[0].vb + tyg[1].vb + tyg[2].vb;
+  const uwaga = (peln.length >= 4 && srVb < 1.5)
+    ? `<div class="alert w" style="margin-top:11px"><b>Siatkówka wychodzi ${pl(srVb)}× na tydzień</b> przy założeniu 2–3. Plan siłowy jest zbudowany pod tę objętość skoków — jeśli grasz realnie rzadziej, warto przesunąć trochę plyometrii z powrotem na siłownię.</div>`
+    : (peln.length >= 4 && srVb > 3.2)
+    ? `<div class="alert w" style="margin-top:11px"><b>Siatkówka wychodzi ${pl(srVb)}× na tydzień.</b> To dużo skoków. Blok mocy w sesji A możesz ciąć o połowę — objętość skokową masz już z gry.</div>` : '';
+
+  el.innerHTML = `
+    <div class="kpis" style="margin-bottom:12px">
+      <div class="kpi"><b>${pl(srVb)}</b><span>siatkówka /tydz.</span></div>
+      <div class="kpi"><b>${pl(srPd)}</b><span>padel /tydz.</span></div>
+      <div class="kpi"><b>${m('VB') + m('PADEL')}</b><span>gier w 30 dni</span></div>
+    </div>
+    <div class="small" style="margin-bottom:8px">
+      <span style="color:var(--acc)">●</span> siatkówka ·
+      <span style="color:var(--info)">▪</span> padel · ostatnie 8 tygodni</div>
+    ${wiersze}
+    ${uwaga}`;
+}
+
 function renderAdher(){
   const el = document.getElementById('adher'); if(!el) return;
   const cele = Object.values(CELE_TYG).reduce((a,b) => a+b, 0);
@@ -1188,7 +1263,7 @@ document.getElementById('dPick').onchange = e => ustawDate(e.target.value);
 migrujLifty();
 function renderAll(){
   renderHead(); renderPrzypomnienia(); renderLights(); renderChips(); renderSession();
-  renderPostep(); renderTempo(); renderAdher(); renderSwTrend(); renderHistoria();
+  renderPostep(); renderTempo(); renderGra(); renderAdher(); renderSwTrend(); renderHistoria();
   renderPlan(); renderBackupInfo();
 }
 renderAll();
