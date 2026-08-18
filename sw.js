@@ -1,4 +1,4 @@
-const CACHE = 'trening-v1';
+const CACHE = 'trening-1.1.0';   // bump razem z APP.wersja w data.js
 const FILES = ['./', './index.html', './data.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

@@ -2,6 +2,8 @@
 
 Aplikacja treningowa na telefon. Instaluje się na ekranie głównym Androida jak zwykła apka, działa offline, zapisuje dane lokalnie w telefonie.
 
+Aktualna wersja: **1.1.0** · historia zmian w `CHANGELOG.md`.
+
 ---
 
 ## Wdrożenie na GitHub Pages — 5 minut
@@ -17,6 +19,7 @@ Aplikacja treningowa na telefon. Instaluje się na ekranie głównym Androida ja
    icon-192.png
    icon-512.png
    icon-512-maskable.png
+   CHANGELOG.md
    ```
    → `Commit changes`.
 
@@ -211,6 +214,42 @@ Wszystko siedzi w `localStorage` **tej konkretnej przeglądarki na tym telefonie
 - **Eksport CSV** (Więcej) — wszystkie treningi, serie, pomiary, testy i statusy SKB w jednym pliku pod Excela, ze średnikiem jako separatorem i przecinkiem dziesiętnym.
 - Wyczyszczenie danych witryny w Chrome **skasuje historię treningów**.
 - Nie używaj trybu incognito — nic się nie zapisze.
+
+---
+
+## Wersjonowanie
+
+Numer wersji widać **w stopce każdego ekranu** i w **Więcej → O aplikacji** (razem z datą wydania i bieżącym tygodniem programu).
+
+Przy każdej zmianie podbij **dwa** miejsca:
+
+| Plik | Co |
+|---|---|
+| `data.js` | `const APP = { wersja: '1.1.0', data: '2026-08-18' }` |
+| `sw.js` | `const CACHE = 'trening-1.1.0'` |
+
+Bez podbicia `CACHE` service worker może dalej serwować starą wersję z pamięci offline. Po podbiciu apka wykrywa aktualizację i pokazuje na dole toast **„Dostępna nowa wersja — Odśwież"**.
+
+Wpisy dopisuj do `CHANGELOG.md`. Wersjonowanie semantyczne: `MAJOR.MINOR.PATCH` — zmiana układu danych → MAJOR, nowa funkcja → MINOR, poprawka → PATCH.
+
+---
+
+## Warstwa wizualna — zasady
+
+Żeby kolejne zmiany nie rozjechały spójności, kolory mają przypisane role i nie mieszają się:
+
+| Rola | Kolor | Gdzie |
+|---|---|---|
+| **Interakcja** | pomarańczowy `#f26c3a` | przyciski, aktywna zakładka, aktywny chip, pierścień postępu |
+| **Dane, seria 1** | niebieski `#3987e5` | wykres wagi, siatkówka, podpowiedzi progresji |
+| **Dane, seria 2** | zielony morski `#199e70` | padel |
+| **Status** | zielony / bursztyn / czerwony | światła SKB, alerty, stan „zrobione" |
+
+Paleta danych jest **zwalidowana pod kątem daltonizmu** (rozdzielność ΔE 20,9 dla pary niebieski–morski, kontrast ≥ 3:1 wobec tła). Kolory statusu są zarezerwowane — nie używaj ich jako kolejnej serii danych.
+
+Wszędzie, gdzie kolor niesie znaczenie, jest **drugie kodowanie**: światła mają podpisy, wykres gier ma różne kształty znaczników (● / ▪), a pasek SKB koduje nasilenie **wysokością słupka**, nie tylko barwą.
+
+Pola formularzy mają `font-size: 16px` — poniżej tej wartości mobilne Safari i Chrome przybliżają ekran przy każdym stuknięciu w input.
 
 ---
 

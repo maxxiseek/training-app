@@ -3,6 +3,8 @@
    Edytuj ten plik, jeśli chcesz zmienić plan. Reszta apki się dostosuje.
 ----------------------------------------------------------------*/
 
+const APP = { wersja: '1.1.0', data: '2026-08-18' };
+
 const PLAN_START = '2026-08-18'; // poniedziałek startu programu
 
 const FAZY = [
