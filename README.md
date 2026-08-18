@@ -67,9 +67,15 @@ Konto założysz później, jeśli będziesz chciał zmienić nazwę adresu.
 - Przy ćwiczeniach siłowych **wszystkie serie z planu są od razu otwarte**, z wpisanym z góry sugerowanym ciężarem. Wpisujesz tylko powtórzenia; ciężar zmieniasz, jeśli bierzesz inny. Komplet serii = ćwiczenie odhacza się samo.
 - **Pomiń** przy każdym ćwiczeniu — ćwiczenie zostaje oznaczone jako świadomie odpuszczone i trafia pod tą nazwą do historii.
 - Trening **nie musi być kompletny**, żeby go zapisać. Zapisujesz ile zrobiłeś, a apka odnotowuje resztę.
+- **Stopery** przy ćwiczeniach czasowych — apka sama czyta czas z opisu („30 s", „45 s/str", „1 min") i pokazuje przycisk ⏱. Stuknięcie startuje odliczanie, koniec sygnalizuje wibracją. Ponowne stuknięcie anuluje.
+- **Notatka z treningu** — jak się czuło, co bolało, co odpuściłeś. Pokazuje się potem przy wpisie w historii.
+- **Przypomnienia na górze ekranu** — testy sprawnościowe po 28 dniach od ostatniego pomiaru, kopia zapasowa po 30 dniach od ostatniej.
 - **Zakończ i zapisz w historii** — zapisuje jednostkę wraz z tym, co pominięte, i od razu przelicza sugestię na kolejny dzień. Po zapisie u góry pojawia się zielona ramka z podsumowaniem, a przycisk zmienia się w *Zaktualizuj wpis w historii* — możesz dopisać coś później i zapisać ponownie.
 
 **Postęp**
+- **Regularność** — realizacja celów tygodniowych za 4 ostatnie tygodnie, z kolorem wg progu (≥80% zielony, ≥50% żółty).
+- **Trend SKB** — pasek 30 dni ze statusami zielone/żółte/czerwone i licznikiem. Przy 6+ dniach z objawami w miesiącu apka mówi wprost, że to wzorzec, nie gorszy dzień, i sugeruje kontakt z fizjoterapeutą.
+- **Kontrola tempa redukcji** — porównuje średnią 7-dniową z poprzednim tygodniem i reaguje: za szybko (>0,8 kg/tydz.) → dodaj 200–250 kcal; w celu → nic nie zmieniaj; stoi → odejmij 150–200 kcal albo sprawdź weekendy.
 - **Historia treningów** — co, kiedy, ile z ilu punktów zrobione i **imiennie co zostało pominięte**. Licznik ostatnich 30 dni.
 - Waga: wykres, ostatni pomiar, średnia z 7 dni, ile zostało do 85 kg.
 - Obwód pasa.
@@ -186,7 +192,8 @@ Rekomendacja: wpisuj ręcznie na bieżąco, bo średnia 7-dniowa działa tylko p
 
 Wszystko siedzi w `localStorage` **tej konkretnej przeglądarki na tym telefonie**. Nie synchronizuje się między urządzeniami.
 
-- **Kopia zapasowa:** Więcej → *Eksportuj kopię (JSON)*. Rób to raz na miesiąc.
+- **Kopia zapasowa:** Więcej → *Eksportuj kopię (JSON)*. Apka pokazuje datę ostatniej kopii i przypomina po 30 dniach.
+- **Eksport CSV** (Więcej) — wszystkie treningi, serie, pomiary, testy i statusy SKB w jednym pliku pod Excela, ze średnikiem jako separatorem i przecinkiem dziesiętnym.
 - Wyczyszczenie danych witryny w Chrome **skasuje historię treningów**.
 - Nie używaj trybu incognito — nic się nie zapisze.
 
@@ -214,7 +221,6 @@ Data startu programu: stała `PLAN_START` na górze `data.js` — od niej liczy 
 ## Czego apka nie robi
 
 - **Nie wysyła powiadomień push.** Zaplanowane przypomnienia w PWA działają zawodnie na Androidzie. Na kobrę co 90 minut w pracy użyj alarmów w telefonie albo kalendarza.
-- **Nie ma stoperów** — świadomie pominięte w wersji 1. Da się dołożyć.
 - **Nie synchronizuje się** między telefonem a laptopem. Do tego potrzebny byłby backend.
 - **Nie czyta wagi z Huawei Health ani z Health Connect** — szczegóły wyżej.
 
