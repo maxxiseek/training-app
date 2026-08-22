@@ -1,5 +1,5 @@
 const CACHE = 'trening-1.2.0';   // bump razem z APP.wersja w data.js
-const FILES = ['./', './index.html', './data.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
+const FILES = ['./', './index.html', './data.js', './engine.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));

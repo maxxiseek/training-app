@@ -22,8 +22,9 @@ Wersja jest widoczna w stopce aplikacji oraz w zakładce **Więcej → O aplikac
 **Poprawki**
 - Światła SKB odświeżają kartę sugestii.
 - Data dnia liczona lokalnie, nie z UTC (późny mecz nie wpada w „wczoraj”).
-- Import JSON: `confirm` przed nadpisaniem i `Object.assign` ze szkieletem stanu, żeby stara kopia nie zgubiła kluczy.
+- Import JSON: `confirm` przed nadpisaniem i `scalStan` — stara kopia 1.1.0 wczytuje się bez utraty wpisów; zepsute tablice są uzupełniane.
 - Usunięty zdublowany `odtworzPominiete`.
+- Silnik sugestii w `engine.js` + testy jednostkowe (`npm test`). Po zapisanym reście apka nie proponuje kolejnej sesji tego samego dnia.
 
 ## 1.1.0 — 18.08.2026
 

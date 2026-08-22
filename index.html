@@ -468,29 +468,21 @@ section.on{display:block}
 </div></nav>
 
 <script src="data.js"></script>
+<script src="engine.js"></script>
 <script>
 /* ============ stan ============ */
 const KEY = 'trening-v1';
 let ST = load();
 function load(){
-  try{ const o = JSON.parse(localStorage.getItem(KEY)) || blank(); return Object.assign(blank(), o); }
+  try{
+    const o = JSON.parse(localStorage.getItem(KEY)) || blank();
+    const s = scalStan(o);
+    return s.ok ? s.st : blank();
+  }
   catch(e){ return blank(); }
 }
-function blank(){ return { dni:{}, lifty:{}, pomiary:[], testy:[], historia:[], ostatniBackup:null }; }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(ST)); }catch(e){ alert('Nie udało się zapisać. Sprawdź, czy nie jesteś w trybie incognito.'); } }
 
-function iso(d){
-  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-}
-function parseDay(s){
-  const [y,m,d] = String(s).split('-').map(Number);
-  return new Date(y, m-1, d);
-}
-function przesunDni(data, n){
-  const d = parseDay(data);
-  d.setDate(d.getDate() + n);
-  return iso(d);
-}
 const pl = n => (n==null||isNaN(n)) ? '—' : Number(n).toFixed(1).replace('.', ',');
 const DZIS = iso(new Date());          // realne dziś — punkt odniesienia dla sugestii
 let   TODAY = DZIS;                    // dzień aktualnie edytowany
@@ -507,134 +499,11 @@ function ustawDate(d){
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function przesunDate(n){ ustawDate(przesunDni(TODAY, n)); }
-function dzien(){ if(!ST.dni[TODAY]) ST.dni[TODAY] = { sesja:null, zrobione:[], swiatlo:null, pominiete:[], notatka:'' }; return ST.dni[TODAY]; }
-
-/* ============ faza / tydzień ============ */
-function tydzien(){
-  const diff = (new Date(TODAY) - new Date(PLAN_START)) / 86400000;
-  return Math.max(1, Math.floor(diff/7) + 1);
-}
-function faza(){ const t = tydzien(); return FAZY.find(f => t>=f.od && t<=f.do) || FAZY[FAZY.length-1]; }
-
-
-/* ============ historia i silnik sugestii ============ */
-function hist(){ return (ST.historia||[]).slice().sort((a,b)=> a.d < b.d ? -1 : 1); }
-function dniTemu(data){ return Math.round((parseDay(DZIS) - parseDay(data)) / 86400000); }
-function dniOd(k){ const h = hist().filter(x => x.k === k); return h.length ? dniTemu(h[h.length-1].d) : 999; }
-function licz7(k){
-  const g = przesunDni(DZIS, -6);
-  return hist().filter(x => x.k === k && x.d >= g).length;
-}
-function liczTreningi7(){
-  const g = przesunDni(DZIS, -6);
-  return hist().filter(x => x.k !== 'REST' && x.d >= g).length;
-}
-function kluczeOd(offset){
-  return hist().filter(x => dniTemu(x.d) === offset).map(x => x.k);
-}
-function ileZRzedu(pred){
-  let n = 0;
-  for(let i = 1; i < 40; i++){
-    if(pred(kluczeOd(i))) n++;
-    else break;
-  }
-  return n;
-}
-function badgeK(k){ return k === 'VB' ? 'VB' : k === 'PADEL' ? 'PD' : k === 'REST' ? 'W' : k; }
-function tytulS(S){ const p = (S && S.nazwa || '').split('—'); return (p.length > 1 ? p[1] : p[0]).trim(); }
-function nazwaK(k){
-  return k === 'VB' ? 'siatkówka' : k === 'PADEL' ? 'padel' : k === 'D' ? 'rehab (D)'
-       : k === 'REST' ? 'dzień wolny' : 'sesja ' + k;
-}
-function nazwaSesji(k){ return (SESJE[k] && SESJE[k].nazwa) || k; }
-function etykietaK(k){
-  return k === 'VB' ? 'Siatkówka' : k === 'PADEL' ? 'Padel' : k === 'REST' ? 'Wolne' : k;
-}
-function typSesji(k){ return (SESJE[k] && SESJE[k].typ) || ''; }
-function jestRest(x){ return !!(x && (x.k === 'REST' || x.rest)); }
-function dopisekPropozycja(){
-  return '<br><span style="color:var(--dim2)">To tylko propozycja, możesz wybrać inną jednostkę.</span>';
-}
-
-function blokady(){
-  const b = {};
-  const dA = dniOd('A'), dC = dniOd('C');
-  if(dA < 1) b.A = 'A było dziś';
-  else if(dA < 2 && CELE_TYG.A <= 1) b.A = 'A było wczoraj';
-  if(dC < 1) b.C = 'C było dziś';
-  else if(dC < 2) b.C = 'C było wczoraj';
-  if(dA < 2 && !b.C) b.C = 'C potrzebuje 48 h od sesji A';
-  if(dC < 2 && !b.A) b.A = 'A potrzebuje 48 h od sesji C';
-  const wczoraj = hist().filter(x => dniTemu(x.d) === 1).map(x => x.k);
-  const skokWczoraj = wczoraj.find(k => SKOKI.includes(k));
-  if(skokWczoraj) SKOKI.forEach(k => { if(!b[k]) b[k] = 'wczoraj był dzień skoków (' + nazwaK(skokWczoraj) + ')'; });
-  const dzis = hist().filter(x => dniTemu(x.d) === 0).map(x => x.k);
-  dzis.forEach(k => { if(!b[k]) b[k] = 'zrobione dziś'; });
-  return b;
-}
-
-function sugeruj(){
-  const b = blokady();
-  if(dzien().swiatlo === 'red')
-    return { k: 'D', powod: 'Czerwone światło — dziś tylko rehab, sport i siłownia wypadają.' };
-
-  const seriaT = ileZRzedu(ks => ks.some(k => k !== 'REST'));
-  if(seriaT >= MAX_TRENING_Z_RZEDU)
-    return { k: 'REST', wolne: true,
-      powod: 'Trzy treningi pod rząd. Dziś regeneracja — sen, spacer, bez siłowni i bez gry.' + dopisekPropozycja() };
-
-  const seriaC = ileZRzedu(ks => ks.some(k => CIEZKIE.includes(k)));
-  if(seriaC >= MAX_CIEZKIE_Z_RZEDU){
-    const ciezkie = [];
-    for(let i = seriaC; i >= 1; i--){
-      const k = kluczeOd(i).find(x => CIEZKIE.includes(x));
-      if(k) ciezkie.push(nazwaK(k));
-    }
-    return { k: 'REST', wolne: true,
-      powod: 'Kolejny ciężki dzień z rzędu (' + ciezkie.join(', ') + '). Dziś regeneracja.' + dopisekPropozycja() };
-  }
-
-  if(liczTreningi7() >= MAX_SESJE_7)
-    return { k: 'REST', wolne: true,
-      powod: 'W oknie 7 dni jest już ' + MAX_SESJE_7 + ' jednostek — dziś regeneracja.' + dopisekPropozycja() };
-
-  if(dzien().swiatlo === 'yellow' && kluczeOd(1).some(k => k !== 'REST')){
-    if(licz7('D') < 1 && !b['D'])
-      return { k: 'D', powod: 'Żółte światło po dniu treningowym — dziś rehab, bez siłowni i bez gry.' + dopisekPropozycja() };
-    return { k: 'REST', wolne: true,
-      powod: 'Żółte światło po dniu treningowym — dziś regeneracja.' + dopisekPropozycja() };
-  }
-
-  const kand = PRIORYTET.map(k => ({ k, def: (CELE_TYG[k] || 0) - licz7(k), blok: b[k] }));
-  const wolne = kand.filter(x => !x.blok && x.def > 0).sort((x,y) => y.def - x.def);
-  if(wolne.length){
-    const w = wolne[0];
-    const zablokowane = kand.filter(x => x.blok && x.def > 0);
-    const brak = wolne.slice(1).map(x => nazwaK(x.k));
-    let p = 'W oknie 7 dni brakuje: <b>' + nazwaK(w.k) + '</b>' +
-            (brak.length ? ', dalej ' + brak.join(', ') : '') + '.';
-    if(zablokowane.length) p += '<br>Dziś odpada: ' + zablokowane.map(x => nazwaK(x.k) + ' — ' + x.blok).join('; ') + '.';
-    return { k: w.k, powod: p };
-  }
-  return { k: 'REST', wolne: true,
-    powod: 'Cele tygodnia odhaczone. Odpocznij — jutro wraca normalny rytm.' + dopisekPropozycja() };
-}
 
 function usunWpis(data, k){
   ST.historia = (ST.historia || []).filter(x => !(x.d === data && x.k === k));
   save(); renderAll();
 }
-function tally(){
-  const cele = PRIORYTET.map(k => {
-    const c = licz7(k), t = CELE_TYG[k] || 0;
-    const ok = c >= t;
-    return '<span style="color:' + (ok ? 'var(--ok)' : 'var(--dim)') + '">' +
-           (k === 'VB' ? 'Siatk.' : k === 'PADEL' ? 'Padel' : k) + ' ' + c + '/' + t + '</span>';
-  }).join('<span style="color:var(--line)"> · </span>');
-  return cele + '<span style="color:var(--line)"> · </span>' +
-         '<span style="color:var(--dim2)">Wolne ' + licz7('REST') + '</span>';
-}
-
 function zakonczTrening(){
   const d = dzien();
   const wpisDnia = (ST.historia || []).find(x => x.d === TODAY);
@@ -643,13 +512,8 @@ function zakonczTrening(){
   const pominiete = widoczne.filter(x => (d.pominiete || []).includes(x.id)).map(x => x.n);
   const zrobione = widoczne.filter(x => d.zrobione.includes(x.id)).length;
   ST.historia = (ST.historia || []).filter(x => !(x.d === TODAY && x.k === k));
-  const typ = typSesji(k);
-  const lekki = typ === 'sport' || typ === 'rest';
-  ST.historia.push(lekki
-    ? { d: TODAY, k, pct: 100, ...(typ === 'sport' ? { sport: true } : { rest: true }),
-        sw: d.swiatlo || null, notka: (d.notatka || '').slice(0, 300) }
-    : { d: TODAY, k, pct: d.__pct || 0, zrob: zrobione, total: widoczne.length,
-        pom: pominiete, sw: d.swiatlo || null, notka: (d.notatka || '').slice(0, 300) });
+  ST.historia.push(wpisHistorii(k, { d: TODAY, swiatlo: d.swiatlo, notatka: d.notatka, __pct: d.__pct },
+    { zrob: zrobione, total: widoczne.length, pom: pominiete }));
   save();
   if(navigator.vibrate) navigator.vibrate([20,50,20]);
   renderAll();
@@ -669,7 +533,7 @@ function renderHead(){
     eb.innerHTML = `<div class="alert w"><b>Tryb edycji — ${TODAY}.</b> Poprawiasz dzień sprzed ${dniTemu(TODAY)} dni: odhaczenia, pominięte, ciężary i powtórzenia. Sugestia jednostki wyłączona, bo dotyczy dzisiaj.` +
       (brak ? `<br><br><b>Uwaga:</b> ten wpis mówi ${w.zrob}/${w.total}, ale szczegółowe odhaczenia nie są dostępne. Jeśli zapiszesz teraz, licznik nadpisze się tym, co widzisz na liście.` : '') + `</div>`;
   } else eb.innerHTML = '';
-  const d = new Date(TODAY);
+  const d = parseDay(TODAY);
   const dni = ['niedziela','poniedziałek','wtorek','środa','czwartek','piątek','sobota'];
   const msc = ['stycznia','lutego','marca','kwietnia','maja','czerwca','lipca','sierpnia','września','października','listopada','grudnia'];
   document.getElementById('hDate').textContent = `${dni[d.getDay()]}, ${d.getDate()} ${msc[d.getMonth()]}`;
@@ -1156,12 +1020,10 @@ document.getElementById('fileImp').onchange = e => {
   const r = new FileReader();
   r.onload = () => {
     try{
-      const o = JSON.parse(r.result);
-      if(!o || typeof o !== 'object' || Array.isArray(o) || (!('historia' in o) && !('dni' in o))){
-        alert('Nieprawidłowy plik.'); return;
-      }
+      const s = scalStan(JSON.parse(r.result));
+      if(!s.ok){ alert('Nieprawidłowy plik.'); return; }
       if(!confirm('Wczytać kopię? Obecny stan w tej przeglądarce zostanie nadpisany.')) return;
-      ST = Object.assign(blank(), o);
+      ST = s.st;
       save(); renderAll(); alert('Wczytane.');
     } catch(x){ alert('Nieprawidłowy plik.'); }
     e.target.value = '';

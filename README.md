@@ -14,6 +14,7 @@ Aktualna wersja: **1.2.0** · historia zmian w `CHANGELOG.md`.
    ```
    index.html
    data.js
+   engine.js
    sw.js
    manifest.webmanifest
    icon-192.png
@@ -233,6 +234,16 @@ Przy każdej zmianie podbij **dwa** miejsca:
 Bez podbicia `CACHE` service worker może dalej serwować starą wersję z pamięci offline. Po podbiciu apka wykrywa aktualizację i pokazuje na dole toast **„Dostępna nowa wersja — Odśwież"**.
 
 Wpisy dopisuj do `CHANGELOG.md`. Wersjonowanie semantyczne: `MAJOR.MINOR.PATCH` — zmiana układu danych → MAJOR, nowa funkcja → MINOR, poprawka → PATCH.
+
+---
+
+## Testy
+
+```
+npm test
+```
+
+Silnik sugestii, daty i kompatybilność store (`test/*.test.js`). To samo leci na GitHub Actions przy pushu. `engine.js` nie rusza DOM — apka ładuje go po `data.js`.
 
 ---
 
