@@ -374,6 +374,7 @@ section.on{display:block}
       <li>Ciężka sesja nóg minimum <b>48 h przed meczem</b></li>
       <li><b>A i C nigdy dzień po dniu</b></li>
       <li><b>Nigdy dwa dni skoków z rzędu</b> — siatkówka liczy się jako dzień skoków</li>
+      <li>Apka <b>sugeruje</b> dzień wolny (nie narzuca): min. 1 wolne / 7 dni, max 3 treningi z rzędu, max 2 ciężkie z rzędu (A, C, siatkówka, padel)</li>
       <li>Kolejność cięcia: akcesoria B → blok siłowy C → blok mocy zostaje do końca</li>
       <li>Wypada jedna sesja? Niech to będzie <b>B, nigdy A</b></li>
       <li>Sen poniżej 6,5 h przez kilka dni → tnij siłownię, nie sport</li>
@@ -478,7 +479,18 @@ function load(){
 function blank(){ return { dni:{}, lifty:{}, pomiary:[], testy:[], historia:[], ostatniBackup:null }; }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(ST)); }catch(e){ alert('Nie udało się zapisać. Sprawdź, czy nie jesteś w trybie incognito.'); } }
 
-const iso = d => d.toISOString().slice(0,10);
+function iso(d){
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function parseDay(s){
+  const [y,m,d] = String(s).split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+function przesunDni(data, n){
+  const d = parseDay(data);
+  d.setDate(d.getDate() + n);
+  return iso(d);
+}
 const pl = n => (n==null||isNaN(n)) ? '—' : Number(n).toFixed(1).replace('.', ',');
 const DZIS = iso(new Date());          // realne dziś — punkt odniesienia dla sugestii
 let   TODAY = DZIS;                    // dzień aktualnie edytowany
@@ -494,7 +506,7 @@ function ustawDate(d){
   document.getElementById('hTitle').textContent = edycja() ? 'Edycja' : 'Dziś';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-function przesunDate(n){ ustawDate(iso(new Date(new Date(TODAY).getTime() + n*86400000))); }
+function przesunDate(n){ ustawDate(przesunDni(TODAY, n)); }
 function dzien(){ if(!ST.dni[TODAY]) ST.dni[TODAY] = { sesja:null, zrobione:[], swiatlo:null, pominiete:[], notatka:'' }; return ST.dni[TODAY]; }
 
 /* ============ faza / tydzień ============ */
@@ -507,15 +519,42 @@ function faza(){ const t = tydzien(); return FAZY.find(f => t>=f.od && t<=f.do) 
 
 /* ============ historia i silnik sugestii ============ */
 function hist(){ return (ST.historia||[]).slice().sort((a,b)=> a.d < b.d ? -1 : 1); }
-function dniTemu(data){ return Math.round((new Date(DZIS) - new Date(data)) / 86400000); }
+function dniTemu(data){ return Math.round((parseDay(DZIS) - parseDay(data)) / 86400000); }
 function dniOd(k){ const h = hist().filter(x => x.k === k); return h.length ? dniTemu(h[h.length-1].d) : 999; }
 function licz7(k){
-  const g = new Date(new Date(DZIS) - 6*86400000).toISOString().slice(0,10);
+  const g = przesunDni(DZIS, -6);
   return hist().filter(x => x.k === k && x.d >= g).length;
 }
-function badgeK(k){ return k === 'VB' ? 'VB' : k === 'PADEL' ? 'PD' : k; }
-function tytulS(S){ const p = S.nazwa.split('—'); return (p.length > 1 ? p[1] : p[0]).trim(); }
-function nazwaK(k){ return k === 'VB' ? 'siatkówka' : k === 'PADEL' ? 'padel' : k === 'D' ? 'rehab (D)' : 'sesja ' + k; }
+function liczTreningi7(){
+  const g = przesunDni(DZIS, -6);
+  return hist().filter(x => x.k !== 'REST' && x.d >= g).length;
+}
+function kluczeOd(offset){
+  return hist().filter(x => dniTemu(x.d) === offset).map(x => x.k);
+}
+function ileZRzedu(pred){
+  let n = 0;
+  for(let i = 1; i < 40; i++){
+    if(pred(kluczeOd(i))) n++;
+    else break;
+  }
+  return n;
+}
+function badgeK(k){ return k === 'VB' ? 'VB' : k === 'PADEL' ? 'PD' : k === 'REST' ? 'W' : k; }
+function tytulS(S){ const p = (S && S.nazwa || '').split('—'); return (p.length > 1 ? p[1] : p[0]).trim(); }
+function nazwaK(k){
+  return k === 'VB' ? 'siatkówka' : k === 'PADEL' ? 'padel' : k === 'D' ? 'rehab (D)'
+       : k === 'REST' ? 'dzień wolny' : 'sesja ' + k;
+}
+function nazwaSesji(k){ return (SESJE[k] && SESJE[k].nazwa) || k; }
+function etykietaK(k){
+  return k === 'VB' ? 'Siatkówka' : k === 'PADEL' ? 'Padel' : k === 'REST' ? 'Wolne' : k;
+}
+function typSesji(k){ return (SESJE[k] && SESJE[k].typ) || ''; }
+function jestRest(x){ return !!(x && (x.k === 'REST' || x.rest)); }
+function dopisekPropozycja(){
+  return '<br><span style="color:var(--dim2)">To tylko propozycja, możesz wybrać inną jednostkę.</span>';
+}
 
 function blokady(){
   const b = {};
@@ -535,10 +574,38 @@ function blokady(){
 }
 
 function sugeruj(){
+  const b = blokady();
   if(dzien().swiatlo === 'red')
     return { k: 'D', powod: 'Czerwone światło — dziś tylko rehab, sport i siłownia wypadają.' };
-  const b = blokady();
-  const kand = PRIORYTET.map(k => ({ k, def: CELE_TYG[k] - licz7(k), blok: b[k] }));
+
+  const seriaT = ileZRzedu(ks => ks.some(k => k !== 'REST'));
+  if(seriaT >= MAX_TRENING_Z_RZEDU)
+    return { k: 'REST', wolne: true,
+      powod: 'Trzy treningi pod rząd. Dziś regeneracja — sen, spacer, bez siłowni i bez gry.' + dopisekPropozycja() };
+
+  const seriaC = ileZRzedu(ks => ks.some(k => CIEZKIE.includes(k)));
+  if(seriaC >= MAX_CIEZKIE_Z_RZEDU){
+    const ciezkie = [];
+    for(let i = seriaC; i >= 1; i--){
+      const k = kluczeOd(i).find(x => CIEZKIE.includes(x));
+      if(k) ciezkie.push(nazwaK(k));
+    }
+    return { k: 'REST', wolne: true,
+      powod: 'Kolejny ciężki dzień z rzędu (' + ciezkie.join(', ') + '). Dziś regeneracja.' + dopisekPropozycja() };
+  }
+
+  if(liczTreningi7() >= MAX_SESJE_7)
+    return { k: 'REST', wolne: true,
+      powod: 'W oknie 7 dni jest już ' + MAX_SESJE_7 + ' jednostek — dziś regeneracja.' + dopisekPropozycja() };
+
+  if(dzien().swiatlo === 'yellow' && kluczeOd(1).some(k => k !== 'REST')){
+    if(licz7('D') < 1 && !b['D'])
+      return { k: 'D', powod: 'Żółte światło po dniu treningowym — dziś rehab, bez siłowni i bez gry.' + dopisekPropozycja() };
+    return { k: 'REST', wolne: true,
+      powod: 'Żółte światło po dniu treningowym — dziś regeneracja.' + dopisekPropozycja() };
+  }
+
+  const kand = PRIORYTET.map(k => ({ k, def: (CELE_TYG[k] || 0) - licz7(k), blok: b[k] }));
   const wolne = kand.filter(x => !x.blok && x.def > 0).sort((x,y) => y.def - x.def);
   if(wolne.length){
     const w = wolne[0];
@@ -549,10 +616,8 @@ function sugeruj(){
     if(zablokowane.length) p += '<br>Dziś odpada: ' + zablokowane.map(x => nazwaK(x.k) + ' — ' + x.blok).join('; ') + '.';
     return { k: w.k, powod: p };
   }
-  if(!b['D']) return { k: 'D',
-    powod: 'Wszystkie cele tygodnia odhaczone. Zostaje rehab albo dzień wolny — regeneracja też jest częścią planu.' };
-  return { k: 'D', wolne: true,
-    powod: 'Wszystko z tego tygodnia zrobione, dzisiejsza jednostka też. Odpocznij — jutro wraca normalny rytm.' };
+  return { k: 'REST', wolne: true,
+    powod: 'Cele tygodnia odhaczone. Odpocznij — jutro wraca normalny rytm.' + dopisekPropozycja() };
 }
 
 function usunWpis(data, k){
@@ -560,12 +625,14 @@ function usunWpis(data, k){
   save(); renderAll();
 }
 function tally(){
-  return PRIORYTET.map(k => {
-    const c = licz7(k), t = CELE_TYG[k];
+  const cele = PRIORYTET.map(k => {
+    const c = licz7(k), t = CELE_TYG[k] || 0;
     const ok = c >= t;
     return '<span style="color:' + (ok ? 'var(--ok)' : 'var(--dim)') + '">' +
            (k === 'VB' ? 'Siatk.' : k === 'PADEL' ? 'Padel' : k) + ' ' + c + '/' + t + '</span>';
   }).join('<span style="color:var(--line)"> · </span>');
+  return cele + '<span style="color:var(--line)"> · </span>' +
+         '<span style="color:var(--dim2)">Wolne ' + licz7('REST') + '</span>';
 }
 
 function zakonczTrening(){
@@ -576,9 +643,11 @@ function zakonczTrening(){
   const pominiete = widoczne.filter(x => (d.pominiete || []).includes(x.id)).map(x => x.n);
   const zrobione = widoczne.filter(x => d.zrobione.includes(x.id)).length;
   ST.historia = (ST.historia || []).filter(x => !(x.d === TODAY && x.k === k));
-  const sport = SESJE[k] && SESJE[k].typ === 'sport';
-  ST.historia.push(sport
-    ? { d: TODAY, k, pct: 100, sport: true, sw: d.swiatlo || null, notka: (d.notatka || '').slice(0, 300) }
+  const typ = typSesji(k);
+  const lekki = typ === 'sport' || typ === 'rest';
+  ST.historia.push(lekki
+    ? { d: TODAY, k, pct: 100, ...(typ === 'sport' ? { sport: true } : { rest: true }),
+        sw: d.swiatlo || null, notka: (d.notatka || '').slice(0, 300) }
     : { d: TODAY, k, pct: d.__pct || 0, zrob: zrobione, total: widoczne.length,
         pom: pominiete, sw: d.swiatlo || null, notka: (d.notatka || '').slice(0, 300) });
   save();
@@ -613,7 +682,7 @@ function renderHead(){
 document.querySelectorAll('.light').forEach(b => b.onclick = () => {
   const d = dzien();
   d.swiatlo = (d.swiatlo === b.dataset.v) ? null : b.dataset.v;
-  save(); renderLights(); renderSession();
+  save(); renderLights(); renderChips(); renderSession();
 });
 function renderLights(){
   const v = dzien().swiatlo;
@@ -636,35 +705,20 @@ function renderChips(){
     document.getElementById('sugBox').innerHTML = '';
   } else {
     const s = sugeruj(); sug = s.k;
+    const wolne = !!(s.wolne || sug === 'REST');
     document.getElementById('sugBox').innerHTML =
-      `<div class="alert ${s.wolne ? '' : 'g'}" style="margin-bottom:11px">
-        <b>${s.wolne ? 'Sugestia: dzień wolny' : 'Sugestia: ' + SESJE[sug].nazwa}</b><br>${s.powod}
+      `<div class="alert ${wolne ? '' : 'g'}" style="margin-bottom:11px">
+        <b>${wolne ? 'Sugestia: dzień wolny' : 'Sugestia: ' + nazwaSesji(sug)}</b><br>${s.powod}
         <div style="margin-top:9px;font-size:12.5px">Ostatnie 7 dni — ${tally()}</div></div>`;
   }
   const wyb = d.sesja || (red ? 'D' : sug);
   document.getElementById('chips').innerHTML = Object.keys(SESJE).map(k =>
-    `<button class="chip ${k===wyb?'on':''} ${k===sug?'sug':''}" data-k="${k}">${k==='VB'?'Siatkówka':k==='PADEL'?'Padel':k}</button>`).join('');
+    `<button class="chip ${k===wyb?'on':''} ${k===sug?'sug':''}" data-k="${k}">${etykietaK(k)}</button>`).join('');
   document.querySelectorAll('.chip').forEach(b => b.onclick = () => {
     const dd = dzien();
     if(dd.sesja !== b.dataset.k){ dd.sesja = b.dataset.k; dd.zrobione = []; }
     save(); renderChips(); renderSession();
   });
-}
-
-/* Gdy edytujesz stary dzień, którego odhaczenia nie zostały zapisane,
-   odtwórz przynajmniej listę pominiętych z wpisu w historii. */
-function odtworzPominiete(d){
-  if(d.__odtworzone) return;
-  const w = (ST.historia || []).find(x => x.d === TODAY);
-  if(!w || !w.pom || !w.pom.length){ d.__odtworzone = true; return; }
-  if(d.pominiete.length || d.zrobione.length){ d.__odtworzone = true; return; }
-  const S = SESJE[d.sesja || w.k];
-  if(!S){ d.__odtworzone = true; return; }
-  S.bloki.forEach((b, bi) => b.items.forEach(it => {
-    if(w.pom.includes(it.n)) d.pominiete.push(`${d.sesja || w.k}-${bi}-${it.n}`);
-  }));
-  d.__odtworzone = true;
-  save();
 }
 
 /* ============ sesja ============ */
@@ -830,7 +884,7 @@ function odtworzPominiete(d){
   if(d.pominiete.length || d.zrobione.length){ d.__odtworzone = true; return; }
   const S = SESJE[d.sesja || w.k];
   if(!S){ d.__odtworzone = true; return; }
-  S.bloki.forEach((b, bi) => b.items.forEach(it => {
+  (S.bloki || []).forEach((b, bi) => (b.items || []).forEach(it => {
     if(w.pom.includes(it.n)) d.pominiete.push(`${d.sesja || w.k}-${bi}-${it.n}`);
   }));
   d.__odtworzone = true;
@@ -846,14 +900,20 @@ function renderSession(){
   const k = d.sesja || (edycja() ? (wpisDnia ? wpisDnia.k : 'A')
                                  : (d.swiatlo === 'red' ? 'D' : sugeruj().k));
   const S = SESJE[k];
+  const box = document.getElementById('sessBody');
+  if(!S){
+    box.innerHTML = `<div class="alert w" style="margin-top:14px">Nieznana jednostka (${k}). Wybierz inną z listy powyżej — stary wpis zostaje w historii.</div>`;
+    return;
+  }
   const zolte = d.swiatlo === 'yellow';
   const sport = S.typ === 'sport';
-  const box = document.getElementById('sessBody');
+  const rest = S.typ === 'rest';
+  const lekki = sport || rest;
   const widoczne = [];
   let h = '';
 
   // auto-zaliczenie ćwiczeń siłowych z kompletem serii
-  if(!sport) S.bloki.forEach((b, bi) => b.items.forEach(it => {
+  if(!lekki) (S.bloki || []).forEach((b, bi) => (b.items || []).forEach(it => {
     if(!it.lift) return;
     const id = `${k}-${bi}-${it.n}`;
     if(d.pominiete.includes(id)) return;
@@ -865,9 +925,16 @@ function renderSession(){
   if(d.swiatlo === 'red' && k !== 'D')
     h += '<div class="alert d" style="margin-top:14px"><b>Uwaga:</b> przy czerwonym świetle ta jednostka nie powinna się dziś odbyć. Przełącz na D.</div>';
 
-  S.bloki.forEach((b, bi) => {
-    const items = b.items.filter(it => !(zolte && it.plyo));
-    const ukryte = b.items.length - items.length;
+  if(rest){
+    h += `<div class="card" style="margin-top:12px">
+      <p style="margin:0 0 8px">Sen, spacer, ewentualnie kobra jeśli kręci biodro. Bez siłowni i bez gry.</p>
+      <p class="small" style="margin:0">To tylko propozycja — możesz wybrać inną jednostkę powyżej.</p>
+    </div>`;
+  }
+
+  (S.bloki || []).forEach((b, bi) => {
+    const items = (b.items || []).filter(it => !(zolte && it.plyo));
+    const ukryte = (b.items || []).length - items.length;
     h += `<div class="blkh">${b.t}${ukryte ? `<span>${ukryte} ukryte — żółte światło</span>` : ''}</div>`;
     if(!items.length){
       h += `<div class="alert w" style="margin-bottom:7px">Cały blok wypada przy żółtym świetle. Plyometria wraca, gdy przez pełne 3 dni nie poczujesz napięcia w prawym pośladku.</div>`;
@@ -935,16 +1002,30 @@ function renderSession(){
   const nast = (zapisane && !edycja()) ? sugeruj() : null;
 
   const C = 119.4;
+  const podpisHero = rest
+    ? (zapisane ? 'zapisane w historii' : 'regeneracja — zatwierdzasz jednym przyciskiem')
+    : sport
+      ? (zapisane ? 'zapisane w historii' : 'rozpiska — zatwierdzasz jednym przyciskiem')
+      : `${S.dur} · <span id="licznik">${zrob}/${ids.length}${pomN ? ` · ${pomN} pominięte` : ''}</span>`;
+  const btnTekst = rest
+    ? (zapisane ? 'Zapisano ✓ — zapisz ponownie' : 'Odpoczynek — zapisz w historii')
+    : sport
+      ? (zapisane ? 'Zapisano ✓ — zapisz ponownie' : 'Zagrane — zapisz w historii')
+      : (zapisane ? 'Zapisz zmiany' : (edycja() ? 'Dodaj do historii' : 'Zakończ i zapisz w historii'));
+  const zapisTekst = lekki
+    ? 'Zapisane w historii.'
+    : `Zapisane w historii — ${zrob}/${ids.length}${pomN ? `, ${pomN} pominięte` : ''}.`;
+  const dalejTekst = edycja() ? ' Zmiany nadpiszą ten wpis.'
+    : (nast ? `<br>Następnie: ${nazwaSesji(nast.k)}.${lekki ? '' : ' Możesz dalej odhaczać i zapisać ponownie.'}` : '');
+
   box.innerHTML = `<div class="hero">
       <div class="badge">${badgeK(k)}</div>
       <div class="heroB">
         <div class="heroT">${tytulS(S)}</div>
-        <div class="heroS">${sport
-          ? (zapisane ? 'zapisane w historii' : 'rozpiska — zatwierdzasz jednym przyciskiem')
-          : `${S.dur} · <span id="licznik">${zrob}/${ids.length}${pomN ? ` · ${pomN} pominięte` : ''}</span>`}
-          ${DELOADY.includes(tydzien()) && !sport ? '<br>deload · 60% ciężarów' : ''}</div>
+        <div class="heroS">${podpisHero}
+          ${DELOADY.includes(tydzien()) && !lekki ? '<br>deload · 60% ciężarów' : ''}</div>
       </div>
-      ${sport ? `<div class="badge" style="background:${zapisane ? 'rgba(53,199,106,.16)' : 'var(--s2)'};
+      ${lekki ? `<div class="badge" style="background:${zapisane ? 'rgba(53,199,106,.16)' : 'var(--s2)'};
           border-color:${zapisane ? 'rgba(53,199,106,.4)' : 'var(--line)'};
           color:${zapisane ? 'var(--ok)' : 'var(--dim2)'}">${zapisane ? '✓' : '–'}</div>`
         : `<svg class="ring" viewBox="0 0 44 44">
@@ -953,17 +1034,13 @@ function renderSession(){
               stroke-dasharray="${(C*pct/100).toFixed(1)} ${C}"/>
             <text x="22" y="26.5">${pct}</text></svg>`}
     </div>` +
-    (zapisane ? `<div class="alert g" style="margin-top:12px"><b>${sport ? 'Zapisane w historii.' : `Zapisane w historii — ${zrob}/${ids.length}${pomN ? `, ${pomN} pominięte` : ''}.`}</b>${
-        edycja() ? ' Zmiany nadpiszą ten wpis.'
-                 : `<br>Następnie: ${SESJE[nast.k].nazwa}.${sport ? '' : ' Możesz dalej odhaczać i zapisać ponownie.'}`}</div>` : '') +
+    (zapisane ? `<div class="alert g" style="margin-top:12px"><b>${zapisTekst}</b>${dalejTekst}</div>` : '') +
     h +
-    `<button class="btn" style="margin-top:14px" onclick="zakonczTrening()">${
-        sport ? (zapisane ? 'Zapisano ✓ — zapisz ponownie' : (k === 'VB' ? 'Zagrane — zapisz w historii' : 'Zagrane — zapisz w historii'))
-              : (zapisane ? 'Zapisz zmiany' : (edycja() ? 'Dodaj do historii' : 'Zakończ i zapisz w historii'))}</button>
-     ${sport ? '' : `<button class="btn sec" style="margin-top:8px" onclick="resetDnia()">Wyczyść odznaczenia</button>`}
+    `<button class="btn" style="margin-top:14px" onclick="zakonczTrening()">${btnTekst}</button>
+     ${lekki ? '' : `<button class="btn sec" style="margin-top:8px" onclick="resetDnia()">Wyczyść odznaczenia</button>`}
      ${zapisane ? `<button class="btn sec" style="margin-top:8px" onclick="usunWpis('${TODAY}','${k}')">Usuń ten trening z historii</button>` : ''}
-     <div class="card" style="margin-top:12px"><label class="small" style="display:block;margin-bottom:7px">Notatka z treningu — jak się czuło, co bolało, co odpuściłeś</label>
-       <textarea id="notka" rows="3" placeholder="np. lewe biodro sztywne w rozgrzewce, po monster walk przeszło">${(d.notatka || '').replace(/</g,'&lt;')}</textarea></div>`;
+     <div class="card" style="margin-top:12px"><label class="small" style="display:block;margin-bottom:7px">${rest ? 'Notatka — jak się spało, co kręci, czy wracasz jutro' : 'Notatka z treningu — jak się czuło, co bolało, co odpuściłeś'}</label>
+       <textarea id="notka" rows="3" placeholder="${rest ? 'np. nogi ciężkie, spałem 8 h' : 'np. lewe biodro sztywne w rozgrzewce, po monster walk przeszło'}">${(d.notatka || '').replace(/</g,'&lt;')}</textarea></div>`;
 
   const nt = document.getElementById('notka');
   if(nt) nt.onchange = () => { dzien().notatka = nt.value.slice(0, 600); save(); };
@@ -1057,7 +1134,7 @@ function renderPlan(){
   const n = ['niedziela','poniedziałek','wtorek','środa','czwartek','piątek','sobota'];
   document.getElementById('weekTable').innerHTML = [1,2,3,4,5,6,0].map(i => {
     const s = SESJE[TYDZIEN[i]];
-    return `<tr><td>${n[i]}</td><td class="r">${s.nazwa}</td></tr>`;
+    return `<tr><td>${n[i]}</td><td class="r">${s ? s.nazwa : TYDZIEN[i]}</td></tr>`;
   }).join('');
   const t = tydzien();
   document.getElementById('phaseBox').innerHTML = FAZY.map(f =>
@@ -1077,8 +1154,18 @@ document.getElementById('btnImp').onclick = () => document.getElementById('fileI
 document.getElementById('fileImp').onchange = e => {
   const f = e.target.files[0]; if(!f) return;
   const r = new FileReader();
-  r.onload = () => { try{ ST = JSON.parse(r.result); save(); renderAll(); alert('Wczytane.'); }
-                     catch(x){ alert('Nieprawidłowy plik.'); } };
+  r.onload = () => {
+    try{
+      const o = JSON.parse(r.result);
+      if(!o || typeof o !== 'object' || Array.isArray(o) || (!('historia' in o) && !('dni' in o))){
+        alert('Nieprawidłowy plik.'); return;
+      }
+      if(!confirm('Wczytać kopię? Obecny stan w tej przeglądarce zostanie nadpisany.')) return;
+      ST = Object.assign(blank(), o);
+      save(); renderAll(); alert('Wczytane.');
+    } catch(x){ alert('Nieprawidłowy plik.'); }
+    e.target.value = '';
+  };
   r.readAsText(f);
 };
 
@@ -1093,7 +1180,7 @@ function renderHistoria(){
     el.innerHTML = '<tr><td class="small">Brak wpisów. Po treningu naciśnij „Zakończ i zapisz w historii”. Później możesz kliknąć wpis na tej liście i go poprawić.</td></tr>';
     return;
   }
-  const g30 = new Date(new Date(TODAY) - 29*86400000).toISOString().slice(0,10);
+  const g30 = przesunDni(TODAY, -29);
   const m = h.filter(x => x.d >= g30).length;
   const odm = n => n === 1 ? 'jednostka' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) ? 'jednostki' : 'jednostek';
   st.innerHTML = `Ostatnie 7 dni — ${tally()}<br><span style="color:var(--dim2)">${m} ${odm(m)} w ostatnich 30 dniach · ${h.length} łącznie</span>`;
@@ -1102,12 +1189,12 @@ function renderHistoria(){
     const kiedy = dt === 0 ? 'dziś' : dt === 1 ? 'wczoraj' : dt + ' dni temu';
     const pom = (x.pom && x.pom.length)
       ? `<br><span class="small" style="color:var(--warn)">pominięte: ${x.pom.join(', ')}</span>` : '';
-    const licz = x.sport ? '✓' : (x.total ? `${x.zrob}/${x.total}` : `${x.pct}%`);
+    const licz = (x.sport || jestRest(x)) ? '✓' : (x.total ? `${x.zrob}/${x.total}` : `${x.pct}%`);
     const kropka = x.sw ? `<span class="kropka ${x.sw}"></span>` : '';
     const nota = x.notka ? `<br><span class="small" style="color:var(--dim)">„${x.notka.replace(/</g,'&lt;')}"</span>` : '';
     return `<tr class="histr" onclick="ustawDate('${x.d}')">
-            <td>${kropka}${SESJE[x.k] ? SESJE[x.k].nazwa : x.k}<br><span class="small">${x.d} · ${kiedy} · <span style="color:var(--info)">edytuj</span></span>${pom}${nota}</td>
-            <td class="r">${licz}${x.sport ? '' : `<br><span class="g">${x.pct}%</span>`}</td></tr>`;
+            <td>${kropka}${nazwaSesji(x.k)}<br><span class="small">${x.d} · ${kiedy} · <span style="color:var(--info)">edytuj</span></span>${pom}${nota}</td>
+            <td class="r">${licz}${(x.sport || jestRest(x)) ? '' : `<br><span class="g">${x.pct}%</span>`}</td></tr>`;
   }).join('');
 }
 
@@ -1220,8 +1307,8 @@ function renderGra(){
   const el = document.getElementById('graBox'); if(!el) return;
   const tyg = [];
   for(let w = 0; w < 8; w++){
-    const koniec = new Date(new Date(DZIS) - w*7*86400000);
-    const a = iso(new Date(koniec - 6*86400000)), b = iso(koniec);
+    const b = przesunDni(DZIS, -w*7);
+    const a = przesunDni(b, -6);
     tyg.push({
       w,
       vb:    hist().filter(x => x.k === 'VB'    && x.d >= a && x.d <= b).length,
@@ -1231,7 +1318,7 @@ function renderGra(){
   const peln = tyg.slice(1);   // pełne tygodnie, bez bieżącego niedokończonego
   const srVb = peln.length ? peln.reduce((s,x) => s + x.vb, 0) / peln.length : 0;
   const srPd = peln.length ? peln.reduce((s,x) => s + x.padel, 0) / peln.length : 0;
-  const g30 = iso(new Date(new Date(DZIS) - 29*86400000));
+  const g30 = przesunDni(DZIS, -29);
   const m = k => hist().filter(x => x.k === k && x.d >= g30).length;
 
   const wiersze = tyg.slice().reverse().map(x => `
@@ -1266,9 +1353,8 @@ function renderAdher(){
   const cele = Object.values(CELE_TYG).reduce((a,b) => a+b, 0);
   const out = [];
   for(let w = 0; w < 4; w++){
-    const koniec = new Date(new Date(DZIS) - w*7*86400000);
-    const start  = new Date(koniec - 6*86400000);
-    const a = iso(start), b = iso(koniec);
+    const b = przesunDni(DZIS, -w*7);
+    const a = przesunDni(b, -6);
     let zal = 0;
     Object.keys(CELE_TYG).forEach(k => {
       const n = hist().filter(x => x.k === k && x.d >= a && x.d <= b).length;
@@ -1286,7 +1372,7 @@ function renderSwTrend(){
   const el = document.getElementById('swTrend'); if(!el) return;
   const dni = [], licz = { green:0, yellow:0, red:0 };
   for(let i = 29; i >= 0; i--){
-    const d = iso(new Date(new Date(DZIS) - i*86400000));
+    const d = przesunDni(DZIS, -i);
     const w = (ST.dni[d] || {}).swiatlo || (hist().find(x => x.d === d) || {}).sw || '';
     if(w) licz[w] = (licz[w] || 0) + 1;
     dni.push(w);
@@ -1306,8 +1392,8 @@ function renderTempo(){
   const el = document.getElementById('tempoBox'); if(!el) return;
   const p = ST.pomiary.filter(x => x.kg).sort((a,b) => a.d < b.d ? -1 : 1);
   if(p.length < 8){ el.innerHTML = ''; return; }
-  const gr = iso(new Date(new Date(DZIS) - 6*86400000));
-  const gr2 = iso(new Date(new Date(DZIS) - 13*86400000));
+  const gr = przesunDni(DZIS, -6);
+  const gr2 = przesunDni(DZIS, -13);
   const t1 = p.filter(x => x.d >= gr), t2 = p.filter(x => x.d >= gr2 && x.d < gr);
   if(t1.length < 3 || t2.length < 3){ el.innerHTML = ''; return; }
   const sr = a => a.reduce((s,x) => s + x.kg, 0) / a.length;

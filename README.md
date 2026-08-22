@@ -2,7 +2,7 @@
 
 Aplikacja treningowa na telefon. Instaluje się na ekranie głównym Androida jak zwykła apka, działa offline, zapisuje dane lokalnie w telefonie.
 
-Aktualna wersja: **1.1.0** · historia zmian w `CHANGELOG.md`.
+Aktualna wersja: **1.2.0** · historia zmian w `CHANGELOG.md`.
 
 ---
 
@@ -65,7 +65,7 @@ Konto założysz później, jeśli będziesz chciał zmienić nazwę adresu.
 **Dziś**
 - Status SKB — zielone / żółte / czerwone. **Zmienia to, co widzisz.** Przy żółtym plyometria znika z listy i nie dostajesz podpowiedzi progresji ciężaru. Przy czerwonym apka przełącza na sesję D i ostrzega, jeśli wybierzesz co innego.
 - **Adaptacyjna sugestia kolejnej jednostki** — nie sztywny kalendarz, tylko decyzja z tego, co faktycznie zrobiłeś (patrz niżej).
-- Wybór jednostki: A, B, C, D, siatkówka, padel. Kropka przy chipie = dzisiejsza sugestia.
+- Wybór jednostki: A, B, C, D, siatkówka, padel, **dzień wolny**. Kropka przy chipie = dzisiejsza sugestia — zawsze możesz stuknąć inną.
 - Checklista z odznaczaniem, pasek postępu, wibracja przy odznaczeniu.
 - Przy ćwiczeniach siłowych **wszystkie serie z planu są od razu otwarte**, z wpisanym z góry sugerowanym ciężarem. Wpisujesz tylko powtórzenia; ciężar zmieniasz, jeśli bierzesz inny. Komplet serii = ćwiczenie odhacza się samo.
 - **Siatkówka i padel działają inaczej niż siłownia** — patrz niżej.
@@ -98,7 +98,7 @@ Dzięki temu widzisz potem, **jak często realnie grasz**: Postęp → *Jak czę
 
 Ta karta też komentuje wynik: jeśli siatkówka wychodzi poniżej ~1,5×/tydz., apka przypomni, że plan siłowy zakłada więcej skoków z gry i warto przesunąć trochę plyometrii z powrotem na siłownię. Jeśli wychodzi powyżej ~3,2×/tydz. — że blok mocy w sesji A można ciąć o połowę, bo objętość skokową masz już z boiska.
 
-Chcesz, żeby jakaś jednostka działała w tym trybie? Ustaw jej `typ: 'sport'` w `data.js`.
+Chcesz, żeby jakaś jednostka działała w tym trybie? Ustaw jej `typ: 'sport'` w `data.js`. Dzień wolny (`typ: 'rest'`) zapisuje się tak samo — jednym przyciskiem, bez checklisty.
 
 ---
 
@@ -130,19 +130,21 @@ Apka nie trzyma się kalendarza. Patrzy na **ruchome okno 7 dni** i liczy, czego
 | A — dolne / moc | 1 |
 | B — góra / core | 1 |
 | C — atletyczny | 1 |
-| D — rehab | 1 |
 | Siatkówka | 2 |
 | Padel | 1 |
 
-Na to nakłada twarde reguły bezpieczeństwa:
+Suma celów to **6**, nie 7 — zostaje slot na regenerację. Rehab (D) nie jest tygodniowym musem: zostaje na chipie i wchodzi przy czerwonym (albo żółtym) świetle SKB.
+
+Na to nakłada twarde reguły bezpieczeństwa i **sugestie** restu:
 
 - **A i C nigdy bliżej niż 48 h od siebie**
 - **Nigdy dwa dni skoków z rzędu** — A, C i siatkówka liczą się jako dni skoków
 - **Czerwone światło → tylko D**, reszta odpada niezależnie od zaległości
+- **Dzień wolny (sugestia, nie nakaz)** — kropka na chipie Wolne, gdy: już 6 jednostek w 7 dniach, trzy treningi pod rząd, albo dwa ciężkie dni z rzędu (A, C, siatkówka, padel). Żółte SKB po dniu treningowym też podpowiada rest albo D. Zawsze możesz stuknąć inną jednostkę.
 
-Wybiera jednostkę z największą zaległością, która nie łamie żadnej reguły. W karcie widzisz **dlaczego** — co brakuje i co dziś odpada z jakiego powodu. Jak pojedziesz w tygodniu inaczej niż planowałeś, wystarczy odhaczyć co zrobiłeś, a kolejne sugestie same się przestawią.
+Wybiera jednostkę z największą zaległością, która nie łamie żadnej reguły. W karcie widzisz **dlaczego** — co brakuje, co dziś odpada i czemu apka proponuje wolne. Jak pojedziesz w tygodniu inaczej niż planowałeś, wystarczy odhaczyć co zrobiłeś, a kolejne sugestie same się przestawią.
 
-Cele i reguły zmienisz w `data.js`: stałe `CELE_TYG`, `SKOKI` i `PRIORYTET`.
+Cele i reguły zmienisz w `data.js`: stałe `CELE_TYG`, `SKOKI`, `PRIORYTET`, `CIEZKIE`, `MAX_TRENING_Z_RZEDU`, `MAX_CIEZKIE_Z_RZEDU`, `MAX_SESJE_7`.
 
 **Plan** — tydzień, fazy, zasady przy rozsypanym tygodniu, makro.
 
@@ -225,8 +227,8 @@ Przy każdej zmianie podbij **dwa** miejsca:
 
 | Plik | Co |
 |---|---|
-| `data.js` | `const APP = { wersja: '1.1.0', data: '2026-08-18' }` |
-| `sw.js` | `const CACHE = 'trening-1.1.0'` |
+| `data.js` | `const APP = { wersja: '1.2.0', data: '2026-08-22' }` |
+| `sw.js` | `const CACHE = 'trening-1.2.0'` |
 
 Bez podbicia `CACHE` service worker może dalej serwować starą wersję z pamięci offline. Po podbiciu apka wykrywa aktualizację i pokazuje na dole toast **„Dostępna nowa wersja — Odśwież"**.
 

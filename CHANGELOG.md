@@ -7,6 +7,24 @@ Wersja jest widoczna w stopce aplikacji oraz w zakładce **Więcej → O aplikac
 
 ---
 
+## 1.2.0 — 22.08.2026
+
+**Sugestia dnia wolnego**
+- Apka proponuje rest, gdy w oknie 7 dni jest już 6 jednostek, po trzech treningach z rzędu albo po dwóch ciężkich dniach z rzędu (A, C, siatkówka, padel).
+- Żółte SKB po dniu treningowym podpowiada rest albo D. Czerwone nadal D.
+- To **tylko propozycja** — chipy A–D / sport zostają klikalne, nic się samo nie zapisuje.
+- Dzień wolny loguje się jednym przyciskiem, jak sport. Stare wpisy w `trening-v1` bez zmian.
+
+**Plan**
+- Cele tygodnia: A, B, C, siatkówka ×2, padel (suma 6). D zostaje na chipie i przy czerwonym SKB, ale nie zjada slotu na regenerację.
+- Szkic tygodnia: niedziela = dzień wolny.
+
+**Poprawki**
+- Światła SKB odświeżają kartę sugestii.
+- Data dnia liczona lokalnie, nie z UTC (późny mecz nie wpada w „wczoraj”).
+- Import JSON: `confirm` przed nadpisaniem i `Object.assign` ze szkieletem stanu, żeby stara kopia nie zgubiła kluczy.
+- Usunięty zdublowany `odtworzPominiete`.
+
 ## 1.1.0 — 18.08.2026
 
 **Wygląd**

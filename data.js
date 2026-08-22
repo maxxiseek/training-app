@@ -3,7 +3,7 @@
    Edytuj ten plik, jeśli chcesz zmienić plan. Reszta apki się dostosuje.
 ----------------------------------------------------------------*/
 
-const APP = { wersja: '1.1.0', data: '2026-08-18' };
+const APP = { wersja: '1.2.0', data: '2026-08-22' };
 
 const PLAN_START = '2026-08-18'; // poniedziałek startu programu
 
@@ -238,19 +238,32 @@ const SESJE = {
       ]},
     ],
   },
+
+  REST: {
+    nazwa: 'Dzień wolny', dur: 'regeneracja', typ: 'rest',
+    bloki: [],
+  },
 };
 
 /* Domyślny tydzień: 0 = niedziela. Używany tylko w zakładce Plan jako szkic. */
-const TYDZIEN = { 1: 'A', 2: 'VB', 3: 'B', 4: 'VB', 5: 'C', 6: 'PADEL', 0: 'D' };
+const TYDZIEN = { 1: 'A', 2: 'VB', 3: 'B', 4: 'VB', 5: 'C', 6: 'PADEL', 0: 'REST' };
 
-/* Ile razy w ruchomym oknie 7 dni. To steruje sugestiami. */
-const CELE_TYG = { A: 1, B: 1, C: 1, D: 1, VB: 2, PADEL: 1 };
+/* Ile razy w ruchomym oknie 7 dni. To steruje sugestiami. Suma 6 → zostaje slot na rest. */
+const CELE_TYG = { A: 1, B: 1, C: 1, VB: 2, PADEL: 1 };
 
 /* Jednostki liczone jako "dzień skoków" — nigdy dwa z rzędu. */
 const SKOKI = ['A', 'C', 'VB'];
 
-/* Priorytet, gdy kilka jednostek ma zaległość. */
-const PRIORYTET = ['A', 'C', 'VB', 'B', 'PADEL', 'D'];
+/* Dni wysokiego obciążenia — padel wchodzi tu, choć nie jest dniem skoków. */
+const CIEZKIE = ['A', 'C', 'VB', 'PADEL'];
+
+/* Hamulce regeneracji: tylko sugestia, nie blokada chipów. */
+const MAX_TRENING_Z_RZEDU = 3;
+const MAX_CIEZKIE_Z_RZEDU = 2;
+const MAX_SESJE_7 = 6;
+
+/* Priorytet, gdy kilka jednostek ma zaległość. D i REST nie są celami tygodnia. */
+const PRIORYTET = ['A', 'C', 'VB', 'B', 'PADEL'];
 
 /* Ćwiczenia siłowe — punkty startowe i cele (do ekranu Postęp) */
 const LIFTY = {
