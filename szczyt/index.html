@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#f7eef1">
 <title>Szczyt</title>
 <link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" sizes="192x192">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,15 +39,27 @@ body{margin:0;background:
 .num{font-variant-numeric:tabular-nums}
 
 /* ---------- nagłówek ---------- */
-header{padding:calc(env(safe-area-inset-top) + 20px) 0 14px}
+header{padding:calc(env(safe-area-inset-top) + 16px) 0 14px}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.brand-mark{width:40px;height:40px;border-radius:11px;flex:0 0 auto;
+  box-shadow:0 2px 8px rgba(80,40,55,.12);background:var(--s1)}
+.brand-name{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.03em;
+  line-height:1;color:var(--txt)}
+.brand-tag{font-size:11.5px;color:var(--dim2);font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;margin-top:3px}
 .hrow{display:flex;justify-content:space-between;align-items:flex-start;gap:14px}
-h1{margin:0;font-size:28px;font-weight:700;letter-spacing:-.03em;font-family:var(--display)}
+h1{margin:0;font-size:22px;font-weight:700;letter-spacing:-.03em;font-family:var(--display)}
 .hsub{color:var(--dim2);font-size:12px;text-transform:uppercase;letter-spacing:.09em;
   margin-top:4px;font-weight:600}
 .phase{background:var(--s2);border:1px solid var(--line);border-radius:10px;
   padding:7px 11px;font-size:11px;color:var(--dim);text-align:right;flex:0 0 auto;line-height:1.4;
   font-weight:600;letter-spacing:.01em}
 .phase b{color:var(--acc);display:block;font-size:13px;letter-spacing:-.01em}
+
+.about-brand{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.about-brand img{width:64px;height:64px;border-radius:16px;box-shadow:var(--sh);background:var(--s2)}
+.about-brand .t{font-family:var(--display);font-size:20px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.about-brand .s{font-size:13px;color:var(--dim);margin-top:3px}
 
 h2{font-size:11.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim2);
   margin:30px 0 11px;font-weight:700}
@@ -286,13 +299,20 @@ section{display:none;animation:fade .22s ease}
 section.on{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 .hide{display:none!important}
-@media(min-width:520px){ h1{font-size:28px} }
+@media(min-width:520px){ h1{font-size:24px} .brand-name{font-size:24px} }
 </style>
 </head>
 <body>
 
 <div class="wrap">
 <header>
+  <div class="brand" aria-label="Szczyt">
+    <img class="brand-mark" src="icon-192.png" width="40" height="40" alt="">
+    <div>
+      <div class="brand-name">Szczyt</div>
+      <div class="brand-tag">trening Olgi</div>
+    </div>
+  </div>
   <div class="hrow">
     <div>
       <h1 id="hTitle">Dziś</h1>
@@ -428,6 +448,13 @@ section.on{display:block}
   </div>
   <h2>O aplikacji</h2>
   <div class="card">
+    <div class="about-brand">
+      <img src="icon-512.png" width="64" height="64" alt="Szczyt — góry i ciężarek">
+      <div>
+        <div class="t">Szczyt</div>
+        <div class="s">Góry + siła · plan nóg i pośladków</div>
+      </div>
+    </div>
     <table>
       <tr><td>Wersja</td><td class="r" id="verApp">—</td></tr>
       <tr><td>Data wydania</td><td class="r" id="verData">—</td></tr>
@@ -681,7 +708,7 @@ function analiza(it){
 function analizaWysokosc(it){
   const kl = it.lift, L = LIFTY[kl] || {};
   const serie = it.serie || 4, zak = it.zakres || [3, 5], krok = it.krok || 5;
-  const startCm = it.startCm != null ? it.startCm : (L.start || 40);
+  const startCm = it.startCm != null ? it.startCm : (L.start || 75);
   const h = dniLiftu(kl).filter(x => x.d < TODAY);
   const deload = DELOADY.includes(tydzien());
 

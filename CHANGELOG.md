@@ -7,6 +7,14 @@ Wersja jest widoczna w stopce aplikacji oraz w zakładce **Więcej → O aplikac
 
 ---
 
+## 1.2.5 — 27.08.2026
+
+**Wskoki na skrzynię**
+- Start wysokości skrzyni: **75 cm** (obie apki).
+
+**Szczyt 1.0.6**
+- Ikona góry+ciężarek w nagłówku i w „O aplikacji” (oraz jako favicon / PWA).
+
 ## 1.2.4 — 27.08.2026
 
 **Wskoki na skrzynię**

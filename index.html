@@ -687,7 +687,7 @@ function analiza(it){
 function analizaWysokosc(it){
   const kl = it.lift, L = LIFTY[kl] || {};
   const serie = it.serie || 4, zak = it.zakres || [3, 5], krok = it.krok || 5;
-  const startCm = it.startCm != null ? it.startCm : (L.start || 40);
+  const startCm = it.startCm != null ? it.startCm : (L.start || 75);
   const h = dniLiftu(kl).filter(x => x.d < TODAY);
   const deload = DELOADY.includes(tydzien());
   const zolte = dzien().swiatlo === 'yellow';
