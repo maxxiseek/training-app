@@ -230,8 +230,8 @@ Przy każdej zmianie podbij **dwa** miejsca:
 
 | Plik | Co |
 |---|---|
-| `data.js` | `const APP = { wersja: '1.2.2', data: '2026-08-27' }` |
-| `sw.js` | `const CACHE = 'trening-1.2.2'` |
+| `data.js` | `const APP = { wersja: '1.2.3', data: '2026-08-27' }` |
+| `sw.js` | `const CACHE = 'trening-1.2.3'` |
 
 Bez podbicia `CACHE` service worker może dalej serwować starą wersję z pamięci offline. Po podbiciu apka wykrywa aktualizację i pokazuje na dole toast **„Dostępna nowa wersja — Odśwież"**.
 
