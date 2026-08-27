@@ -420,6 +420,14 @@ section.on{display:block}
 <!-- ================= WIĘCEJ ================= -->
 <section id="s-wiecej">
   <h2>Bezpieczeństwo</h2>
+  <details open><summary>Jak wpisywać ciężary</summary>
+    <ul>
+      <li><b>Trap bar / hip thrust ze sztangą</b> — tylko talerze (bez barem). Łatwiej powtórzyć ten sam setup.</li>
+      <li><b>Hantle (wyciskanie, wiosło, RDL)</b> — waga <b>jednej</b> hantli.</li>
+      <li><b>Bułgarski / zakroki</b> — łącznie w rękach (2×10 = wpisz 20).</li>
+      <li><b>Goblet</b> — ciężar kettla / hantli przy klatce.</li>
+    </ul>
+  </details>
   <details><summary>Zasady ogólne</summary>
     <ul>
       <li><b>Plyometria na zmęczonych nogach</b> — blok mocy zawsze na początku</li>
@@ -662,7 +670,12 @@ setInterval(() => {
   else { TIMER = null; }
 }, 200);
 
-/* Podwójna progresja — patrzy na poprzednie sesje, nie na dzisiejszą. */
+function hintWagi(kl){
+  const m = { talerze: 'tylko talerze (bez barem)', hantla: 'waga jednej hantli',
+    rece: 'łącznie w rękach', goblet: 'ciężar kettla / hantli', stos: 'kg na stosie / maszynie' };
+  const k = (LIFTY[kl] && LIFTY[kl].waga) || '';
+  return m[k] || '';
+}
 function analiza(it){
   if(it.tryb === 'czas' || (LIFTY[it.lift] && LIFTY[it.lift].tryb === 'czas')) return analizaCzas(it);
   if(it.tryb === 'wysokosc' || (LIFTY[it.lift] && LIFTY[it.lift].tryb === 'wysokosc')) return analizaWysokosc(it);
@@ -671,9 +684,12 @@ function analiza(it){
   const h = dniLiftu(kl).filter(x => x.d < TODAY);
   const deload = DELOADY.includes(tydzien());
 
-  if(!h.length) return { kg: L.start || null, powt: zak[0], serie, tekst:
-    L.start ? `Start: <b>${pl0(L.start)} kg</b> — ${serie} × ${zak[0]}, zostaw 2 powt. zapasu.`
+  if(!h.length){
+    const wh = hintWagi(kl);
+    return { kg: L.start || null, powt: zak[0], serie, tekst:
+    L.start ? `Start: <b>${pl0(L.start)} kg</b>${wh ? ` <span class="small">(${wh})</span>` : ''} — ${serie} × ${zak[0]}, zostaw 2 powt. zapasu.`
             : `Pierwszy raz — dobierz ciężar tak, żeby ${zak[0]} powt. wyszło z 2 powt. zapasu. Od następnego razu policzę progresję.` };
+  }
 
   const ost = h[h.length - 1], poprz = h.length > 1 ? h[h.length - 2] : null;
   const opis = `${ost.d} · <b>${pl0(ost.kg)} kg</b> — ${ost.powt.join(' / ')}`;
@@ -945,9 +961,11 @@ function renderSession(){
         const ph1 = czas ? 'min' : (wys ? 'cm' : 'kg');
         const ph2 = czas ? (an.powt != null ? String(an.powt) : 'wznios') : String(an.powt);
         const trybArg = czas ? "'czas'" : (wys ? "'wysokosc'" : "''");
+        const wh = (!czas && !wys) ? hintWagi(it.lift) : '';
         setyHtml = `<div class="setg" onclick="event.stopPropagation()">` +
           (czas ? `<div class="small" style="margin:0 0 6px">minuty · wznios/poziom (opcjonalnie)</div>` : '') +
           (wys ? `<div class="small" style="margin:0 0 6px">wysokość skrzyni (cm) · powtórzenia</div>` : '') +
+          (wh ? `<div class="small" style="margin:0 0 6px">${wh} · powtórzenia</div>` : '') +
           Array.from({ length: n }, (_, i) => {
             const z = setDnia(it.lift, i);
             return `<div class="setr${z && (czas ? z.kg : (z.kg && z.p)) ? ' ok' : ''}">

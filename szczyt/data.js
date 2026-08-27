@@ -2,7 +2,7 @@
    data.js — Szczyt (trening Olgi): sesje, ćwiczenia, fazy
 ----------------------------------------------------------------*/
 
-const APP = { wersja: '1.0.6', data: '2026-08-27' };
+const APP = { wersja: '1.0.7', data: '2026-08-27' };
 
 const PLAN_START = '2026-08-27';
 
@@ -29,7 +29,7 @@ const SESJE = {
     bloki: [
       { t: 'Rozgrzewka · 8–10 min', items: [
         { n: 'Kobra / wyprost leżąc (McKenzie press-up)', d: '10 powt.' },
-        { n: 'Odwodzenie biodra z gumą, stojąc (standing band hip abduction)', d: '2 × 15 na każdą stronę', u: 'Aktywacja pośladka średniego' },
+        { n: 'Odwodzenie biodra z gumą, stojąc (standing band hip abduction)', d: '2 × 15 na każdą stronę', u: 'Noga na bok (nie do tyłu — kickback to inne ćwiczenie). Guma nad kolanami, tułów stabilny, odpychaj nogę w bok.' },
         { n: 'Mostek biodrowy z gumą (banded glute bridge)', d: '2 × 12' },
         { n: 'Rozciąganie zginacza biodra w półklęku (half-kneeling hip flexor stretch)', d: '2 × 30 s na każdą stronę', u: 'Podwiń miednicę, spinaj pośladek nogi tylnej' },
         { n: 'Dead bug (martwy robak)', d: '2 × 8 na każdą stronę', u: 'Lędźwie wklejone w podłogę' },
@@ -40,10 +40,10 @@ const SESJE = {
         { n: 'Zeskok z lądowaniem (depth drop / stick landing)', d: '3 × 4', u: 'Skrzynia 30–40 cm, cichy lądunek, hold 2 s. Od tyg. 4', plyo: true },
       ]},
       { t: 'Siła · przerwy 2–3 min', items: [
-        { n: 'Martwy ciąg z trap barem (trap bar deadlift)', d: '4 × 5', u: 'Uchwyty wysokie, plecy neutralne', lift: 'trapbar', krok: 5, serie: 4, zakres: [5, 6] },
-        { n: 'Hip thrust ze sztangą (barbell hip thrust)', d: '4 × 8', u: 'Podbródek do klatki, żebra w dół, bez przeprostu', lift: 'hipthrust', krok: 5, serie: 4, zakres: [8, 10] },
-        { n: 'Bułgarski przysiad z hantlami (Bulgarian split squat / RFESS)', d: '3 × 8 na każdą nogę', u: '3 serie × 8 na lewą i 8 na prawą w każdej serii. Tułów lekko pochylony do przodu.', lift: 'rfess', krok: 2.5, serie: 3, zakres: [8, 10] },
-        { n: 'RDL jednonóż / uginanie nóg (single-leg RDL / leg curl)', d: '3 × 8 na każdą nogę', u: '3 × 8 na każdą nogę (nie łącznie). Dwugłowe — ochrona kolana i prędkość.', lift: 'rdl', krok: 2.5, serie: 3, zakres: [8, 10] },
+        { n: 'Martwy ciąg z trap barem (trap bar deadlift)', d: '4 × 5', u: 'Uchwyty wysokie, plecy neutralne. Wpisz tylko talerze (bez wagi barem) — tak łatwiej powtórzyć ten sam setup.', lift: 'trapbar', krok: 5, serie: 4, zakres: [5, 6] },
+        { n: 'Hip thrust ze sztangą (barbell hip thrust)', d: '4 × 8', u: 'Podbródek do klatki, żebra w dół, bez przeprostu. Wpisz tylko talerze (bez barem).', lift: 'hipthrust', krok: 5, serie: 4, zakres: [8, 10] },
+        { n: 'Bułgarski przysiad z hantlami (Bulgarian split squat / RFESS)', d: '3 × 8 na każdą nogę', u: '3 × 8 na lewą i 8 na prawą w każdej serii. Tułów lekko pochylony. Wpisz łącznie w rękach (np. 2×10 = 20).', lift: 'rfess', krok: 2.5, serie: 3, zakres: [8, 10] },
+        { n: 'RDL jednonóż / uginanie nóg (single-leg RDL / leg curl)', d: '3 × 8 na każdą nogę', u: '3 × 8 na każdą nogę (nie łącznie). Wpisz wagę jednej hantli.', lift: 'rdl', krok: 2.5, serie: 3, zakres: [8, 10] },
       ]},
       { t: 'Akcesoria · superserie, 60 s', items: [
         { n: 'Wspięcia na palce jednonóż (single-leg calf raise)', d: '3 × 12 na każdą nogę + izo 30 s' },
@@ -64,9 +64,9 @@ const SESJE = {
         { n: 'Open book (otwarta książka — rotacja tułowia leżąc)', d: '2 × 8 na każdą stronę' },
       ]},
       { t: 'Góra · przerwy 2 min', items: [
-        { n: 'Wyciskanie hantli na ławce (dumbbell bench press)', d: '4 × 8', lift: 'benchdb', krok: 2.5, serie: 4, zakres: [8, 10] },
+        { n: 'Wyciskanie hantli na ławce (dumbbell bench press)', d: '4 × 8', u: 'Wpisz wagę jednej hantli.', lift: 'benchdb', krok: 2.5, serie: 4, zakres: [8, 10] },
         { n: 'Podciąganie / ściąganie drążka (pull-up / lat pulldown)', d: '4 × 8', lift: 'pullup', krok: 2.5, serie: 4, zakres: [8, 10] },
-        { n: 'Wiosłowanie hantlem (single-arm dumbbell row)', d: '3 × 10 na każdą stronę', u: '3 × 10 na każdą stronę.', lift: 'row', krok: 2.5, serie: 3, zakres: [10, 12] },
+        { n: 'Wiosłowanie hantlem (single-arm dumbbell row)', d: '3 × 10 na każdą stronę', u: '3 × 10 na każdą stronę. Wpisz wagę jednej hantli.', lift: 'row', krok: 2.5, serie: 3, zakres: [10, 12] },
       ]},
       { t: 'Pośladki · 60–90 s', items: [
         { n: 'Hip thrust / mostek na wyciągu (cable / machine hip thrust)', d: '3 × 12', u: 'Pełne spięcie u góry', lift: 'hipthrustb', krok: 5, serie: 3, zakres: [10, 12] },
@@ -86,7 +86,7 @@ const SESJE = {
     bloki: [
       { t: 'Rozgrzewka · 8 min', items: [
         { n: 'Kobra + pozycja dziecka (McKenzie + child’s pose)', d: '10 + 1 min' },
-        { n: 'Odwodzenie z gumą + monster walk (band abduction + monster walk)', d: '2 × 15 na każdą stronę' },
+        { n: 'Odwodzenie z gumą + monster walk (band abduction + monster walk)', d: '2 × 15 na każdą stronę', u: 'Odwodzenie = noga na bok (nie do tyłu). Potem monster walk w półprzysiadzie.' },
         { n: 'Skipy + krok odstawno-dostawny (A-skips + side shuffle)', d: '3 × 15 m' },
         { n: 'Przejścia biodrami 90/90 (90/90 hip switches)', d: '2 × 8 na każdą stronę' },
       ]},
@@ -97,8 +97,8 @@ const SESJE = {
         { n: 'Slam piłką o podłoże (medicine ball slam)', d: '3 × 8' },
       ]},
       { t: 'Siła · przerwy 90 s', items: [
-        { n: 'Przysiad goblet / przedni (goblet / front squat)', d: '3 × 8', u: 'Bez sztangi na plecach w fazie 0–1', lift: 'squat', krok: 2.5, serie: 3, zakres: [8, 10] },
-        { n: 'Zakroki z hantlami (walking/reverse lunges)', d: '3 × 10 na każdą nogę', u: '3 × 10 na każdą nogę w każdej serii.', lift: 'lunge', krok: 2.5, serie: 3, zakres: [10, 12] },
+        { n: 'Przysiad goblet / przedni (goblet / front squat)', d: '3 × 8', u: 'Bez sztangi na plecach w fazie 0–1. Wpisz ciężar kettla / hantli (to, co trzymasz przy klatce).', lift: 'squat', krok: 2.5, serie: 3, zakres: [8, 10] },
+        { n: 'Zakroki z hantlami (walking/reverse lunges)', d: '3 × 10 na każdą nogę', u: '3 × 10 na każdą nogę w każdej serii. Wpisz łącznie w rękach (np. 2×10 = 20).', lift: 'lunge', krok: 2.5, serie: 3, zakres: [10, 12] },
         { n: 'Wykrok na skrzynię (step-up)', d: '3 × 8 na każdą nogę', u: '3 × 8 na każdą nogę. Cała stopa na skrzyni, bez odbicia.', lift: 'stepup', krok: 2.5, serie: 3, zakres: [8, 10] },
         { n: 'Pompki / pompki na kolanach (push-ups / knee push-ups)', d: '2 × 10', u: 'Technicznie, bez maxów' },
       ]},
@@ -171,17 +171,18 @@ const MAX_SESJE_7 = 4;
 const PRIORYTET = ['A', 'C', 'B', 'GORY'];
 
 const LIFTY = {
-  trapbar:    { n: 'Martwy ciąg trap bar (trap bar deadlift)', start: null, f1: null, f2: null },
-  hipthrust:  { n: 'Hip thrust (barbell hip thrust)',           start: null, f1: null, f2: null },
-  hipthrustb: { n: 'Hip thrust — sesja B (cable/machine hip thrust)',  start: null, f1: null, f2: null },
-  benchdb:    { n: 'Wyciskanie hantli (dumbbell bench press)',    start: null, f1: null, f2: null },
-  row:        { n: 'Wiosłowanie hantlem (single-arm dumbbell row)',  start: null, f1: null, f2: null },
-  rfess:      { n: 'Bułgarski przysiad (Bulgarian split squat)',   start: null, f1: null, f2: null },
-  rdl:        { n: 'RDL jednonóż (single-leg RDL)',         start: null, f1: null, f2: null },
-  squat:      { n: 'Przysiad goblet (goblet squat)',      start: null, f1: null, f2: null },
-  lunge:      { n: 'Zakroki (lunges)',              start: null, f1: null, f2: null },
-  stepup:     { n: 'Wykrok na skrzynię (step-up)',              start: null, f1: null, f2: null },
-  pullup:     { n: 'Podciąganie / drążek (pull-up / lat pulldown)', start: null, f1: null, f2: null },
+  /* waga: jak czytać pole kg — talerze | hantla | rece | goblet | stos */
+  trapbar:    { n: 'Martwy ciąg trap bar (trap bar deadlift)', start: 45,   f1: null, f2: null, waga: 'talerze' },
+  hipthrust:  { n: 'Hip thrust (barbell hip thrust)',           start: 25,   f1: null, f2: null, waga: 'talerze' },
+  hipthrustb: { n: 'Hip thrust — sesja B (cable/machine hip thrust)',  start: null, f1: null, f2: null, waga: 'stos' },
+  benchdb:    { n: 'Wyciskanie hantli (dumbbell bench press)',    start: 7.5,  f1: null, f2: null, waga: 'hantla' },
+  row:        { n: 'Wiosłowanie hantlem (single-arm dumbbell row)',  start: 10,   f1: null, f2: null, waga: 'hantla' },
+  rfess:      { n: 'Bułgarski przysiad (Bulgarian split squat)',   start: 20,   f1: null, f2: null, waga: 'rece' },
+  rdl:        { n: 'RDL jednonóż (single-leg RDL)',         start: 16,   f1: null, f2: null, waga: 'hantla' },
+  squat:      { n: 'Przysiad goblet (goblet squat)',      start: 20,   f1: null, f2: null, waga: 'goblet' },
+  lunge:      { n: 'Zakroki (lunges)',              start: 20,   f1: null, f2: null, waga: 'rece' },
+  stepup:     { n: 'Wykrok na skrzynię (step-up)',              start: null, f1: null, f2: null, waga: 'rece' },
+  pullup:     { n: 'Podciąganie / drążek (pull-up / lat pulldown)', start: null, f1: null, f2: null, waga: 'stos' },
   boxjump:    { n: 'Wskoki na skrzynię (box jumps)', start: 75, f1: null, f2: null, tryb: 'wysokosc' },
   schody:     { n: 'Schody / stepper (stair climber)',     start: 25,   f1: null, f2: null, tryb: 'czas' },
   bieznia:    { n: 'Bieżnia pod górę (incline treadmill walk)',       start: 20,   f1: null, f2: null, tryb: 'czas' },

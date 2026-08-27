@@ -3,7 +3,7 @@
    Edytuj ten plik, jeśli chcesz zmienić plan. Reszta apki się dostosuje.
 ----------------------------------------------------------------*/
 
-const APP = { wersja: '1.2.5', data: '2026-08-27' };
+const APP = { wersja: '1.2.6', data: '2026-08-27' };
 
 const PLAN_START = '2026-08-18'; // poniedziałek startu programu
 
@@ -38,7 +38,7 @@ const SESJE = {
     bloki: [
       { t: 'Rozgrzewka · 8–10 min', items: [
         { n: 'Kobra / wyprost leżąc (McKenzie press-up)', d: '10 powt.' },
-        { n: 'Odwodzenie biodra z gumą, stojąc (standing band hip abduction)', d: '2 × 15 na każdą stronę', u: 'Aktywacja pośladka średniego — polisa na SKB' },
+        { n: 'Odwodzenie biodra z gumą, stojąc (standing band hip abduction)', d: '2 × 15 na każdą stronę', u: 'Noga na bok (nie do tyłu — kickback to inne ćwiczenie). Guma nad kolanami — polisa na SKB.' },
         { n: 'Mostek biodrowy z gumą (banded glute bridge)', d: '2 × 12' },
         { n: 'Rozciąganie zginacza biodra w półklęku (half-kneeling hip flexor stretch)', d: '2 × 30 s na każdą stronę', u: 'Podwiń miednicę, spinaj pośladek nogi tylnej' },
         { n: 'Dead bug (martwy robak)', d: '2 × 8 na każdą stronę', u: 'Lędźwie wklejone w podłogę' },
@@ -97,7 +97,7 @@ const SESJE = {
     bloki: [
       { t: 'Rozgrzewka · 8 min', items: [
         { n: 'Kobra + pozycja dziecka (McKenzie + child’s pose)', d: '10 + 1 min' },
-        { n: 'Odwodzenie z gumą + monster walk (band abduction + monster walk)', d: '2 × 15 na każdą stronę' },
+        { n: 'Odwodzenie z gumą + monster walk (band abduction + monster walk)', d: '2 × 15 na każdą stronę', u: 'Odwodzenie = noga na bok (nie do tyłu). Potem monster walk w półprzysiadzie.' },
         { n: 'Skipy + krok odstawno-dostawny (A-skips + side shuffle)', d: '3 × 15 m' },
         { n: 'Przejścia biodrami 90/90 (90/90 hip switches)', d: '2 × 8 na każdą stronę' },
       ]},

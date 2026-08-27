@@ -7,6 +7,13 @@ Wersja jest widoczna w stopce aplikacji oraz w zakładce **Więcej → O aplikac
 
 ---
 
+## 1.2.6 — 27.08.2026
+
+**Szczyt 1.0.7 — startowe ciężary Olgi**
+- Trap 45 (tylko talerze), hip thrust 25 (talerze), bułgarski 20 (łącznie w rękach), RDL 16 (jedna hantla), wyciskanie 7,5, wiosło 10, goblet 20, zakroki 20.
+- Przy seriach podpowiedź „co wpisujesz”; w Więcej → „Jak wpisywać ciężary”.
+- Odwodzenie z gumą: noga **na bok** (nie do tyłu) — też w Twojej apce.
+
 ## 1.2.5 — 27.08.2026
 
 **Wskoki na skrzynię**
