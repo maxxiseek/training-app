@@ -3,6 +3,6 @@
   "private": true,
   "description": "Plan atletyczny — PWA (+ Szczyt dla Olgi)",
   "scripts": {
-    "test": "node --test test/ szczyt/test/"
+    "test": "bash -lc 'node --test test/*.test.js szczyt/test/*.test.js'"
   }
 }
