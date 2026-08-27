@@ -993,6 +993,11 @@ function renderPostep(){
     if(!a || !a.length) return null;
     const best = a.reduce((m,x) => x.kg > m.kg ? x : m, a[0]);
     const o = a[a.length-1];
+    const czas = LIFTY[k].tryb === 'czas';
+    if(czas){
+      return `<tr><td>${LIFTY[k].n}<br><span class="small">ostatnio ${o.kg} min${o.p ? ` · wznios ${o.p}` : ''}</span></td>
+            <td class="r">${best.kg} min<br><span class="g">${best.p ? 'wznios ' + best.p : '—'}</span></td></tr>`;
+    }
     return `<tr><td>${LIFTY[k].n}<br><span class="small">ostatnio ${o.kg} × ${o.p}</span></td>
             <td class="r">${best.kg} kg<br><span class="g">${best.p} powt.</span></td></tr>`;
   }).filter(Boolean);

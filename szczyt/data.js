@@ -2,7 +2,7 @@
    data.js — Szczyt (trening Olgi): sesje, ćwiczenia, fazy
 ----------------------------------------------------------------*/
 
-const APP = { wersja: '1.0.1', data: '2026-08-27' };
+const APP = { wersja: '1.0.2', data: '2026-08-27' };
 
 const PLAN_START = '2026-08-27';
 
