@@ -245,6 +245,7 @@ svg.spark{width:100%;height:96px;display:block;margin-top:8px}
 .gral{width:64px;flex:0 0 auto;font-size:11.5px;color:var(--dim2);font-weight:600}
 .grad{color:var(--data1);letter-spacing:3px}
 .grap{color:var(--data2);letter-spacing:3px}
+.grab{color:var(--acc);letter-spacing:3px;opacity:.85}
 .gran{margin-left:auto;color:var(--dim2);font-size:12px;font-variant-numeric:tabular-nums}
 
 table{width:100%;border-collapse:collapse;font-size:14px}
@@ -341,7 +342,7 @@ section.on{display:block}
 
   <h2>Dodatkowo dziś</h2>
   <div class="card extraBox">
-    <p class="extraHint">Siatkówka, padel albo inna aktywność — możesz odhaczyć obok siłowni tego samego dnia.</p>
+    <p class="extraHint">Siatkówka, padel, balet albo inna aktywność — lekkie, możesz odhaczyć obok siłowni tego samego dnia.</p>
     <div class="chips" id="extraChips"></div>
     <div id="extraMsg" class="small" style="margin-top:8px"></div>
   </div>
@@ -1312,7 +1313,7 @@ function dedup(a){
 
 function renderGra(){
   const el = document.getElementById('graBox'); if(!el) return;
-  const keys = ['GORY', 'VB', 'PADEL'];
+  const keys = ['GORY', 'VB', 'PADEL', 'BALET'];
   const st = statystykiSportu(keys, { maxPeln: 4 });
   const g30 = przesunDni(DZIS, -29);
   const m = k => hist().filter(x => x.k === k && x.d >= g30).length;
@@ -1320,14 +1321,15 @@ function renderGra(){
   const mark = (n, ch) => n ? ch.repeat(n) : '<span style="color:var(--dim2)">—</span>';
 
   const wiersze = st.tyg.slice().reverse().map(x => {
-    const g = x.counts.GORY || 0, vb = x.counts.VB || 0, pd = x.counts.PADEL || 0;
+    const g = x.counts.GORY || 0, vb = x.counts.VB || 0, pd = x.counts.PADEL || 0, bl = x.counts.BALET || 0;
     return `
     <div class="graw">
       <span class="gral">${x.w === 0 ? 'ten tydz.' : '−' + x.w}</span>
       <span class="grad" style="color:var(--acc)">${mark(g, '▲')}</span>
       <span class="grad">${vb ? '●'.repeat(vb) : ''}</span>
       <span class="grap">${pd ? '▪'.repeat(pd) : ''}</span>
-      <span class="gran">${g + vb + pd || ''}</span>
+      <span class="grab">${bl ? '◇'.repeat(bl) : ''}</span>
+      <span class="gran">${g + vb + pd + bl || ''}</span>
     </div>`;
   }).join('');
 
@@ -1335,16 +1337,18 @@ function renderGra(){
     ? `średnia z ${odmT(st.nPeln)}` + (st.od ? ` · od ${st.od}` : '')
     : 'średnia pojawi się po pierwszym pełnym tygodniu';
 
+  const lekko = (st.avgs.VB || 0) + (st.avgs.PADEL || 0) + (st.avgs.BALET || 0);
   el.innerHTML = `
     <div class="kpis" style="margin-bottom:12px">
       <div class="kpi"><b>${st.nPeln ? pl(st.avgs.GORY || 0) : '—'}</b><span>górski /tydz.</span></div>
-      <div class="kpi"><b>${st.nPeln ? pl((st.avgs.VB || 0) + (st.avgs.PADEL || 0)) : '—'}</b><span>gry /tydz.</span></div>
-      <div class="kpi"><b>${m('GORY') + m('VB') + m('PADEL')}</b><span>w 30 dniach</span></div>
+      <div class="kpi"><b>${st.nPeln ? pl(lekko) : '—'}</b><span>lekko /tydz.</span></div>
+      <div class="kpi"><b>${m('GORY') + m('VB') + m('PADEL') + m('BALET')}</b><span>w 30 dniach</span></div>
     </div>
     <div class="small" style="margin-bottom:8px">
       <span style="color:var(--acc)">▲</span> trening górski ·
       <span style="color:var(--data1)">●</span> siatkówka ·
-      <span style="color:var(--data2)">▪</span> padel · ${podpisSr}</div>
+      <span style="color:var(--data2)">▪</span> padel ·
+      <span style="color:var(--acc)">◇</span> balet · ${podpisSr}</div>
     ${wiersze}`;
 }
 

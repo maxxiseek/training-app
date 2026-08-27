@@ -66,18 +66,19 @@ function ileZRzedu(pred){
   return n;
 }
 function badgeK(k){
-  return k === 'VB' ? 'VB' : k === 'PADEL' ? 'PD' : k === 'GORY' ? 'TG'
-       : k === 'AKT' ? '+' : k === 'REST' ? 'W' : k;
+  return k === 'VB' ? 'VB' : k === 'PADEL' ? 'PD' : k === 'BALET' ? 'BL'
+       : k === 'GORY' ? 'TG' : k === 'AKT' ? '+' : k === 'REST' ? 'W' : k;
 }
 function tytulS(S){ const p = (S && S.nazwa || '').split('—'); return (p.length > 1 ? p[1] : p[0]).trim(); }
 function nazwaK(k){
-  return k === 'VB' ? 'siatkówka' : k === 'PADEL' ? 'padel' : k === 'GORY' ? 'trening górski'
-       : k === 'AKT' ? 'inna aktywność' : k === 'REST' ? 'dzień wolny' : 'sesja ' + k;
+  return k === 'VB' ? 'siatkówka' : k === 'PADEL' ? 'padel' : k === 'BALET' ? 'balet'
+       : k === 'GORY' ? 'trening górski' : k === 'AKT' ? 'inna aktywność'
+       : k === 'REST' ? 'dzień wolny' : 'sesja ' + k;
 }
 function nazwaSesji(k){ return (SESJE[k] && SESJE[k].nazwa) || k; }
 function etykietaK(k){
-  return k === 'VB' ? 'Siatkówka' : k === 'PADEL' ? 'Padel' : k === 'GORY' ? 'Górski'
-       : k === 'AKT' ? 'Inne' : k === 'REST' ? 'Wolne' : k;
+  return k === 'VB' ? 'Siatkówka' : k === 'PADEL' ? 'Padel' : k === 'BALET' ? 'Balet'
+       : k === 'GORY' ? 'Górski' : k === 'AKT' ? 'Inne' : k === 'REST' ? 'Wolne' : k;
 }
 function typSesji(k){ return (SESJE[k] && SESJE[k].typ) || ''; }
 function jestRest(x){ return !!(x && (x.k === 'REST' || x.rest)); }

@@ -59,6 +59,7 @@ test('cele tygodnia suma 4, GORY ×1', () => {
   assert.ok(!ctx.PRIORYTET.includes('PADEL'));
   assert.ok(ctx.SESJE.VB.extra);
   assert.ok(ctx.SESJE.PADEL.extra);
+  assert.ok(ctx.SESJE.BALET.extra);
   assert.ok(ctx.SESJE.AKT.extra);
 });
 
@@ -105,9 +106,23 @@ test('etykiety treningu górskiego / ekstra', () => {
   const ctx = boot();
   assert.equal(ctx.etykietaK('GORY'), 'Górski');
   assert.equal(ctx.etykietaK('AKT'), 'Inne');
+  assert.equal(ctx.etykietaK('BALET'), 'Balet');
   assert.equal(ctx.badgeK('GORY'), 'TG');
+  assert.equal(ctx.badgeK('BALET'), 'BL');
   assert.match(ctx.SESJE.GORY.nazwa, /Trening górski/);
-  assert.deepEqual(ctx.dodatkoweKlucze().sort(), ['AKT','PADEL','VB']);
+  assert.deepEqual(ctx.dodatkoweKlucze().sort(), ['AKT','BALET','PADEL','VB']);
+});
+
+test('balet jest lekkim dodatkiem — nie liczy się do serii treningów', () => {
+  const ctx = boot();
+  setHist(ctx, [
+    { d:'2026-08-26', k:'BALET', sport:true },
+    { d:'2026-08-25', k:'BALET', sport:true },
+    { d:'2026-08-24', k:'BALET', sport:true },
+  ]);
+  assert.equal(ctx.liczTreningi7(), 0);
+  assert.notEqual(ctx.sugeruj().k, 'REST');
+  assert.ok(ctx.jestDodatek('BALET'));
 });
 
 test('GORY jest kondycją z checklistą i liftami czasu', () => {
