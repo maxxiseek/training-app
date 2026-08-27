@@ -3,10 +3,10 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { boot, setHist } = require('./harness');
 
-test('pusta historia: najwyższy deficyt GORY (2) wygrywa', () => {
+test('pusta historia: priorytet A przy równym deficycie', () => {
   const ctx = boot();
   setHist(ctx, []);
-  assert.equal(ctx.sugeruj().k, 'GORY');
+  assert.equal(ctx.sugeruj().k, 'A');
 });
 
 test('brak ścieżek SKB — czerwone światło nie wymusza D', () => {
@@ -51,9 +51,10 @@ test('A + padel tego samego dnia — padel nie blokuje celów A jutro jako skok'
   assert.equal(b.PADEL, undefined); // padel nie w SKOKI; wczorajszy padel nie w blokadach skoków poza A/C
 });
 
-test('cele tygodnia suma 5, bez VB/PADEL', () => {
+test('cele tygodnia suma 4, GORY ×1', () => {
   const ctx = boot();
-  assert.equal(Object.values(ctx.CELE_TYG).reduce((a,b)=>a+b, 0), 5);
+  assert.equal(Object.values(ctx.CELE_TYG).reduce((a,b)=>a+b, 0), 4);
+  assert.equal(ctx.CELE_TYG.GORY, 1);
   assert.ok(!ctx.PRIORYTET.includes('VB'));
   assert.ok(!ctx.PRIORYTET.includes('PADEL'));
   assert.ok(ctx.SESJE.VB.extra);

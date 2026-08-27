@@ -66,17 +66,17 @@ function ileZRzedu(pred){
   return n;
 }
 function badgeK(k){
-  return k === 'VB' ? 'VB' : k === 'PADEL' ? 'PD' : k === 'GORY' ? 'G'
+  return k === 'VB' ? 'VB' : k === 'PADEL' ? 'PD' : k === 'GORY' ? 'TG'
        : k === 'AKT' ? '+' : k === 'REST' ? 'W' : k;
 }
 function tytulS(S){ const p = (S && S.nazwa || '').split('—'); return (p.length > 1 ? p[1] : p[0]).trim(); }
 function nazwaK(k){
-  return k === 'VB' ? 'siatkówka' : k === 'PADEL' ? 'padel' : k === 'GORY' ? 'góry'
+  return k === 'VB' ? 'siatkówka' : k === 'PADEL' ? 'padel' : k === 'GORY' ? 'trening górski'
        : k === 'AKT' ? 'inna aktywność' : k === 'REST' ? 'dzień wolny' : 'sesja ' + k;
 }
 function nazwaSesji(k){ return (SESJE[k] && SESJE[k].nazwa) || k; }
 function etykietaK(k){
-  return k === 'VB' ? 'Siatkówka' : k === 'PADEL' ? 'Padel' : k === 'GORY' ? 'Góry'
+  return k === 'VB' ? 'Siatkówka' : k === 'PADEL' ? 'Padel' : k === 'GORY' ? 'Górski'
        : k === 'AKT' ? 'Inne' : k === 'REST' ? 'Wolne' : k;
 }
 function typSesji(k){ return (SESJE[k] && SESJE[k].typ) || ''; }
@@ -151,7 +151,7 @@ function tally(){
     const c = licz7(k), t = CELE_TYG[k] || 0;
     const ok = c >= t;
     return '<span style="color:' + (ok ? 'var(--ok)' : 'var(--dim)') + '">' +
-           (k === 'GORY' ? 'Góry' : k) + ' ' + c + '/' + t + '</span>';
+           (k === 'GORY' ? 'Górski' : k) + ' ' + c + '/' + t + '</span>';
   }).join('<span style="color:var(--line)"> · </span>');
   return cele + '<span style="color:var(--line)"> · </span>' +
          '<span style="color:var(--dim2)">Wolne ' + licz7('REST') + '</span>';

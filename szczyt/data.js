@@ -2,7 +2,7 @@
    data.js — Szczyt (trening Olgi): sesje, ćwiczenia, fazy
 ----------------------------------------------------------------*/
 
-const APP = { wersja: '1.0.3', data: '2026-08-27' };
+const APP = { wersja: '1.0.4', data: '2026-08-27' };
 
 const PLAN_START = '2026-08-27';
 
@@ -10,7 +10,7 @@ const CEL_WAGA = null; // docelowa waga — do uzupełnienia
 
 const FAZY = [
   { od: 1,  do: 3,  nazwa: 'Faza 0 — Kalibracja',
-    opis: 'Dobierz ciężary z zapasem 2 powtórzeń. Plyometria ostrożnie. Easy GORY (marsz / lekka stromizna). Lekki deficyt.' },
+    opis: 'Dobierz ciężary z zapasem 2 powtórzeń. Plyometria ostrożnie. Lekki trening górski (marsz / stromizna). Lekki deficyt.' },
   { od: 4,  do: 11, nazwa: 'Faza 1 — Baza + redukcja',
     opis: 'Siła nóg i pośladków + dynamika. Buduj objętość marszu i stromizny pod pięciotysięcznik. Tydzień 8 = deload.' },
   { od: 12, do: 99, nazwa: 'Faza 2 — Pod szczyt',
@@ -111,7 +111,7 @@ const SESJE = {
   },
 
   GORY: {
-    nazwa: 'Góry / stromizna', dur: '~30–90 min', typ: 'kondycja',
+    nazwa: 'TG — Trening górski', dur: '~30–90 min', typ: 'kondycja',
     bloki: [
       { t: 'Kondycja · odhacz co zrobiłaś (można więcej niż jedno)', items: [
         { n: 'Schody / stepper (stair climber)', d: '25–40 min',
@@ -157,16 +157,16 @@ const SESJE = {
 };
 
 /* Szkic tygodnia (zakładka Plan). 0 = niedziela. */
-const TYDZIEN = { 1: 'A', 2: 'GORY', 3: 'B', 4: 'GORY', 5: 'C', 6: 'REST', 0: 'REST' };
+const TYDZIEN = { 1: 'A', 2: 'B', 3: 'GORY', 4: 'C', 5: 'REST', 6: 'REST', 0: 'REST' };
 
-const CELE_TYG = { A: 1, B: 1, C: 1, GORY: 2 };
+const CELE_TYG = { A: 1, B: 1, C: 1, GORY: 1 };
 
 const SKOKI = ['A', 'C'];
 const CIEZKIE = ['A', 'C'];
 
 const MAX_TRENING_Z_RZEDU = 3;
 const MAX_CIEZKIE_Z_RZEDU = 2;
-const MAX_SESJE_7 = 5;
+const MAX_SESJE_7 = 4;
 
 const PRIORYTET = ['A', 'C', 'B', 'GORY'];
 
