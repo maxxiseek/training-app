@@ -2,7 +2,7 @@
    data.js — Szczyt (trening Olgi): sesje, ćwiczenia, fazy
 ----------------------------------------------------------------*/
 
-const APP = { wersja: '1.0.0', data: '2026-08-27' };
+const APP = { wersja: '1.0.1', data: '2026-08-27' };
 
 const PLAN_START = '2026-08-27';
 
@@ -111,12 +111,21 @@ const SESJE = {
   },
 
   GORY: {
-    nazwa: 'Góry / stromizna', dur: 'podejście lub sesja kondycyjna', typ: 'sport',
+    nazwa: 'Góry / stromizna', dur: '~30–90 min', typ: 'kondycja',
     bloki: [
-      { t: 'Opcje (wybierz jedną)', items: [
-        { n: 'Marsz w terenie / podejście', d: '45–90+ min', u: 'Oddychanie rozmową; weekend może być dłuższy' },
-        { n: 'Stromizna na siłowni', d: '25–40 min', u: 'Bieżnia wznios / stepper / schody' },
-        { n: 'Podejście z lekkim plecakiem', d: 'wg formy', u: 'Buduj objętość stopniowo pod pięciotysięcznik' },
+      { t: 'Kondycja · odhacz co zrobiłaś (można więcej niż jedno)', items: [
+        { n: 'Schody / stepper', d: '25–40 min',
+          u: 'Najczęstsze na siłce. Wpisz minuty + wznios/poziom. Cel: najpierw czas, potem trudność.',
+          lift: 'schody', tryb: 'czas', krok: 2, serie: 1, zakres: [25, 40], startMin: 25, startWzn: 5 },
+        { n: 'Bieżnia wznios', d: '20–35 min',
+          u: 'Tempo rozmowy. Wznios w polu obok minut.',
+          lift: 'bieznia', tryb: 'czas', krok: 2, serie: 1, zakres: [20, 35], startMin: 20, startWzn: 6 },
+        { n: 'Marsz w terenie / podejście', d: '45–90 min',
+          u: 'Weekend / góry. Wznios = subiektywna trudność 1–10 albo pomiń.',
+          lift: 'marsz', tryb: 'czas', krok: 5, serie: 1, zakres: [45, 90], startMin: 45, startWzn: 3 },
+        { n: 'Podejście z plecakiem', d: '40–90 min',
+          u: 'Buduj objętość pod pięciotysięcznik. Wznios = kg plecaka (opcjonalnie).',
+          lift: 'plecak', tryb: 'czas', krok: 5, serie: 1, zakres: [40, 90], startMin: 40, startWzn: 4 },
       ]},
       { t: 'Schłodzenie — 6–8 min', items: [
         { n: 'Marsz / luźne chodzenie', d: '2 min' },
@@ -173,6 +182,10 @@ const LIFTY = {
   lunge:      { n: 'Zakroki',              start: null, f1: null, f2: null },
   stepup:     { n: 'Step-up',              start: null, f1: null, f2: null },
   pullup:     { n: 'Podciąganie / drążek', start: null, f1: null, f2: null },
+  schody:     { n: 'Schody / stepper',     start: 25,   f1: null, f2: null, tryb: 'czas' },
+  bieznia:    { n: 'Bieżnia wznios',       start: 20,   f1: null, f2: null, tryb: 'czas' },
+  marsz:      { n: 'Marsz / podejście',    start: 45,   f1: null, f2: null, tryb: 'czas' },
+  plecak:     { n: 'Podejście z plecakiem', start: 40,  f1: null, f2: null, tryb: 'czas' },
 };
 
 const TESTY = [];

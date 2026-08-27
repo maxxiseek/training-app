@@ -7,7 +7,7 @@ Aktualna wersja: **1.0.0**.
 ## Co jest w środku
 
 - Sesje **A / B / C** — duży overlap z planem wspólnym (te same stanowiska na siłowni)
-- **Góry** ×2 / tydzień — marsz, stromizna, podejście
+- **Góry** ×2 / tydzień — checklista (schody/stepper na czele) z progresją minut i wzniosu
 - **Dodatkowo dziś:** siatkówka, padel, inna aktywność (można obok siłowni tego samego dnia)
 - Waga, historia, podwójna progresja ciężarów, PWA offline
 - Bez świateł SKB, bez testów wyskoku, bez sesji rehab D

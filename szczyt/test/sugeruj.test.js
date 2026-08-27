@@ -108,3 +108,12 @@ test('etykiety GORY / ekstra', () => {
   assert.equal(ctx.badgeK('GORY'), 'G');
   assert.deepEqual(ctx.dodatkoweKlucze().sort(), ['AKT','PADEL','VB']);
 });
+
+test('GORY jest kondycją z checklistą i liftami czasu', () => {
+  const ctx = boot();
+  assert.equal(ctx.SESJE.GORY.typ, 'kondycja');
+  const items = ctx.SESJE.GORY.bloki[0].items;
+  assert.ok(items.some(x => x.lift === 'schody' && x.tryb === 'czas'));
+  assert.ok(items.every(x => x.lift));
+  assert.equal(ctx.LIFTY.schody.tryb, 'czas');
+});
