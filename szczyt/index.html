@@ -638,6 +638,7 @@ setInterval(() => {
 /* Podwójna progresja — patrzy na poprzednie sesje, nie na dzisiejszą. */
 function analiza(it){
   if(it.tryb === 'czas' || (LIFTY[it.lift] && LIFTY[it.lift].tryb === 'czas')) return analizaCzas(it);
+  if(it.tryb === 'wysokosc' || (LIFTY[it.lift] && LIFTY[it.lift].tryb === 'wysokosc')) return analizaWysokosc(it);
   const kl = it.lift, L = LIFTY[kl] || {};
   const serie = it.serie || 3, zak = it.zakres || [8, 10], krok = it.krok || 2.5;
   const h = dniLiftu(kl).filter(x => x.d < TODAY);
@@ -674,6 +675,47 @@ function analiza(it){
   const trend = poprz && poprz.kg === ost.kg && ost.min > poprz.min ? ' Idzie w górę.' : '';
   return { kg: ost.kg, powt: nast, serie, tekst:
     `${opis}<br>Zostań na <b>${pl0(ost.kg)} kg</b>, celuj w ${serie} × ${nast}. Podbiję ciężar po ${serie} × ${zak[1]}.${trend}` };
+}
+
+/* Progresja skoków: wysokość skrzyni (cm) + powtórzenia. kg=cm, p=powt. */
+function analizaWysokosc(it){
+  const kl = it.lift, L = LIFTY[kl] || {};
+  const serie = it.serie || 4, zak = it.zakres || [3, 5], krok = it.krok || 5;
+  const startCm = it.startCm != null ? it.startCm : (L.start || 40);
+  const h = dniLiftu(kl).filter(x => x.d < TODAY);
+  const deload = DELOADY.includes(tydzien());
+
+  if(!h.length) return { kg: startCm, powt: zak[0], serie, tryb: 'wysokosc', tekst:
+    `Start: skrzynia <b>${startCm} cm</b> — ${serie} × ${zak[0]}. Zejście krokiem. Jak ${serie} × ${zak[1]} czysto — podbiję wysokość o ${krok} cm.` };
+
+  const ost = h[h.length - 1], poprz = h.length > 1 ? h[h.length - 2] : null;
+  const opis = `${ost.d} · <b>${pl0(ost.kg)} cm</b> — ${ost.powt.join(' / ')}`;
+
+  if(deload){
+    const cm = Math.max(20, Math.round(ost.kg * 0.7 / krok) * krok);
+    return { kg: cm, powt: zak[0], serie, tryb: 'wysokosc', tekst:
+      `${opis}<br>Deload — skrzynia <b>${cm} cm</b>, bez szukania maksów.` };
+  }
+
+  let stag = 0;
+  for(let i = h.length - 1; i >= 0; i--){
+    if(h[i].kg === ost.kg && !(h[i].sety >= serie && h[i].min >= zak[1])) stag++; else break;
+  }
+  if(stag >= 3){
+    const niz = Math.max(krok, Math.round(ost.kg * 0.1 / krok) * krok);
+    return { kg: Math.max(20, ost.kg - niz), powt: zak[1], serie, tryb: 'wysokosc', tekst:
+      `${opis}<br><b>${stag} sesje w miejscu na ${pl0(ost.kg)} cm.</b> Zejdź do <b>${Math.max(20, ost.kg - niz)} cm</b>, zrób ${serie} × ${zak[1]} czysto.` };
+  }
+  if(ost.sety >= serie && ost.min >= zak[1])
+    return { kg: ost.kg + krok, powt: zak[0], serie, tryb: 'wysokosc', tekst:
+      `${opis}<br>Zaliczone ${serie} × ${zak[1]} — dziś skrzynia <b>${ost.kg + krok} cm</b>, wracasz do ${zak[0]} powt.` };
+  if(ost.sety < serie)
+    return { kg: ost.kg, powt: Math.max(zak[0], ost.min), serie, tryb: 'wysokosc', tekst:
+      `${opis}<br>Zostań na <b>${pl0(ost.kg)} cm</b> — ostatnio brakło serii do ${serie}.` };
+  const nast = Math.min(zak[1], ost.min + 1);
+  const trend = poprz && poprz.kg === ost.kg && ost.min > poprz.min ? ' Idzie w górę.' : '';
+  return { kg: ost.kg, powt: nast, serie, tryb: 'wysokosc', tekst:
+    `${opis}<br>Zostań na <b>${pl0(ost.kg)} cm</b>, celuj w ${serie} × ${nast}. Podbiję wysokość po ${serie} × ${zak[1]}.${trend}` };
 }
 
 /* Progresja czasu (góry): minuty (+ opcjonalny wznios). kg=min, p=wznios. */
@@ -870,20 +912,23 @@ function renderSession(){
       if(it.lift){
         const n = an.serie;
         const czas = !!(an.tryb === 'czas' || it.tryb === 'czas');
+        const wys = !!(an.tryb === 'wysokosc' || it.tryb === 'wysokosc');
         const zapisaneDzis = setyDnia(it.lift, TODAY);
         const ostKg = zapisaneDzis.length ? zapisaneDzis[zapisaneDzis.length - 1].kg : null;
-        const ph1 = czas ? 'min' : 'kg';
+        const ph1 = czas ? 'min' : (wys ? 'cm' : 'kg');
         const ph2 = czas ? (an.powt != null ? String(an.powt) : 'wznios') : String(an.powt);
+        const trybArg = czas ? "'czas'" : (wys ? "'wysokosc'" : "''");
         setyHtml = `<div class="setg" onclick="event.stopPropagation()">` +
           (czas ? `<div class="small" style="margin:0 0 6px">minuty · wznios/poziom (opcjonalnie)</div>` : '') +
+          (wys ? `<div class="small" style="margin:0 0 6px">wysokość skrzyni (cm) · powtórzenia</div>` : '') +
           Array.from({ length: n }, (_, i) => {
             const z = setDnia(it.lift, i);
             return `<div class="setr${z && (czas ? z.kg : (z.kg && z.p)) ? ' ok' : ''}">
               <span class="setl">${i + 1}</span>
-              <input id="kg-${it.lift}-${i}" type="number" step="${czas ? 1 : 0.5}" inputmode="decimal" placeholder="${ph1}"
-                value="${z ? z.kg : (ostKg != null ? ostKg : (an.kg != null ? an.kg : ''))}" onchange="zapiszSet('${it.lift}',${i},'${id}',${n},${czas ? "'czas'" : "''"})">
+              <input id="kg-${it.lift}-${i}" type="number" step="${czas || wys ? 1 : 0.5}" inputmode="decimal" placeholder="${ph1}"
+                value="${z ? z.kg : (ostKg != null ? ostKg : (an.kg != null ? an.kg : ''))}" onchange="zapiszSet('${it.lift}',${i},'${id}',${n},${trybArg})">
               <input id="p-${it.lift}-${i}" type="number" inputmode="numeric" placeholder="${ph2}"
-                value="${z ? z.p : (czas && an.powt != null ? an.powt : '')}" onchange="zapiszSet('${it.lift}',${i},'${id}',${n},${czas ? "'czas'" : "''"})">
+                value="${z ? z.p : (czas && an.powt != null ? an.powt : '')}" onchange="zapiszSet('${it.lift}',${i},'${id}',${n},${trybArg})">
             </div>`;
           }).join('') + `</div>`;
       }
@@ -994,9 +1039,14 @@ function renderPostep(){
     const best = a.reduce((m,x) => x.kg > m.kg ? x : m, a[0]);
     const o = a[a.length-1];
     const czas = LIFTY[k].tryb === 'czas';
+    const wys = LIFTY[k].tryb === 'wysokosc';
     if(czas){
       return `<tr><td>${LIFTY[k].n}<br><span class="small">ostatnio ${o.kg} min${o.p ? ` · wznios ${o.p}` : ''}</span></td>
             <td class="r">${best.kg} min<br><span class="g">${best.p ? 'wznios ' + best.p : '—'}</span></td></tr>`;
+    }
+    if(wys){
+      return `<tr><td>${LIFTY[k].n}<br><span class="small">ostatnio ${o.kg} cm × ${o.p}</span></td>
+            <td class="r">${best.kg} cm<br><span class="g">${best.p} powt.</span></td></tr>`;
     }
     return `<tr><td>${LIFTY[k].n}<br><span class="small">ostatnio ${o.kg} × ${o.p}</span></td>
             <td class="r">${best.kg} kg<br><span class="g">${best.p} powt.</span></td></tr>`;

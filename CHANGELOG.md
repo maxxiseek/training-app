@@ -7,6 +7,16 @@ Wersja jest widoczna w stopce aplikacji oraz w zakładce **Więcej → O aplikac
 
 ---
 
+## 1.2.4 — 27.08.2026
+
+**Wskoki na skrzynię**
+- Progresja wysokości (cm) + powtórzeń — jak przy ciężarach: po 4 × 5 czysto podbijamy skrzynię o 5 cm (start 40 cm).
+- W polach serii: `cm` i powtórzenia; w rekordach też cm zamiast kg.
+
+**Szczyt 1.0.5**
+- Ta sama progresja box jumps.
+- Nowa ikona PWA: góry + ciężarek (różowa hybryda).
+
 ## 1.2.3 — 27.08.2026
 
 **Nazwy ćwiczeń**

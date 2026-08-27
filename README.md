@@ -2,7 +2,7 @@
 
 Aplikacja treningowa na telefon. Instaluje się na ekranie głównym Androida jak zwykła apka, działa offline, zapisuje dane lokalnie w telefonie.
 
-Aktualna wersja: **1.2.3** · historia zmian w `CHANGELOG.md`.
+Aktualna wersja: **1.2.4** · historia zmian w `CHANGELOG.md`.
 
 Osobna wersja dla Olgi: katalog **[`szczyt/`](szczyt/)** — PWA **Szczyt** (bez SKB, plan nóg/pośladków + góry). Deploy: `…/szczyt/`.
 
@@ -230,8 +230,8 @@ Przy każdej zmianie podbij **dwa** miejsca:
 
 | Plik | Co |
 |---|---|
-| `data.js` | `const APP = { wersja: '1.2.3', data: '2026-08-27' }` |
-| `sw.js` | `const CACHE = 'trening-1.2.3'` |
+| `data.js` | `const APP = { wersja: '1.2.4', data: '2026-08-27' }` |
+| `sw.js` | `const CACHE = 'trening-1.2.4'` |
 
 Bez podbicia `CACHE` service worker może dalej serwować starą wersję z pamięci offline. Po podbiciu apka wykrywa aktualizację i pokazuje na dole toast **„Dostępna nowa wersja — Odśwież"**.
 

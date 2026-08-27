@@ -3,7 +3,7 @@
    Edytuj ten plik, jeśli chcesz zmienić plan. Reszta apki się dostosuje.
 ----------------------------------------------------------------*/
 
-const APP = { wersja: '1.2.3', data: '2026-08-27' };
+const APP = { wersja: '1.2.4', data: '2026-08-27' };
 
 const PLAN_START = '2026-08-18'; // poniedziałek startu programu
 
@@ -45,7 +45,7 @@ const SESJE = {
         { n: 'Pogo hops (sprężyste podskoki ze sztywnymi kolanami)', d: '2 × 20', u: 'Kolana prawie sztywne, praca ze stopy' },
       ]},
       { t: 'Blok mocy · przerwy 90–120 s', items: [
-        { n: 'Wskoki na skrzynię (box jumps)', d: '4 × 3', u: 'Zejście krokiem, nigdy zeskok', plyo: true },
+        { n: 'Wskoki na skrzynię (box jumps)', d: '4 × 3', u: 'Zejście krokiem, nigdy zeskok. Wpisz wysokość skrzyni (cm) i powtórzenia.', plyo: true, lift: 'boxjump', tryb: 'wysokosc', krok: 5, serie: 4, zakres: [3, 5], startCm: 40 },
         { n: 'Zeskok z lądowaniem (depth drop / stick landing)', d: '3 × 4', u: 'Skrzynia 30–40 cm, cichy lądunek, hold 2 s. Od tyg. 4', plyo: true },
       ]},
       { t: 'Siła · przerwy 2–3 min', items: [
@@ -277,6 +277,7 @@ const LIFTY = {
   lunge:     { n: 'Zakroki (lunges)',              start: 16,   f1: null, f2: null },
   ohp:       { n: 'Wyciskanie nad głowę (overhead press)', start: null, f1: null, f2: null },
   pullup:    { n: 'Podciąganie / drążek (pull-up / lat pulldown)', start: 55,   f1: null, f2: null },
+  boxjump:   { n: 'Wskoki na skrzynię (box jumps)', start: 40, f1: null, f2: null, tryb: 'wysokosc' },
 };
 
 const TESTY = [
