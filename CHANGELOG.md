@@ -7,6 +7,11 @@ Wersja jest widoczna w stopce aplikacji oraz w zakładce **Więcej → O aplikac
 
 ---
 
+## 1.2.2 — 27.08.2026
+
+**Sugestia**
+- Padel **nie** jest dniem ciężkim — po siłowni / siatkówce apka nie pcha w rest tylko z powodu padla.
+
 ## 1.2.1 — 27.08.2026
 
 **Postęp — jak często grasz**

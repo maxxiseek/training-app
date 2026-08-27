@@ -2,7 +2,7 @@
 
 Aplikacja treningowa na telefon. Instaluje się na ekranie głównym Androida jak zwykła apka, działa offline, zapisuje dane lokalnie w telefonie.
 
-Aktualna wersja: **1.2.1** · historia zmian w `CHANGELOG.md`.
+Aktualna wersja: **1.2.2** · historia zmian w `CHANGELOG.md`.
 
 Osobna wersja dla Olgi: katalog **[`szczyt/`](szczyt/)** — PWA **Szczyt** (bez SKB, plan nóg/pośladków + góry). Deploy: `…/szczyt/`.
 
@@ -97,7 +97,7 @@ Sport to nie trening do odhaczania punkt po punkcie. Rozgrzewka i schłodzenie s
 
 Na dole jest jeden przycisk: **Zagrane — zapisz w historii**. Wpis idzie do historii jako ✓ za cały dzień, razem ze statusem SKB i notatką.
 
-Dzięki temu widzisz potem, **jak często realnie grasz**: Postęp → *Jak często grasz* pokazuje średnią siatkówek i padli na tydzień, liczbę gier w 30 dniach i rozkład ostatnich 8 tygodni (● siatkówka, ▪ padel).
+Dzięki temu widzisz potem, **jak często realnie grasz**: Postęp → *Jak często grasz* pokazuje średnią siatkówek i padli na tydzień (z **max 4 pełnych tygodni**, od pierwszego wpisu — bez pustych tygodni sprzed startu), liczbę gier w 30 dniach i rozkład tygodni (● siatkówka, ▪ padel).
 
 Ta karta też komentuje wynik: jeśli siatkówka wychodzi poniżej ~1,5×/tydz., apka przypomni, że plan siłowy zakłada więcej skoków z gry i warto przesunąć trochę plyometrii z powrotem na siłownię. Jeśli wychodzi powyżej ~3,2×/tydz. — że blok mocy w sesji A można ciąć o połowę, bo objętość skokową masz już z boiska.
 
@@ -143,7 +143,7 @@ Na to nakłada twarde reguły bezpieczeństwa i **sugestie** restu:
 - **A i C nigdy bliżej niż 48 h od siebie**
 - **Nigdy dwa dni skoków z rzędu** — A, C i siatkówka liczą się jako dni skoków
 - **Czerwone światło → tylko D**, reszta odpada niezależnie od zaległości
-- **Dzień wolny (sugestia, nie nakaz)** — kropka na chipie Wolne, gdy: już 6 jednostek w 7 dniach, trzy treningi pod rząd, albo dwa ciężkie dni z rzędu (A, C, siatkówka, padel). Żółte SKB po dniu treningowym też podpowiada rest albo D. Zawsze możesz stuknąć inną jednostkę.
+- **Dzień wolny (sugestia, nie nakaz)** — kropka na chipie Wolne, gdy: już 6 jednostek w 7 dniach, trzy treningi pod rząd, albo dwa ciężkie dni z rzędu (A, C, siatkówka). Padel nie liczy się jako ciężki — można grać po siłowni. Żółte SKB po dniu treningowym też podpowiada rest albo D. Zawsze możesz stuknąć inną jednostkę.
 
 Wybiera jednostkę z największą zaległością, która nie łamie żadnej reguły. W karcie widzisz **dlaczego** — co brakuje, co dziś odpada i czemu apka proponuje wolne. Jak pojedziesz w tygodniu inaczej niż planowałeś, wystarczy odhaczyć co zrobiłeś, a kolejne sugestie same się przestawią.
 
@@ -230,8 +230,8 @@ Przy każdej zmianie podbij **dwa** miejsca:
 
 | Plik | Co |
 |---|---|
-| `data.js` | `const APP = { wersja: '1.2.0', data: '2026-08-22' }` |
-| `sw.js` | `const CACHE = 'trening-1.2.0'` |
+| `data.js` | `const APP = { wersja: '1.2.2', data: '2026-08-27' }` |
+| `sw.js` | `const CACHE = 'trening-1.2.2'` |
 
 Bez podbicia `CACHE` service worker może dalej serwować starą wersję z pamięci offline. Po podbiciu apka wykrywa aktualizację i pokazuje na dole toast **„Dostępna nowa wersja — Odśwież"**.
 

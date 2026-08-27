@@ -3,7 +3,7 @@
    Edytuj ten plik, jeśli chcesz zmienić plan. Reszta apki się dostosuje.
 ----------------------------------------------------------------*/
 
-const APP = { wersja: '1.2.1', data: '2026-08-27' };
+const APP = { wersja: '1.2.2', data: '2026-08-27' };
 
 const PLAN_START = '2026-08-18'; // poniedziałek startu programu
 
@@ -254,8 +254,8 @@ const CELE_TYG = { A: 1, B: 1, C: 1, VB: 2, PADEL: 1 };
 /* Jednostki liczone jako "dzień skoków" — nigdy dwa z rzędu. */
 const SKOKI = ['A', 'C', 'VB'];
 
-/* Dni wysokiego obciążenia — padel wchodzi tu, choć nie jest dniem skoków. */
-const CIEZKIE = ['A', 'C', 'VB', 'PADEL'];
+/* Dni wysokiego obciążenia — padel nie: da się grać po siłowni. */
+const CIEZKIE = ['A', 'C', 'VB'];
 
 /* Hamulce regeneracji: tylko sugestia, nie blokada chipów. */
 const MAX_TRENING_Z_RZEDU = 3;

@@ -30,13 +30,22 @@ test('trzy treningi pod rząd → REST (sugestia)', () => {
   assert.match(s.powod, /propozycja/i);
 });
 
-test('dwa ciężkie dni z rzędu (VB, padel) → REST', () => {
+test('dwa ciężkie dni z rzędu (A, VB) → REST', () => {
+  const ctx = boot();
+  setHist(ctx, [
+    { d:'2026-08-21', k:'VB' },
+    { d:'2026-08-20', k:'A' },
+  ]);
+  assert.equal(ctx.sugeruj().k, 'REST');
+});
+
+test('padel nie jest ciężki — po VB nie wymusza REST', () => {
   const ctx = boot();
   setHist(ctx, [
     { d:'2026-08-21', k:'PADEL' },
     { d:'2026-08-20', k:'VB' },
   ]);
-  assert.equal(ctx.sugeruj().k, 'REST');
+  assert.notEqual(ctx.sugeruj().k, 'REST');
 });
 
 test('REST wczoraj przerywa serię — wraca trening', () => {
