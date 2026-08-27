@@ -7,6 +7,12 @@ Wersja jest widoczna w stopce aplikacji oraz w zakładce **Więcej → O aplikac
 
 ---
 
+## 1.2.3 — 27.08.2026
+
+**Nazwy ćwiczeń**
+- Polskie nazwy + angielski w nawiasie (łatwiejsze wyszukiwanie w netcie).
+- Dawki unilateralne jaśniej: „na każdą nogę / stronę” zamiast skrótu `/nogę`, `/str`.
+
 ## 1.2.2 — 27.08.2026
 
 **Sugestia**

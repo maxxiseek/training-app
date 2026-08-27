@@ -2,7 +2,7 @@
 
 Aplikacja treningowa na telefon. Instaluje się na ekranie głównym Androida jak zwykła apka, działa offline, zapisuje dane lokalnie w telefonie.
 
-Aktualna wersja: **1.2.2** · historia zmian w `CHANGELOG.md`.
+Aktualna wersja: **1.2.3** · historia zmian w `CHANGELOG.md`.
 
 Osobna wersja dla Olgi: katalog **[`szczyt/`](szczyt/)** — PWA **Szczyt** (bez SKB, plan nóg/pośladków + góry). Deploy: `…/szczyt/`.
 
