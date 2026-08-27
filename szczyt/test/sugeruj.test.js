@@ -71,17 +71,16 @@ test('dwa ciężkie A/C z rzędu → REST', () => {
   assert.equal(ctx.sugeruj().k, 'REST');
 });
 
-test('5 jednostek głównych w 7 dniach → REST; padel nie liczy się', () => {
+test('4 jednostki główne w 7 dniach → REST; padel nie liczy się', () => {
   const ctx = boot();
   setHist(ctx, [
     { d:'2026-08-27', k:'A' },
     { d:'2026-08-26', k:'B' },
-    { d:'2026-08-25', k:'GORY', sport:true },
+    { d:'2026-08-25', k:'GORY' },
     { d:'2026-08-24', k:'C' },
-    { d:'2026-08-23', k:'GORY', sport:true },
     { d:'2026-08-22', k:'PADEL', sport:true },
   ]);
-  assert.equal(ctx.liczTreningi7(), 5);
+  assert.equal(ctx.liczTreningi7(), 4);
   assert.equal(ctx.sugeruj().k, 'REST');
 });
 
@@ -102,11 +101,12 @@ test('statystykiSportu: średnia z 2 tygodni, nie z pustych 4', () => {
   assert.ok(st.avgs.VB < 4);
 });
 
-test('etykiety GORY / ekstra', () => {
+test('etykiety treningu górskiego / ekstra', () => {
   const ctx = boot();
-  assert.equal(ctx.etykietaK('GORY'), 'Góry');
+  assert.equal(ctx.etykietaK('GORY'), 'Górski');
   assert.equal(ctx.etykietaK('AKT'), 'Inne');
-  assert.equal(ctx.badgeK('GORY'), 'G');
+  assert.equal(ctx.badgeK('GORY'), 'TG');
+  assert.match(ctx.SESJE.GORY.nazwa, /Trening górski/);
   assert.deepEqual(ctx.dodatkoweKlucze().sort(), ['AKT','PADEL','VB']);
 });
 

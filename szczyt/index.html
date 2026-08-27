@@ -1242,12 +1242,12 @@ function renderGra(){
 
   el.innerHTML = `
     <div class="kpis" style="margin-bottom:12px">
-      <div class="kpi"><b>${st.nPeln ? pl(st.avgs.GORY || 0) : '—'}</b><span>góry /tydz.</span></div>
+      <div class="kpi"><b>${st.nPeln ? pl(st.avgs.GORY || 0) : '—'}</b><span>górski /tydz.</span></div>
       <div class="kpi"><b>${st.nPeln ? pl((st.avgs.VB || 0) + (st.avgs.PADEL || 0)) : '—'}</b><span>gry /tydz.</span></div>
       <div class="kpi"><b>${m('GORY') + m('VB') + m('PADEL')}</b><span>w 30 dniach</span></div>
     </div>
     <div class="small" style="margin-bottom:8px">
-      <span style="color:var(--acc)">▲</span> góry ·
+      <span style="color:var(--acc)">▲</span> trening górski ·
       <span style="color:var(--data1)">●</span> siatkówka ·
       <span style="color:var(--data2)">▪</span> padel · ${podpisSr}</div>
     ${wiersze}`;
