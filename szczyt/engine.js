@@ -1,6 +1,5 @@
 /* ---------------------------------------------------------------
-   engine.js — daty, stan, silnik sugestii. Bez DOM.
-   Ładowany po data.js. Testy: node --test
+   engine.js — Szczyt: daty, stan, sugestia (bez SKB). Bez DOM.
 ----------------------------------------------------------------*/
 
 function iso(d){
@@ -50,9 +49,10 @@ function licz7(k){
   const g = przesunDni(DZIS, -6);
   return hist().filter(x => x.k === k && x.d >= g).length;
 }
+function jestDodatek(k){ return !!(SESJE[k] && SESJE[k].extra); }
 function liczTreningi7(){
   const g = przesunDni(DZIS, -6);
-  return hist().filter(x => x.k !== 'REST' && x.d >= g).length;
+  return hist().filter(x => x.k !== 'REST' && !jestDodatek(x.k) && x.d >= g).length;
 }
 function kluczeOd(offset){
   return hist().filter(x => dniTemu(x.d) === offset).map(x => x.k);
@@ -65,18 +65,24 @@ function ileZRzedu(pred){
   }
   return n;
 }
-function badgeK(k){ return k === 'VB' ? 'VB' : k === 'PADEL' ? 'PD' : k === 'REST' ? 'W' : k; }
+function badgeK(k){
+  return k === 'VB' ? 'VB' : k === 'PADEL' ? 'PD' : k === 'GORY' ? 'G'
+       : k === 'AKT' ? '+' : k === 'REST' ? 'W' : k;
+}
 function tytulS(S){ const p = (S && S.nazwa || '').split('—'); return (p.length > 1 ? p[1] : p[0]).trim(); }
 function nazwaK(k){
-  return k === 'VB' ? 'siatkówka' : k === 'PADEL' ? 'padel' : k === 'D' ? 'rehab (D)'
-       : k === 'REST' ? 'dzień wolny' : 'sesja ' + k;
+  return k === 'VB' ? 'siatkówka' : k === 'PADEL' ? 'padel' : k === 'GORY' ? 'góry'
+       : k === 'AKT' ? 'inna aktywność' : k === 'REST' ? 'dzień wolny' : 'sesja ' + k;
 }
 function nazwaSesji(k){ return (SESJE[k] && SESJE[k].nazwa) || k; }
 function etykietaK(k){
-  return k === 'VB' ? 'Siatkówka' : k === 'PADEL' ? 'Padel' : k === 'REST' ? 'Wolne' : k;
+  return k === 'VB' ? 'Siatkówka' : k === 'PADEL' ? 'Padel' : k === 'GORY' ? 'Góry'
+       : k === 'AKT' ? 'Inne' : k === 'REST' ? 'Wolne' : k;
 }
 function typSesji(k){ return (SESJE[k] && SESJE[k].typ) || ''; }
 function jestRest(x){ return !!(x && (x.k === 'REST' || x.rest)); }
+function glowneKlucze(){ return Object.keys(SESJE).filter(k => !jestDodatek(k)); }
+function dodatkoweKlucze(){ return Object.keys(SESJE).filter(k => jestDodatek(k)); }
 function dopisekPropozycja(){
   return '<br><span style="color:var(--dim2)">To tylko propozycja, możesz wybrać inną jednostkę.</span>';
 }
@@ -100,17 +106,15 @@ function blokady(){
 
 function sugeruj(){
   const b = blokady();
-  if(dzien().swiatlo === 'red')
-    return { k: 'D', powod: 'Czerwone światło — dziś tylko rehab, sport i siłownia wypadają.' };
 
   if(kluczeOd(0).includes('REST'))
     return { k: 'REST', wolne: true,
       powod: 'Dziś już odpoczynek. Jutro wraca normalny rytm.' + dopisekPropozycja() };
 
-  const seriaT = ileZRzedu(ks => ks.some(k => k !== 'REST'));
+  const seriaT = ileZRzedu(ks => ks.some(k => k !== 'REST' && !jestDodatek(k)));
   if(seriaT >= MAX_TRENING_Z_RZEDU)
     return { k: 'REST', wolne: true,
-      powod: 'Trzy treningi pod rząd. Dziś regeneracja — sen, spacer, bez siłowni i bez gry.' + dopisekPropozycja() };
+      powod: 'Trzy treningi pod rząd. Dziś regeneracja — sen, spacer, bez siłowni.' + dopisekPropozycja() };
 
   const seriaC = ileZRzedu(ks => ks.some(k => CIEZKIE.includes(k)));
   if(seriaC >= MAX_CIEZKIE_Z_RZEDU){
@@ -126,13 +130,6 @@ function sugeruj(){
   if(liczTreningi7() >= MAX_SESJE_7)
     return { k: 'REST', wolne: true,
       powod: 'W oknie 7 dni jest już ' + MAX_SESJE_7 + ' jednostek — dziś regeneracja.' + dopisekPropozycja() };
-
-  if(dzien().swiatlo === 'yellow' && kluczeOd(1).some(k => k !== 'REST')){
-    if(licz7('D') < 1 && !b['D'])
-      return { k: 'D', powod: 'Żółte światło po dniu treningowym — dziś rehab, bez siłowni i bez gry.' + dopisekPropozycja() };
-    return { k: 'REST', wolne: true,
-      powod: 'Żółte światło po dniu treningowym — dziś regeneracja.' + dopisekPropozycja() };
-  }
 
   const kand = PRIORYTET.map(k => ({ k, def: (CELE_TYG[k] || 0) - licz7(k), blok: b[k] }));
   const wolne = kand.filter(x => !x.blok && x.def > 0).sort((x,y) => y.def - x.def);
@@ -154,7 +151,7 @@ function tally(){
     const c = licz7(k), t = CELE_TYG[k] || 0;
     const ok = c >= t;
     return '<span style="color:' + (ok ? 'var(--ok)' : 'var(--dim)') + '">' +
-           (k === 'VB' ? 'Siatk.' : k === 'PADEL' ? 'Padel' : k) + ' ' + c + '/' + t + '</span>';
+           (k === 'GORY' ? 'Góry' : k) + ' ' + c + '/' + t + '</span>';
   }).join('<span style="color:var(--line)"> · </span>');
   return cele + '<span style="color:var(--line)"> · </span>' +
          '<span style="color:var(--dim2)">Wolne ' + licz7('REST') + '</span>';
@@ -171,7 +168,7 @@ function wpisHistorii(k, d, extras){
   });
 }
 
-/* Średnia aktywności sportowej: max 4 pełne tygodnie, od pierwszego wpisu (bez pustych sprzed startu). */
+/* Średnia aktywności sportowej: max 4 pełne tygodnie, od pierwszego wpisu. */
 function statystykiSportu(keys, opts){
   opts = opts || {};
   const maxPeln = opts.maxPeln || 4;

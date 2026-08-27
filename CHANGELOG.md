@@ -7,6 +7,16 @@ Wersja jest widoczna w stopce aplikacji oraz w zakładce **Więcej → O aplikac
 
 ---
 
+## 1.2.1 — 27.08.2026
+
+**Postęp — jak często grasz**
+- Średnia siatkówki/padla z **max 4 pełnych tygodni**, liczonych **od pierwszego wpisu** — bez dzielenia przez puste tygodnie sprzed startu.
+- Alerty o zbyt rzadkiej / częstej siatkówce od **2** pełnych tygodni z danymi (wcześniej od 4, przy zerach).
+- Podpis pokazuje, z ilu tygodni jest średnia.
+
+**Szczyt**
+- Osobna PWA dla Olgi w katalogu `szczyt/` (bez SKB, plan nóg/pośladków + góry).
+
 ## 1.2.0 — 22.08.2026
 
 **Sugestia dnia wolnego**

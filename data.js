@@ -3,7 +3,7 @@
    Edytuj ten plik, jeśli chcesz zmienić plan. Reszta apki się dostosuje.
 ----------------------------------------------------------------*/
 
-const APP = { wersja: '1.2.0', data: '2026-08-22' };
+const APP = { wersja: '1.2.1', data: '2026-08-27' };
 
 const PLAN_START = '2026-08-18'; // poniedziałek startu programu
 

@@ -1,4 +1,4 @@
-const CACHE = 'trening-1.2.1';   // bump razem z APP.wersja w data.js
+const CACHE = 'szczyt-1.0.0';
 const FILES = ['./', './index.html', './data.js', './engine.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -6,7 +6,7 @@ self.addEventListener('install', e => {
 });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks =>
-    Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+    Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k))).then(() => self.clients.claim()));
 });
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;

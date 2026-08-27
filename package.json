@@ -1,8 +1,8 @@
 {
   "name": "trening",
   "private": true,
-  "description": "Plan atletyczny — PWA",
+  "description": "Plan atletyczny — PWA (+ Szczyt dla Olgi)",
   "scripts": {
-    "test": "node --test test/*.test.js"
+    "test": "node --test test/ szczyt/test/"
   }
 }
