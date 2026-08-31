@@ -1,4 +1,4 @@
-const CACHE = 'szczyt-1.0.8';
+const CACHE = 'szczyt-1.0.9';
 const FILES = ['./', './index.html', './data.js', './engine.js', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

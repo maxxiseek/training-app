@@ -3,7 +3,7 @@
    Edytuj ten plik, jeśli chcesz zmienić plan. Reszta apki się dostosuje.
 ----------------------------------------------------------------*/
 
-const APP = { wersja: '1.2.6', data: '2026-08-27' };
+const APP = { wersja: '1.2.7', data: '2026-08-31' };
 
 const PLAN_START = '2026-08-18'; // poniedziałek startu programu
 
@@ -30,6 +30,7 @@ const DELOADY = [8, 16];
              najpierw dochodzisz do max powtórzeń we WSZYSTKICH seriach,
              dopiero potem apka podbija ciężar i wracasz do min,
      plyo:   true → ukrywane przy żółtym świetle
+     yt:     opcjonalny link YouTube (technika)
    }
 */
 const SESJE = {
@@ -103,8 +104,8 @@ const SESJE = {
       ]},
       { t: 'Blok mocy · przerwy 90 s', items: [
         { n: 'Skok w dal z miejsca (standing broad jump)', d: '4 × 3', u: 'Mierz odległość', plyo: true },
-        { n: 'Skok boczny + lądowanie na jednej nodze (lateral bound + single-leg stick)', d: '3 × 4 na każdą stronę', u: '3 × 4 na każdą stronę, hold 2 s. Kluczowe pod padel i SKB.', plyo: true },
-        { n: 'Rzut piłką rotacyjnie o ścianę (rotational med-ball throw)', d: '3 × 6 na każdą stronę', u: 'Rotacja z bioder i klatki, nie z lędźwi' },
+        { n: 'Skok boczny + lądowanie na jednej nodze (lateral bound + single-leg stick)', d: '3 × 4 na każdą stronę', u: '3 × 4 na każdą stronę, hold 2 s. Kluczowe pod padel i SKB.', plyo: true, yt: 'https://www.youtube.com/shorts/IyMLKJX4MRU' },
+        { n: 'Rzut piłką rotacyjnie o ścianę (rotational med-ball throw)', d: '3 × 6 na każdą stronę', u: 'Rotacja z bioder i klatki, nie z lędźwi', yt: 'https://www.youtube.com/shorts/02c2YLgF8iE' },
         { n: 'Slam piłką o podłoże (medicine ball slam)', d: '3 × 8' },
       ]},
       { t: 'Siła · przerwy 90 s', items: [
@@ -218,7 +219,7 @@ const SESJE = {
       ]},
       { t: 'Rozgrzewka 5 · Hamowanie — 2 min', items: [
         { n: 'Wypad w bok narastająco (lateral lunge, building depth)', d: '5 na każdą stronę, coraz głębiej' },
-        { n: 'Skok boczny + lądowanie na jednej nodze (lateral bound + single-leg stick)', d: '3 na każdą stronę', u: 'Na każdą stronę osobno, hold 2 s.', plyo: true },
+        { n: 'Skok boczny + lądowanie na jednej nodze (lateral bound + single-leg stick)', d: '3 na każdą stronę', u: 'Na każdą stronę osobno, hold 2 s.', plyo: true, yt: 'https://www.youtube.com/shorts/IyMLKJX4MRU' },
         { n: 'Sprint 4–5 m z ostrym zatrzymaniem (short sprint + hard stop)', d: '4: 60→80→90→90%' },
         { n: 'Imitacja uderzeń bez piłki (shadow swings)', d: '8 FH + 8 BH + 6 nad głową' },
       ]},

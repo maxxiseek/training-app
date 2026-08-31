@@ -2,7 +2,7 @@
    data.js — Szczyt (trening Olgi): sesje, ćwiczenia, fazy
 ----------------------------------------------------------------*/
 
-const APP = { wersja: '1.0.8', data: '2026-08-27' };
+const APP = { wersja: '1.0.9', data: '2026-08-31' };
 
 const PLAN_START = '2026-08-27';
 
@@ -20,7 +20,7 @@ const FAZY = [
 const DELOADY = [8, 16];
 
 /* Sesje.
-   item: { n, d, u?, lift?, krok?, serie?, zakres?, plyo? }
+   item: { n, d, u?, lift?, krok?, serie?, zakres?, plyo?, yt? }
    extra: true → tracker „Dodatkowo dziś”, poza CELE_TYG i chipami głównymi
 */
 const SESJE = {
@@ -92,8 +92,8 @@ const SESJE = {
       ]},
       { t: 'Blok mocy · przerwy 90 s', items: [
         { n: 'Skok w dal z miejsca (standing broad jump)', d: '4 × 3', u: 'Mierz odległość', plyo: true },
-        { n: 'Skok boczny + lądowanie na jednej nodze (lateral bound + single-leg stick)', d: '3 × 4 na każdą stronę', u: 'Na każdą stronę osobno, hold 2 s.', plyo: true },
-        { n: 'Rzut piłką rotacyjnie o ścianę (rotational med-ball throw)', d: '3 × 6 na każdą stronę', u: 'Rotacja z bioder i klatki, nie z lędźwi' },
+        { n: 'Skok boczny + lądowanie na jednej nodze (lateral bound + single-leg stick)', d: '3 × 4 na każdą stronę', u: 'Na każdą stronę osobno, hold 2 s.', plyo: true, yt: 'https://www.youtube.com/shorts/IyMLKJX4MRU' },
+        { n: 'Rzut piłką rotacyjnie o ścianę (rotational med-ball throw)', d: '3 × 6 na każdą stronę', u: 'Rotacja z bioder i klatki, nie z lędźwi', yt: 'https://www.youtube.com/shorts/02c2YLgF8iE' },
         { n: 'Slam piłką o podłoże (medicine ball slam)', d: '3 × 8' },
       ]},
       { t: 'Siła · przerwy 90 s', items: [

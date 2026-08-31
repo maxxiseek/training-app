@@ -2,7 +2,7 @@
 
 Osobna PWA obok głównego planu atletycznego. Bez SKB, z naciskiem na nogi/pośladki, dynamikę i kondycję pod **pięciotysięcznik**. Siatkówka i padel to lekki tracker („Dodatkowo dziś”).
 
-Aktualna wersja: **1.0.8**.
+Aktualna wersja: **1.0.9**.
 
 ## Co jest w środku
 

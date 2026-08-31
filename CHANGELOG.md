@@ -7,6 +7,14 @@ Wersja jest widoczna w stopce aplikacji oraz w zakładce **Więcej → O aplikac
 
 ---
 
+## 1.2.7 — 31.08.2026
+
+**Filmy YouTube przy ćwiczeniach**
+- Lateral bound + stick landing i rzut piłką rotacyjnie — przycisk **▶ film** przy pozycji (obie apki).
+- W `data.js` pole opcjonalne `yt` na kolejne linki.
+
+**Szczyt 1.0.9** — te same filmy.
+
 ## 1.2.6 — 27.08.2026
 
 **Szczyt 1.0.8**
