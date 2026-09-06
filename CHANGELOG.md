@@ -7,6 +7,14 @@ Wersja jest widoczna w stopce aplikacji oraz w zakładce **Więcej → O aplikac
 
 ---
 
+## 1.2.9 — 2026-09-06
+
+**Sugestia dnia = siłownia, nie sport**
+- Kropka „dziś” sugeruje tylko **A / B / C** (albo REST/D przy regeneracji) — nigdy siatkówki ani padla.
+- W karcie sugestii widać **ostatnie treningi** (w tym sport, jeśli był) oraz cele 7 dni.
+- VB/padel zostają na chipach do ręcznego odhaczenia; decyzja o grze jest osobna.
+- Limit „sesji w 7 dni” i seria „treningów pod rząd” liczą siłownię/rehab — sport ich nie zjada.
+
 ## 1.2.8 / Szczyt 1.1.0 — 2026-09-06
 
 **MINIMUM / FULL na A/B/C (root + Szczyt)**

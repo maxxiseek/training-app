@@ -14,7 +14,10 @@ Opisuje **konteksty, cele, fazy, sesje, progresje i reguły**, bez technicznych 
 ---
 
 
-> **Aktualizacja 2026-09-06:** A/B/C mają tryby **MINIMUM** i **FULL** (oba zaliczają cel tygodnia). Poniższe tabele opisują MINIMUM; FULL = MINIMUM + oznaczone dodatki. Box jump: stałe 3×3. Sport VB/Padel: fazy, nie checklista.
+> 
+> **Sugestia dnia bez VB/padla (1.2.9):** apka proponuje A/B/C (lub REST/D). Sport zostaje na chipach; w karcie widać ostatnie treningi.
+
+**Aktualizacja 2026-09-06:** A/B/C mają tryby **MINIMUM** i **FULL** (oba zaliczają cel tygodnia). Poniższe tabele opisują MINIMUM; FULL = MINIMUM + oznaczone dodatki. Box jump: stałe 3×3. Sport VB/Padel: fazy, nie checklista.
 
 ## 1. Twój plan (aplikacja główna)
 

@@ -587,8 +587,8 @@ function renderChips(){
     const wolne = !!(s.wolne || sug === 'REST');
     document.getElementById('sugBox').innerHTML =
       `<div class="alert ${wolne ? '' : 'g'}" style="margin-bottom:11px">
-        <b>${wolne ? 'Sugestia: dzień wolny' : 'Sugestia: ' + nazwaSesji(sug)}</b><br>${s.powod}
-        <div style="margin-top:9px;font-size:12.5px">Ostatnie 7 dni — ${tally()}</div></div>`;
+        <b>${wolne ? 'Sugestia: dzień wolny' : 'Sugerowany trening: ' + etykietaK(sug)}</b><br>${s.powod}
+        <div style="margin-top:9px;font-size:12.5px">Cele 7 dni — ${tally()}</div></div>`;
   }
   const wyb = d.sesja || (red ? 'D' : sug);
   document.getElementById('chips').innerHTML = Object.keys(SESJE).map(k =>
