@@ -68,18 +68,19 @@ Sugestia dnia jest **adaptacyjna** (zaległości + blokady), nie sztywny kalenda
 1. **Rozgrzewka** — krótki blok 6–8 min (mobilność biodra, mostek, odwodzenie nogą **na bok**, zginacz, dead bug, lekkie pogo).  
 2. **Moc** — box jumps **3×3** stałe (start **75 cm**; po czystym 3×3 → +5 cm).  
 3. **Siła** — trap bar 3×4–5; hip thrust 3×6–8; RFESS 2×6–8/nogę.  
-4. **Core** — Pallof **lub** dead bug, 2 serie.  
+4. **Core** — Pallof **lub** dead bug, 2 × 8–10.  
 5. **FULL** — + hamstring (leg curl / SL RDL) 2×8–10; + łydka jednonóż 2×10–15.
 
 #### B — Góra / core / ramiona (MINIMUM ~40–45 · FULL ~50–55)
 
-MINIMUM: bench DB + pull + OHP + row (po 3 seriach).  
-FULL: + barki/ramiona (1–2) + core.
+MINIMUM: bench DB + pull + OHP + row (po 3 seriach) + **deska na piłce** 2–3×45–60 s + deska boczna 2×8–10/str.  
+FULL: + barki/ramiona (wznosy, curls+triceps).
 
 #### C — Atletyczny FBW (MINIMUM ~45–50 · FULL ~55–60)
 
-MINIMUM: **jedno** ćwiczenie mocy w rotacji (broad → lateral+stick → MB throw) 3 serie; goblet 3×6–8; reverse lunge 2×8/nogę; push 2–3×8–12; farmer 2 przejścia.  
-FULL: + step-up 2×8/nogę; + slam 2–3×4; + dead bug; + Pallof z krokiem.
+MINIMUM: **jedno** ćwiczenie mocy w rotacji (broad 3×3 → lateral+stick 3×4/str → MB throw 3×6/str); goblet 3×6–8; reverse lunge 2×8/nogę; push 2–3×8–12; farmer 2×30–40 m.  
+FULL: + slam 2–3×4–6; + dead bug z gumą 2×8–10/str; + Pallof z krokiem 2×8/str.  
+(Step-up tylko u Olgi w Szczycie — nie w root.)
 
 #### D — Rehab / mobilność (~20 min, dom)
 

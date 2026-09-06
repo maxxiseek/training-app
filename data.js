@@ -3,7 +3,7 @@
    Edytuj ten plik, jeśli chcesz zmienić plan. Reszta apki się dostosuje.
 ----------------------------------------------------------------*/
 
-const APP = { wersja: '1.2.10', data: '2026-09-06' };
+const APP = { wersja: '1.2.11', data: '2026-09-06' };
 
 const PLAN_START = '2026-08-18'; // poniedziałek startu programu
 
@@ -41,22 +41,22 @@ const SESJE = {
     bloki: [
       { t: 'Rozgrzewka · 6–8 min', items: [
         { n: 'Mobilność biodra + mostek + odwodzenie (noga na bok)', d: '6–8 min łącznie',
-          u: 'Krótki blok: mobilność biodra, mostek, odwodzenie z gumą (noga na bok), zginacz w półklęku, dead bug, lekkie pogo. Bez rozbijania na osobne serie.' },
+          u: 'Po kolei, bez osobnego logowania serii: kobra 8–10× → odwodzenie z gumą 2×12/str (noga na bok, nie kickback) → mostek 2×10 → zginacz w półklęku 2×20–30 s/str (miednica podwinięta) → dead bug 2×6/str (lędźwie wklejone) → lekkie pogo 1–2×15.' },
       ]},
       { t: 'Moc · przerwy 90–120 s', items: [
-        { n: 'Wskoki na skrzynię (box jumps)', d: '3 × 3', u: 'Stałe 3×3. Zejście krokiem. Po czystym 3×3 → +5 cm. Start 75 cm.', plyo: true, lift: 'boxjump', tryb: 'wysokosc', krok: 5, serie: 3, zakres: [3, 3], startCm: 75 },
+        { n: 'Wskoki na skrzynię (box jumps)', d: '3 × 3', u: 'Stałe 3×3. Ciche lądowanie, zejście krokiem (nigdy zeskok). Po czystym 3×3 → +5 cm. Start 75 cm.', plyo: true, lift: 'boxjump', tryb: 'wysokosc', krok: 5, serie: 3, zakres: [3, 3], startCm: 75 },
       ]},
       { t: 'Siła · przerwy 2–3 min', items: [
-        { n: 'Martwy ciąg z trap barem (trap bar deadlift)', d: '3 × 4–5', u: 'Uchwyty wysokie, plecy neutralne', lift: 'trapbar', krok: 5, serie: 3, zakres: [4, 5] },
-        { n: 'Hip thrust ze sztangą (barbell hip thrust)', d: '3 × 6–8', u: 'Podbródek do klatki, żebra w dół, bez przeprostu', lift: 'hipthrust', krok: 5, serie: 3, zakres: [6, 8] },
-        { n: 'Bułgarski przysiad z hantlami (Bulgarian split squat / RFESS)', d: '2 × 6–8 na każdą nogę', u: '2 serie × 6–8 na lewą i na prawą.', lift: 'rfess', krok: 2.5, serie: 2, zakres: [6, 8] },
+        { n: 'Martwy ciąg z trap barem (trap bar deadlift)', d: '3 × 4–5', u: 'Uchwyty wysokie, plecy neutralne, sztanga „przez podłogę”. Ostatnie powtórzenie w serii nadal szybkie.', lift: 'trapbar', krok: 5, serie: 3, zakres: [4, 5] },
+        { n: 'Hip thrust ze sztangą (barbell hip thrust)', d: '3 × 6–8', u: 'Podbródek do klatki, żebra w dół, bez przeprostu lędźwi. Peak squeeze 1 s na górze.', lift: 'hipthrust', krok: 5, serie: 3, zakres: [6, 8] },
+        { n: 'Bułgarski przysiad z hantlami (Bulgarian split squat / RFESS)', d: '2 × 6–8 na każdą nogę', u: '2 serie × 6–8 na lewą i na prawą. Tułów lekko pochylony, kolano śledzi środek stopy.', lift: 'rfess', krok: 2.5, serie: 2, zakres: [6, 8] },
       ]},
       { t: 'Core', items: [
-        { n: 'Pallof press albo dead bug — wybierz 1', d: '2 serie', u: 'Jedno z dwóch: Pallof albo dead bug. Miednica stabilna.' },
+        { n: 'Pallof press albo dead bug — wybierz 1', d: '2 × 8–10', u: 'Pallof: 2 × 8–10/str, miednica nieruchoma. Albo dead bug: 2 × 8–10/str, lędźwie wklejone. Jedno z dwóch.' },
       ]},
       { t: 'Dodatki FULL', items: [
-        { n: 'Uginanie nóg albo RDL jednonóż (leg curl / single-leg RDL)', d: '2 × 8–10', u: 'Hamstring — wybierz wariant. Na każdą nogę przy RDL.', poziom: 'full', lift: 'rdl', krok: 2.5, serie: 2, zakres: [8, 10] },
-        { n: 'Wspięcia na palce jednonóż (single-leg calf raise)', d: '2 × 10–15 na każdą nogę', poziom: 'full' },
+        { n: 'Uginanie nóg albo RDL jednonóż (leg curl / single-leg RDL)', d: '2 × 8–10', u: 'Hamstring — wybierz wariant. Przy RDL: 2 × 8–10 na każdą nogę, biodro kwadratowe.', poziom: 'full', lift: 'rdl', krok: 2.5, serie: 2, zakres: [8, 10] },
+        { n: 'Wspięcia na palce jednonóż (single-leg calf raise)', d: '2 × 10–15 na każdą nogę', u: 'Pełny zakres, 1 s pauza na górze. Opcjonalnie + izometria 20–30 s po ostatniej serii.', poziom: 'full' },
       ]},
     ],
   },
@@ -65,18 +65,21 @@ const SESJE = {
     nazwa: 'B — Góra / core / ramiona', dur: '~40–45 min', durMin: '~40–45 min', durFull: '~50–55 min', typ: 'silownia',
     bloki: [
       { t: 'Rozgrzewka · 5–6 min', items: [
-        { n: 'Face pull + rotacja zewnętrzna + pull-apart', d: '5–6 min', u: 'Krótka aktywacja barków — bez rozbudowy na osobne bloki.' },
+        { n: 'Face pull + rotacja zewnętrzna + pull-apart', d: '5–6 min', u: 'Face pull 2×12 → rotacja zewnętrzna z gumą 2×12/str (łokieć przy tułowiu) → band pull-apart 2×15. Krótka aktywacja barków przed wyciskaniem.' },
       ]},
       { t: 'Główne · przerwy 2 min', items: [
-        { n: 'Wyciskanie hantli na ławce (dumbbell bench press)', d: '3 × 8–10', lift: 'benchdb', krok: 2.5, serie: 3, zakres: [8, 10] },
-        { n: 'Podciąganie / ściąganie drążka (pull-up / lat pulldown)', d: '3 × 8–10', lift: 'pullup', krok: 2.5, serie: 3, zakres: [8, 10] },
-        { n: 'Wyciskanie hantli nad głowę, siedząc (seated DB OHP)', d: '3 × 8–10', u: 'Z oparciem — nie stojąc', lift: 'ohp', krok: 2.5, serie: 3, zakres: [8, 10] },
-        { n: 'Wiosłowanie hantlem (single-arm dumbbell row)', d: '3 × 8–10 na każdą stronę', lift: 'row', krok: 2.5, serie: 3, zakres: [8, 10] },
+        { n: 'Wyciskanie hantli na ławce (dumbbell bench press)', d: '3 × 8–10', u: 'Łopatki ściągnięte, stopy w podłodze. Kontrolowane opuszczanie.', lift: 'benchdb', krok: 2.5, serie: 3, zakres: [8, 10] },
+        { n: 'Podciąganie / ściąganie drążka (pull-up / lat pulldown)', d: '3 × 8–10', u: 'Pełny zwis → klatka do drążka. Jeśli <8 podciągnięć — pulldown albo assisted.', lift: 'pullup', krok: 2.5, serie: 3, zakres: [8, 10] },
+        { n: 'Wyciskanie hantli nad głowę, siedząc (seated DB OHP)', d: '3 × 8–10', u: 'Z oparciem — nie stojąc. Żebra w dół, nie przeprost lędźwi.', lift: 'ohp', krok: 2.5, serie: 3, zakres: [8, 10] },
+        { n: 'Wiosłowanie hantlem (single-arm dumbbell row)', d: '3 × 8–10 na każdą stronę', u: '3 × 8–10 na każdą stronę. Łokieć blisko tułowia, bez rotacji tułowia.', lift: 'row', krok: 2.5, serie: 3, zakres: [8, 10] },
       ]},
-      { t: 'Dodatki FULL · barki / ramiona / core', items: [
-        { n: 'Wznosy bokiem (lateral raises)', d: '2 × 12–15', poziom: 'full' },
-        { n: 'Uginanie + wyprosty (curls + triceps pushdown)', d: '2 × 10–12', poziom: 'full' },
-        { n: 'Deska / deska boczna', d: '2 serie', poziom: 'full' },
+      { t: 'Core', items: [
+        { n: 'Deska na piłce, przedramiona (stability ball plank)', d: '2–3 × 45–60 s', u: 'Przedramiona na piłce, ciało w linii. Im bliżej piłki barki, tym łatwiej — oddalaj, gdy jest stabilnie.' },
+        { n: 'Deska boczna z uniesieniem biodra (side plank hip lifts)', d: '2 × 8–10 na każdą stronę', u: 'Hold 2–3 s na górze. Bark nad łokciem, biodra do przodu.' },
+      ]},
+      { t: 'Dodatki FULL · barki / ramiona', items: [
+        { n: 'Wznosy bokiem (lateral raises)', d: '2 × 12–15', u: 'Lekkie hantle, bez szarpania. Łokcie miękkie, zatrzymaj na górze.', poziom: 'full' },
+        { n: 'Uginanie + wyprosty (curls + triceps pushdown)', d: '2 × 10–12', u: 'Superseria: uginanie hantli / młotkowe + wyprosty na wyciągu. 2 × 10–12 każde.', poziom: 'full' },
       ]},
     ],
   },
@@ -85,24 +88,23 @@ const SESJE = {
     nazwa: 'C — Atletyczny FBW', dur: '~45–50 min', durMin: '~45–50 min', durFull: '~55–60 min', typ: 'silownia',
     bloki: [
       { t: 'Rozgrzewka · 6–8 min', items: [
-        { n: 'Mobilność + aktywacja bioder + skipy', d: '6–8 min', u: 'Kobra/pozycja dziecka, odwodzenie + monster walk, skipy / shuffle, 90/90 — krótko.' },
+        { n: 'Mobilność + aktywacja bioder + skipy', d: '6–8 min', u: 'Kobra 8–10× + pozycja dziecka 30–45 s → odwodzenie z gumą + monster walk 2×10/str (noga na bok) → skipy A + shuffle 2×12 m → przejścia 90/90 2×6/str.' },
       ]},
       { t: 'Moc · 1 ćwiczenie (rotacja) · przerwy 90 s', items: [
-        { n: 'Skok w dal z miejsca (standing broad jump)', d: '3 serie jakościowe', u: 'Mierz odległość. Rotacja mocy — tylko to ćwiczenie dziś.', plyo: true, moc: 0 },
-        { n: 'Skok boczny + lądowanie (lateral bound + stick)', d: '3 serie jakościowe', u: 'Na każdą stronę, hold 2 s. Rotacja mocy.', plyo: true, moc: 1, yt: 'https://www.youtube.com/shorts/IyMLKJX4MRU' },
-        { n: 'Rzut piłką rotacyjnie (rotational med-ball throw)', d: '3 serie jakościowe', u: 'Rotacja z bioder i klatki, nie z lędźwi. Rotacja mocy.', moc: 2, yt: 'https://www.youtube.com/shorts/02c2YLgF8iE' },
-        { n: 'Slam piłką o podłoże (medicine ball slam)', d: '2–3 × 4', u: 'Tylko w FULL — dołożenie do aktualnej mocy.', poziom: 'full' },
+        { n: 'Skok w dal z miejsca (standing broad jump)', d: '3 × 3', u: 'Mierz odległość. Miękkie lądowanie. Rotacja mocy — tylko to ćwiczenie dziś.', plyo: true, moc: 0 },
+        { n: 'Skok boczny + lądowanie (lateral bound + stick)', d: '3 × 4 na każdą stronę', u: '3 × 4/str, hold 2 s na lądowaniu. Kluczowe pod padel i SKB. Rotacja mocy.', plyo: true, moc: 1, yt: 'https://www.youtube.com/shorts/IyMLKJX4MRU' },
+        { n: 'Rzut piłką rotacyjnie (rotational med-ball throw)', d: '3 × 6 na każdą stronę', u: 'Rotacja z bioder i klatki, nie z lędźwi. Rotacja mocy.', moc: 2, yt: 'https://www.youtube.com/shorts/02c2YLgF8iE' },
+        { n: 'Slam piłką o podłoże (medicine ball slam)', d: '2–3 × 4–6', u: 'Tylko w FULL — dołożenie do aktualnej mocy. Pełny wyprost bioder, piłka w podłogę.', poziom: 'full' },
       ]},
       { t: 'Siła · przerwy 90 s', items: [
-        { n: 'Przysiad goblet / przedni (goblet / front squat)', d: '3 × 6–8', u: 'Bez sztangi na plecach w fazie 0–1', lift: 'squat', krok: 2.5, serie: 3, zakres: [6, 8] },
-        { n: 'Zakroki tyłem z hantlami (reverse lunges)', d: '2 × 8 na każdą nogę', lift: 'lunge', krok: 2.5, serie: 2, zakres: [8, 8] },
-        { n: 'Pompki / wyciskanie (łatwiejszy wariant)', d: '2–3 × 8–12', u: 'Pompki z nogami w górze, klasyczne albo hantle — wybierz wariant, który domkniesz technicznie.' },
-        { n: 'Spacer farmera (farmer’s walk)', d: '2 przejścia' },
-        { n: 'Wykrok na skrzynię (step-up)', d: '2 × 8 na każdą nogę', poziom: 'full', lift: 'stepup', krok: 2.5, serie: 2, zakres: [8, 8] },
+        { n: 'Przysiad goblet / przedni (goblet / front squat)', d: '3 × 6–8', u: 'Bez sztangi na plecach w fazie 0–1. Łokcie wysoko przy front / kielich przy mostku.', lift: 'squat', krok: 2.5, serie: 3, zakres: [6, 8] },
+        { n: 'Zakroki tyłem z hantlami (reverse lunges)', d: '2 × 8 na każdą nogę', u: '2 × 8 na każdą nogę. Krok tył, kolano przedniej nogi nad śródstopiem.', lift: 'lunge', krok: 2.5, serie: 2, zakres: [8, 8] },
+        { n: 'Pompki / wyciskanie (łatwiejszy wariant)', d: '2–3 × 8–12', u: 'Pompki z nogami w górze, klasyczne albo hantle — wybierz wariant, który domkniesz technicznie w zakresie 8–12.' },
+        { n: 'Spacer farmera (farmer’s walk)', d: '2 × 30–40 m', u: 'Tułów prosty, barki „w kieszeniach”, bez kołysania. Dwa przejścia.' },
       ]},
       { t: 'Core FULL', items: [
-        { n: 'Dead bug', d: '2 serie', poziom: 'full' },
-        { n: 'Pallof press z krokiem w bok', d: '2 × na każdą stronę', poziom: 'full' },
+        { n: 'Dead bug z gumą (banded dead bug)', d: '2 × 8–10 na każdą stronę', u: 'Lędźwie wklejone. Guma zwiększa napięcie antyrotacyjne.', poziom: 'full' },
+        { n: 'Pallof press z krokiem w bok', d: '2 × 8 na każdą stronę', u: 'Wyciskanie + mały krok w bok bez utraty pozycji miednicy.', poziom: 'full' },
       ]},
     ],
   },
@@ -183,7 +185,6 @@ const LIFTY = {
   rdl:       { n: 'RDL jednonóż (single-leg RDL)',         start: null, f1: null, f2: null },
   squat:     { n: 'Przysiad goblet (goblet squat)',      start: null, f1: null, f2: null },
   lunge:     { n: 'Zakroki (lunges)',              start: 16,   f1: null, f2: null },
-  stepup:    { n: 'Wykrok na skrzynię (step-up)', start: null, f1: null, f2: null },
   ohp:       { n: 'Wyciskanie nad głowę (overhead press)', start: null, f1: null, f2: null },
   pullup:    { n: 'Podciąganie / drążek (pull-up / lat pulldown)', start: 55,   f1: null, f2: null },
   boxjump:   { n: 'Wskoki na skrzynię (box jumps)', start: 75, f1: null, f2: null, tryb: 'wysokosc' },
