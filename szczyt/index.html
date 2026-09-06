@@ -304,6 +304,18 @@ section.on{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 .hide{display:none!important}
 @media(min-width:520px){ h1{font-size:24px} .brand-name{font-size:24px} }
+
+.tryby{display:flex;gap:8px;margin:10px 0 4px;flex-wrap:wrap}
+.trybBtn{flex:1;min-width:120px;background:var(--s2);border:1px solid var(--line);color:var(--dim);
+  padding:10px 12px;border-radius:14px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;text-align:left}
+.trybBtn b{display:block;color:var(--txt);font-size:14px;margin-bottom:2px}
+.trybBtn.on{border-color:var(--acc);background:var(--acc-soft,rgba(242,108,58,.12));color:var(--txt);
+  box-shadow:0 0 0 1px var(--acc)}
+.trybHint{font-size:12px;color:var(--dim2);margin:0 0 10px;line-height:1.4}
+.faza{background:var(--s1);border:1px solid var(--line);border-radius:var(--r2,14px);padding:12px 14px;margin:0 0 8px}
+.faza .ft{font-weight:700;font-size:14px}
+.faza .fc{font-size:12px;color:var(--acc);font-weight:600;margin-left:6px}
+.faza .fx{font-size:13px;color:var(--dim);margin:6px 0 0;line-height:1.45}
 </style>
 </head>
 <body>
@@ -348,6 +360,7 @@ section.on{display:block}
     <p class="extraHint">Siatkówka, padel, balet albo inna aktywność — lekkie, możesz odhaczyć obok siłowni tego samego dnia.</p>
     <div class="chips" id="extraChips"></div>
     <div id="extraMsg" class="small" style="margin-top:8px"></div>
+    <div id="extraFazy"></div>
   </div>
 </section>
 
@@ -581,8 +594,8 @@ function renderChips(){
     const wolne = !!(s.wolne || sug === 'REST');
     document.getElementById('sugBox').innerHTML =
       `<div class="alert ${wolne ? '' : 'g'}" style="margin-bottom:11px">
-        <b>${wolne ? 'Sugestia: dzień wolny' : 'Sugestia: ' + nazwaSesji(sug)}</b><br>${s.powod}
-        <div style="margin-top:9px;font-size:12.5px">Ostatnie 7 dni — ${tally()}</div></div>`;
+        <b>${wolne ? 'Sugestia: dzień wolny' : 'Sugerowany trening: ' + etykietaK(sug)}</b><br>${s.powod}
+        <div style="margin-top:9px;font-size:12.5px">Cele 7 dni — ${tally()}</div></div>`;
   }
   const wyb = d.sesja || sug;
   document.getElementById('chips').innerHTML = glowneKlucze().map(k =>
@@ -617,6 +630,20 @@ function renderExtra(){
     if(msg) msg.textContent = 'Zapisano: ' + nazwaSesji(k);
   });
   if(msg && !done.size) msg.textContent = '';
+  const fazyEl = document.getElementById('extraFazy');
+  if(fazyEl){
+    const sporty = ['VB','PADEL'].filter(k => SESJE[k] && SESJE[k].format === 'fazy');
+    fazyEl.innerHTML = sporty.map(k => {
+      const S = SESJE[k];
+      const open = done.has(k) ? 'open' : '';
+      return `<details class="extraFazy" ${open} style="margin-top:10px">
+        <summary style="cursor:pointer;font-weight:700;font-size:13px">${S.nazwa} — jak się rozgrzać / schłodzić</summary>
+        <div style="margin-top:8px">${(S.fazy||[]).map(f =>
+          `<div class="faza"><div class="ft">${f.t}<span class="fc">${f.czas||''}</span></div><div class="fx">${f.tekst}</div></div>`
+        ).join('')}</div>
+      </details>`;
+    }).join('');
+  }
 }
 
 /* ============ sesja ============ */
@@ -763,6 +790,10 @@ function analizaWysokosc(it){
   if(ost.sety < serie)
     return { kg: ost.kg, powt: Math.max(zak[0], ost.min), serie, tryb: 'wysokosc', tekst:
       `${opis}<br>Zostań na <b>${pl0(ost.kg)} cm</b> — ostatnio brakło serii do ${serie}.` };
+  if(zak[0] === zak[1]){
+    return { kg: ost.kg, powt: zak[0], serie, tryb: 'wysokosc', tekst:
+      `${opis}<br>Zostań na <b>${pl0(ost.kg)} cm</b> — cel to czyste ${serie} × ${zak[0]}. Potem +${krok} cm (bez dokładania powtórzeń).` };
+  }
   const nast = Math.min(zak[1], ost.min + 1);
   const trend = poprz && poprz.kg === ost.kg && ost.min > poprz.min ? ' Idzie w górę.' : '';
   return { kg: ost.kg, powt: nast, serie, tryb: 'wysokosc', tekst:
@@ -901,6 +932,26 @@ function odtworzPominiete(d){
 }
 
 /* ============ sesja ============ */
+
+function ustawTrybSesji(t){
+  const d = dzien();
+  d.trybSesji = (t === 'full') ? 'full' : 'minimum';
+  save();
+  renderSession();
+}
+function aktualnyTrybSesji(){
+  return trybSesjiDnia(dzien());
+}
+function durSesji(S, tryb){
+  if(!S) return '';
+  if(tryb === 'full' && (S.durFull || S.durMax)) return S.durFull || S.durMax;
+  if(tryb === 'minimum' && S.durMin) return S.durMin;
+  return S.dur || '';
+}
+function filtrItems(items, tryb, mocIdx){
+  return (items || []).filter(it => itemWidoczny(it, tryb, mocIdx));
+}
+
 function renderSession(){
   const d = dzien();
   d.pominiete = d.pominiete || [];
@@ -916,12 +967,21 @@ function renderSession(){
   const sport = S.typ === 'sport';
   const rest = S.typ === 'rest';
   const lekki = sport || rest;
+  const mocIdx = (k === 'C') ? indeksMocyC() : 0;
+  if(S.typ === 'silownia'){
+    if(!d.trybSesji){
+      const sug = (typeof sugerujTrybSesji === 'function') ? sugerujTrybSesji(k) : 'minimum';
+      d.trybSesji = (sug === 'full') ? 'full' : 'minimum';
+    }
+  }
+  const tryb = (S.typ === 'silownia') ? aktualnyTrybSesji() : 'full';
   const widoczne = [];
   let h = '';
 
   // auto-zaliczenie ćwiczeń siłowych / kondycji z kompletem serii
   if(!lekki) (S.bloki || []).forEach((b, bi) => (b.items || []).forEach(it => {
     if(!it.lift) return;
+    if(!itemWidoczny(it, tryb, mocIdx)) return;
     const id = `${k}-${bi}-${it.n}`;
     if(d.pominiete.includes(id)) return;
     const czas = it.tryb === 'czas';
@@ -939,13 +999,32 @@ function renderSession(){
     </div>`;
   }
 
+
+  if(S.typ === 'silownia'){
+    const minOn = tryb === 'minimum';
+    h += `<div class="tryby">
+      <button type="button" class="trybBtn ${minOn?'on':''}" onclick="ustawTrybSesji('minimum')"><b>MINIMUM</b>Najważniejsze — mniej objętości</button>
+      <button type="button" class="trybBtn ${!minOn?'on':''}" onclick="ustawTrybSesji('full')"><b>FULL</b>Pełna objętość, gdy masz czas i regenerację</button>
+    </div>`;
+    if(typeof ciezkiGoryWczoraj === 'function' && ciezkiGoryWczoraj() && (k==='A'||k==='C'))
+      h += `<div class="alert w">Po ciężkim GORY lepiej zostać przy <b>MINIMUM</b> — FULL nadal dostępne, jeśli czujesz się dobrze.</div>`;
+  }
+
+
+  if(sport && S.format === 'fazy' && (S.fazy || []).length && !(S.bloki || []).some(b => (b.items||[]).length)){
+    h += (S.fazy || []).map(f => `<div class="faza"><div class="ft">${f.t}<span class="fc">${f.czas || ''}</span></div><div class="fx">${f.tekst}</div></div>`).join('');
+  }
   (S.bloki || []).forEach((b, bi) => {
-    const items = b.items || [];
+    const items = filtrItems(b.items || [], tryb, mocIdx);
     h += `<div class="blkh">${b.t}</div>`;
     if(!items.length){
       return;
     }
     if(sport){
+      if(S.format === 'fazy' && (S.fazy || []).length){
+        h += (S.fazy || []).map(f => `<div class="faza"><div class="ft">${f.t}<span class="fc">${f.czas || ''}</span></div><div class="fx">${f.tekst}</div></div>`).join('');
+        return;
+      }
       h += items.map(it => `<div class="ref">
           <div class="refn">${it.n}</div>
           <div class="exd"><span class="pill">${it.d}</span>${linkYt(it)}</div>
@@ -1020,7 +1099,7 @@ function renderSession(){
     ? (zapisane ? 'zapisane w historii' : 'regeneracja — zatwierdzasz jednym przyciskiem')
     : sport
       ? (zapisane ? 'zapisane w historii' : 'rozpiska — zatwierdzasz jednym przyciskiem')
-      : `${S.dur} · <span id="licznik">${zrob}/${ids.length}${pomN ? ` · ${pomN} pominięte` : ''}</span>`;
+      : `${durSesji(S, tryb)} · <span id="licznik">${zrob}/${ids.length}${pomN ? ` · ${pomN} pominięte` : ''}</span>`;
   const btnTekst = rest
     ? (zapisane ? 'Zapisano ✓ — zapisz ponownie' : 'Odpoczynek — zapisz w historii')
     : sport

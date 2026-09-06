@@ -2,7 +2,7 @@
 
 Aplikacja treningowa na telefon. Instaluje się na ekranie głównym Androida jak zwykła apka, działa offline, zapisuje dane lokalnie w telefonie.
 
-Aktualna wersja: **1.2.7** · historia zmian w `CHANGELOG.md`.
+Aktualna wersja: **1.2.9** · historia zmian w `CHANGELOG.md`.
 
 Osobna wersja dla Olgi: katalog **[`szczyt/`](szczyt/)** — PWA **Szczyt** (bez SKB, plan nóg/pośladków + góry). Deploy: `…/szczyt/`.
 
@@ -69,7 +69,7 @@ Konto założysz później, jeśli będziesz chciał zmienić nazwę adresu.
 
 **Dziś**
 - Status SKB — zielone / żółte / czerwone. **Zmienia to, co widzisz.** Przy żółtym plyometria znika z listy i nie dostajesz podpowiedzi progresji ciężaru. Przy czerwonym apka przełącza na sesję D i ostrzega, jeśli wybierzesz co innego.
-- **Adaptacyjna sugestia kolejnej jednostki** — nie sztywny kalendarz, tylko decyzja z tego, co faktycznie zrobiłeś (patrz niżej).
+- **Adaptacyjna sugestia treningu siłowego (A/B/C)** — bez siatkówki/padla (te odhaczasz osobno); w karcie widać też ostatnie treningi.
 - Wybór jednostki: A, B, C, D, siatkówka, padel, **dzień wolny**. Kropka przy chipie = dzisiejsza sugestia — zawsze możesz stuknąć inną.
 - Checklista z odznaczaniem, pasek postępu, wibracja przy odznaczeniu.
 - Przy ćwiczeniach siłowych **wszystkie serie z planu są od razu otwarte**, z wpisanym z góry sugerowanym ciężarem. Wpisujesz tylko powtórzenia; ciężar zmieniasz, jeśli bierzesz inny. Komplet serii = ćwiczenie odhacza się samo.
@@ -232,8 +232,8 @@ Przy każdej zmianie podbij **dwa** miejsca:
 
 | Plik | Co |
 |---|---|
-| `data.js` | `const APP = { wersja: '1.2.7', data: '2026-08-31' }` |
-| `sw.js` | `const CACHE = 'trening-1.2.7'` |
+| `data.js` | `const APP = { wersja: '1.2.9', data: '2026-09-06' }` |
+| `sw.js` | `const CACHE = 'trening-1.2.9'` |
 
 Bez podbicia `CACHE` service worker może dalej serwować starą wersję z pamięci offline. Po podbiciu apka wykrywa aktualizację i pokazuje na dole toast **„Dostępna nowa wersja — Odśwież"**.
 

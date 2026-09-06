@@ -2,7 +2,7 @@
    data.js — Szczyt (trening Olgi): sesje, ćwiczenia, fazy
 ----------------------------------------------------------------*/
 
-const APP = { wersja: '1.0.9', data: '2026-08-31' };
+const APP = { wersja: '1.1.1', data: '2026-09-06' };
 
 const PLAN_START = '2026-08-27';
 
@@ -20,92 +20,84 @@ const FAZY = [
 const DELOADY = [8, 16];
 
 /* Sesje.
-   item: { n, d, u?, lift?, krok?, serie?, zakres?, plyo?, yt? }
+   item: { n, d, u?, lift?, krok?, serie?, zakres?, plyo?, yt?, poziom?, moc? }
+   poziom: 'full' = tylko tryb FULL; brak = zawsze (MINIMUM+FULL)
+   moc: 0|1|2 = rotacja mocy w C
+   format:'fazy' + fazy:[{t,czas,tekst}] dla sportu
    extra: true → tracker „Dodatkowo dziś”, poza CELE_TYG i chipami głównymi
 */
 const SESJE = {
   A: {
-    nazwa: 'A — Dolne / moc', dur: '~70 min', typ: 'silownia',
+    nazwa: 'A — Dolne / moc', dur: '~40–45 min', durMin: '~40–45 min', durFull: '~50–60 min', typ: 'silownia',
     bloki: [
-      { t: 'Rozgrzewka · 8–10 min', items: [
-        { n: 'Kobra / wyprost leżąc (McKenzie press-up)', d: '10 powt.' },
-        { n: 'Odwodzenie biodra z gumą, stojąc (standing band hip abduction)', d: '2 × 15 na każdą stronę', u: 'Noga na bok (nie do tyłu — kickback to inne ćwiczenie). Guma nad kolanami, tułów stabilny, odpychaj nogę w bok.' },
-        { n: 'Mostek biodrowy z gumą (banded glute bridge)', d: '2 × 12' },
-        { n: 'Rozciąganie zginacza biodra w półklęku (half-kneeling hip flexor stretch)', d: '2 × 30 s na każdą stronę', u: 'Podwiń miednicę, spinaj pośladek nogi tylnej' },
-        { n: 'Dead bug (martwy robak)', d: '2 × 8 na każdą stronę', u: 'Lędźwie wklejone w podłogę' },
-        { n: 'Pogo hops (sprężyste podskoki ze sztywnymi kolanami)', d: '2 × 20', u: 'Kolana prawie sztywne, praca ze stopy' },
+      { t: 'Rozgrzewka · 6–8 min', items: [
+        { n: 'Mobilność biodra + mostek + odwodzenie (noga na bok)', d: '6–8 min łącznie',
+          u: 'Krótki blok: mobilność biodra, mostek, odwodzenie z gumą (noga na bok), zginacz w półklęku, dead bug, lekkie pogo.' },
       ]},
-      { t: 'Blok mocy · przerwy 90–120 s', items: [
-        { n: 'Wskoki na skrzynię (box jumps)', d: '4 × 3', u: 'Zejście krokiem, nigdy zeskok. Wpisz wysokość skrzyni (cm) i powtórzenia.', plyo: true, lift: 'boxjump', tryb: 'wysokosc', krok: 5, serie: 4, zakres: [3, 5], startCm: 75 },
-        { n: 'Zeskok z lądowaniem (depth drop / stick landing)', d: '3 × 4', u: 'Skrzynia 30–40 cm, cichy lądunek, hold 2 s. Od tyg. 4', plyo: true },
+      { t: 'Moc · przerwy 90–120 s', items: [
+        { n: 'Wskoki na skrzynię (box jumps)', d: '3 × 3', u: 'Stałe 3×3. Zejście krokiem. Po czystym 3×3 → +5 cm. Start 75 cm.', plyo: true, lift: 'boxjump', tryb: 'wysokosc', krok: 5, serie: 3, zakres: [3, 3], startCm: 75 },
       ]},
       { t: 'Siła · przerwy 2–3 min', items: [
-        { n: 'Martwy ciąg z trap barem (trap bar deadlift)', d: '4 × 5', u: 'Uchwyty wysokie, plecy neutralne. Wpisz tylko talerze (bez wagi barem) — tak łatwiej powtórzyć ten sam setup.', lift: 'trapbar', krok: 5, serie: 4, zakres: [5, 6] },
-        { n: 'Hip thrust ze sztangą (barbell hip thrust)', d: '4 × 8', u: 'Podbródek do klatki, żebra w dół, bez przeprostu. Wpisz tylko talerze (bez barem).', lift: 'hipthrust', krok: 5, serie: 4, zakres: [8, 10] },
-        { n: 'Bułgarski przysiad z hantlami (Bulgarian split squat / RFESS)', d: '3 × 8 na każdą nogę', u: '3 × 8 na lewą i 8 na prawą w każdej serii. Tułów lekko pochylony. Wpisz łącznie w rękach (np. 2×10 = 20).', lift: 'rfess', krok: 2.5, serie: 3, zakres: [8, 10] },
-        { n: 'RDL jednonóż / uginanie nóg (single-leg RDL / leg curl)', d: '3 × 8 na każdą nogę', u: '3 × 8 na każdą nogę (nie łącznie). Wpisz wagę jednej hantli.', lift: 'rdl', krok: 2.5, serie: 3, zakres: [8, 10] },
+        { n: 'Martwy ciąg z trap barem (trap bar deadlift)', d: '3 × 4–5', u: 'Uchwyty wysokie, plecy neutralne. Wpisz tylko talerze (bez wagi barem).', lift: 'trapbar', krok: 5, serie: 3, zakres: [4, 5] },
+        { n: 'Hip thrust ze sztangą (barbell hip thrust)', d: '3 × 6–8', u: 'Podbródek do klatki, żebra w dół. Wpisz tylko talerze (bez barem).', lift: 'hipthrust', krok: 5, serie: 3, zakres: [6, 8] },
+        { n: 'Bułgarski przysiad z hantlami (Bulgarian split squat / RFESS)', d: '2 × 6–8 na każdą nogę', u: 'Wpisz łącznie w rękach (np. 2×10 = 20).', lift: 'rfess', krok: 2.5, serie: 2, zakres: [6, 8] },
       ]},
-      { t: 'Akcesoria · superserie, 60 s', items: [
-        { n: 'Wspięcia na palce jednonóż (single-leg calf raise)', d: '3 × 12 na każdą nogę + izo 30 s' },
-        { n: 'Pallof press (wyciskanie antyrotacyjne)', d: '3 × 12 na każdą stronę', u: 'Miednica nieruchoma' },
-        { n: 'Copenhagen plank (deska kopenhaska na przywodziciele)', d: '3 × 20 s na każdą stronę' },
-        { n: 'Wznosy kolan w zwisie (hanging knee raises)', d: '3 × 10', u: 'Bez szarpania' },
+      { t: 'Core', items: [
+        { n: 'Pallof press albo dead bug — wybierz 1', d: '2 serie', u: 'Jedno z dwóch. Miednica stabilna.' },
+      ]},
+      { t: 'Dodatki FULL', items: [
+        { n: 'Uginanie nóg albo RDL jednonóż (leg curl / single-leg RDL)', d: '2 × 8–10', u: 'Wpisz wagę jednej hantli przy RDL.', poziom: 'full', lift: 'rdl', krok: 2.5, serie: 2, zakres: [8, 10] },
+        { n: 'Wspięcia na palce jednonóż (single-leg calf raise)', d: '2 × 10–15 na każdą nogę', poziom: 'full' },
       ]},
     ],
   },
 
   B: {
-    nazwa: 'B — Góra light + glute', dur: '~60 min', typ: 'silownia',
+    nazwa: 'B — Góra light + glute', dur: '~40–45 min', durMin: '~40–45 min', durFull: '~50–55 min', typ: 'silownia',
     bloki: [
-      { t: 'Rozgrzewka · 6 min', items: [
-        { n: 'Face pull (przyciąganie linki do twarzy)', d: '2 × 15' },
-        { n: 'Rotacja zewnętrzna barku z gumą (band external rotation)', d: '2 × 15 na każdą stronę', u: 'Łokieć przy tułowiu' },
-        { n: 'Band pull-apart (rozciąganie gumy przed sobą)', d: '2 × 20' },
-        { n: 'Open book (otwarta książka — rotacja tułowia leżąc)', d: '2 × 8 na każdą stronę' },
+      { t: 'Rozgrzewka · 5–6 min', items: [
+        { n: 'Face pull + rotacja zewnętrzna + pull-apart', d: '5–6 min', u: 'Krótka aktywacja barków.' },
       ]},
       { t: 'Góra · przerwy 2 min', items: [
-        { n: 'Wyciskanie hantli na ławce (dumbbell bench press)', d: '4 × 8', u: 'Wpisz wagę jednej hantli.', lift: 'benchdb', krok: 2.5, serie: 4, zakres: [8, 10] },
-        { n: 'Podciąganie / ściąganie drążka (pull-up / lat pulldown)', d: '4 × 8', lift: 'pullup', krok: 2.5, serie: 4, zakres: [8, 10] },
-        { n: 'Wiosłowanie hantlem (single-arm dumbbell row)', d: '3 × 10 na każdą stronę', u: '3 × 10 na każdą stronę. Wpisz wagę jednej hantli.', lift: 'row', krok: 2.5, serie: 3, zakres: [10, 12] },
+        { n: 'Wyciskanie hantli na ławce (dumbbell bench press)', d: '3 × 8–12', u: 'Wpisz wagę jednej hantli.', lift: 'benchdb', krok: 2.5, serie: 3, zakres: [8, 12] },
+        { n: 'Ściąganie drążka / podciąganie wspomagane (lat pulldown)', d: '3 × 8–12', lift: 'pullup', krok: 2.5, serie: 3, zakres: [8, 12] },
+        { n: 'Wiosłowanie hantlem (single-arm dumbbell row)', d: '2 × 8–12 na każdą stronę', u: 'Wpisz wagę jednej hantli.', lift: 'row', krok: 2.5, serie: 2, zakres: [8, 12] },
       ]},
-      { t: 'Pośladki · 60–90 s', items: [
-        { n: 'Hip thrust / mostek na wyciągu (cable / machine hip thrust)', d: '3 × 12', u: 'Pełne spięcie u góry', lift: 'hipthrustb', krok: 5, serie: 3, zakres: [10, 12] },
-        { n: 'Kickback pośladka na wyciągu (cable glute kickback)', d: '3 × 12 na każdą stronę', u: '3 × 12 na każdą stronę. Bez przeprostu lędźwi.' },
-        { n: 'Odwodzenie biodra — maszyna / guma (hip abduction machine / band)', d: '3 × 15', u: 'Kontrola, bez szarpania' },
-        { n: 'Frog pump / mostek izometryczny (frog pumps)', d: '2 × 20', u: 'Finisz — spięcie 1 s u góry' },
+      { t: 'Pośladki', items: [
+        { n: 'Hip thrust maszyna / wyciąg (cable / machine hip thrust)', d: '3 × 8–12', u: 'Pełne spięcie u góry', lift: 'hipthrustb', krok: 5, serie: 3, zakres: [8, 12] },
+        { n: 'Kickback pośladka na wyciągu (cable glute kickback)', d: '2 × 10–15 na każdą stronę', u: 'Bez przeprostu lędźwi.' },
+        { n: 'Odwodzenie biodra — maszyna / guma (hip abduction)', d: '2 × 12–20', u: 'Kontrola, bez szarpania' },
+        { n: 'Deska na piłce albo deska boczna', d: '2 serie', u: 'Wybierz jeden wariant.' },
       ]},
-      { t: 'Core', items: [
-        { n: 'Deska na piłce, przedramiona (stability ball plank)', d: '3 × 45–60 s' },
-        { n: 'Deska boczna z uniesieniem biodra (side plank hip dips/lifts)', d: '3 × 10 na każdą stronę', u: 'Hold 3 s w górze' },
+      { t: 'Dodatki FULL · glute', items: [
+        { n: 'Frog pump (frog pumps)', d: '2 × 15–20', u: 'Finisz — spięcie 1 s u góry', poziom: 'full' },
+        { n: 'Druga izolacja glute (kickback lub odwodzenie — inny wariant)', d: '2 serie', u: 'Nie dokładaj OHP. Tylko druga izolacja pośladka.', poziom: 'full' },
       ]},
     ],
   },
 
   C: {
-    nazwa: 'C — Atletyczny + nogi', dur: '~65 min', typ: 'silownia',
+    nazwa: 'C — Atletyczny + nogi', dur: '~45–50 min', durMin: '~45–50 min', durFull: '~55–60 min', typ: 'silownia',
     bloki: [
-      { t: 'Rozgrzewka · 8 min', items: [
-        { n: 'Kobra + pozycja dziecka (McKenzie + child’s pose)', d: '10 + 1 min' },
-        { n: 'Odwodzenie z gumą + monster walk (band abduction + monster walk)', d: '2 × 15 na każdą stronę', u: 'Odwodzenie = noga na bok (nie do tyłu). Potem monster walk w półprzysiadzie.' },
-        { n: 'Skipy + krok odstawno-dostawny (A-skips + side shuffle)', d: '3 × 15 m' },
-        { n: 'Przejścia biodrami 90/90 (90/90 hip switches)', d: '2 × 8 na każdą stronę' },
+      { t: 'Rozgrzewka · 6–8 min', items: [
+        { n: 'Mobilność + aktywacja bioder + skipy', d: '6–8 min', u: 'Kobra/pozycja dziecka, odwodzenie + monster walk, skipy / shuffle, 90/90 — krótko.' },
       ]},
-      { t: 'Blok mocy · przerwy 90 s', items: [
-        { n: 'Skok w dal z miejsca (standing broad jump)', d: '4 × 3', u: 'Mierz odległość', plyo: true },
-        { n: 'Skok boczny + lądowanie na jednej nodze (lateral bound + single-leg stick)', d: '3 × 4 na każdą stronę', u: 'Na każdą stronę osobno, hold 2 s.', plyo: true, yt: 'https://www.youtube.com/shorts/IyMLKJX4MRU' },
-        { n: 'Rzut piłką rotacyjnie o ścianę (rotational med-ball throw)', d: '3 × 6 na każdą stronę', u: 'Rotacja z bioder i klatki, nie z lędźwi', yt: 'https://www.youtube.com/shorts/02c2YLgF8iE' },
-        { n: 'Slam piłką o podłoże (medicine ball slam)', d: '3 × 8' },
+      { t: 'Moc · 1 ćwiczenie (rotacja) · przerwy 90 s', items: [
+        { n: 'Skok w dal z miejsca (standing broad jump)', d: '3 serie jakościowe', u: 'Mierz odległość. Rotacja mocy.', plyo: true, moc: 0 },
+        { n: 'Skok boczny + lądowanie (lateral bound + stick)', d: '3 serie jakościowe', u: 'Na każdą stronę, hold 2 s.', plyo: true, moc: 1, yt: 'https://www.youtube.com/shorts/IyMLKJX4MRU' },
+        { n: 'Rzut piłką rotacyjnie (rotational med-ball throw)', d: '3 serie jakościowe', u: 'Rotacja z bioder i klatki, nie z lędźwi.', moc: 2, yt: 'https://www.youtube.com/shorts/02c2YLgF8iE' },
+        { n: 'Slam piłką o podłoże (medicine ball slam)', d: '2–3 × 4', poziom: 'full' },
       ]},
       { t: 'Siła · przerwy 90 s', items: [
-        { n: 'Przysiad goblet / przedni (goblet / front squat)', d: '3 × 8', u: 'Bez sztangi na plecach w fazie 0–1. Wpisz ciężar kettla / hantli (to, co trzymasz przy klatce).', lift: 'squat', krok: 2.5, serie: 3, zakres: [8, 10] },
-        { n: 'Zakroki z hantlami (walking/reverse lunges)', d: '3 × 10 na każdą nogę', u: '3 × 10 na każdą nogę w każdej serii. Wpisz łącznie w rękach (np. 2×10 = 20).', lift: 'lunge', krok: 2.5, serie: 3, zakres: [10, 12] },
-        { n: 'Wykrok na skrzynię (step-up)', d: '3 × 8 na każdą nogę', u: '3 × 8 na każdą nogę. Cała stopa na skrzyni, bez odbicia.', lift: 'stepup', krok: 2.5, serie: 3, zakres: [8, 10] },
-        { n: 'Pompki / pompki na kolanach (push-ups / knee push-ups)', d: '2 × 10', u: 'Technicznie, bez maxów' },
+        { n: 'Przysiad goblet / przedni (goblet / front squat)', d: '3 × 6–8', u: 'Wpisz ciężar kettla / hantli.', lift: 'squat', krok: 2.5, serie: 3, zakres: [6, 8] },
+        { n: 'Zakroki tyłem z hantlami (reverse lunges)', d: '2 × 8 na każdą nogę', u: 'Wpisz łącznie w rękach.', lift: 'lunge', krok: 2.5, serie: 2, zakres: [8, 8] },
+        { n: 'Pompki / pompki na kolanach (push-ups / knee push-ups)', d: '2–3 × 8–12', u: 'Technicznie, bez maxów — łatwiejszy wariant OK.' },
+        { n: 'Spacer farmera / z obciążeniem (farmer’s walk)', d: '2 przejścia', u: 'Symulacja plecaka — tułów prosty' },
+        { n: 'Wykrok na skrzynię (step-up)', d: '2 × 8 na każdą nogę', poziom: 'full', lift: 'stepup', krok: 2.5, serie: 2, zakres: [8, 8] },
       ]},
-      { t: 'Core i finisz', items: [
-        { n: 'Dead bug z gumą (banded dead bug)', d: '3 × 10 na każdą stronę' },
-        { n: 'Pallof press z krokiem w bok (Pallof press with lateral step)', d: '3 × 8 na każdą stronę' },
-        { n: 'Spacer farmera / z obciążeniem (farmer’s walk)', d: '3 × 40 m', u: 'Symulacja plecaka — tułów prosty' },
+      { t: 'Core FULL', items: [
+        { n: 'Dead bug', d: '2 serie', poziom: 'full' },
+        { n: 'Pallof press z krokiem w bok', d: '2 × na każdą stronę', poziom: 'full' },
       ]},
     ],
   },
@@ -136,12 +128,24 @@ const SESJE = {
   },
 
   VB: {
-    nazwa: 'Siatkówka', dur: 'tracker', typ: 'sport', extra: true,
+    nazwa: 'Siatkówka', dur: 'tracker', typ: 'sport', extra: true, format: 'fazy',
+    fazy: [
+      { t: 'Rozruszanie', czas: '2–3 min', tekst: 'Lekki trucht, shuffle i karioka. Podnieś temperaturę zanim wejdziesz w skoki.' },
+      { t: 'Aktywacja', czas: '3–4 min', tekst: 'Najpierw biodra (monster walk, mostek), potem barki (pull-apart + rotacja). Stabilne biodro → ramię do ataku.' },
+      { t: 'Przygotowanie pod grę', czas: '3–4 min', tekst: 'Pogo → skoki narastająco → 2–3 approach bez piłki. Czyste lądowanie, bez checklisty serii.' },
+      { t: 'Po grze — schłodzenie', czas: '6–8 min', tekst: 'Marsz, roller (łydki, ud, pośladek, piersiowy) i 2–3 stretchy: zginacz, klatka, łydka.' },
+    ],
     bloki: [],
   },
 
   PADEL: {
-    nazwa: 'Padel', dur: 'tracker', typ: 'sport', extra: true,
+    nazwa: 'Padel', dur: 'tracker', typ: 'sport', extra: true, format: 'fazy',
+    fazy: [
+      { t: 'Rozruszanie', czas: '2 min', tekst: 'Trucht, shuffle, cofanie tyłem, karioka — stopy we wszystkich kierunkach przed hamowaniami.' },
+      { t: 'Aktywacja', czas: '3 min', tekst: 'Pachwina/biodra, potem bark i nadgarstek. Najpierw noga do dojścia, potem ramię do uderzenia.' },
+      { t: 'Przygotowanie pod grę', czas: '2–3 min', tekst: 'Wypad w bok → bound + stick → krótki sprint z ostrym stopem → shadow swings.' },
+      { t: 'Po grze — schłodzenie', czas: '6–8 min', tekst: 'Marsz, roller (z przywodzicielami) i stretch: zginacz, motyl, łydka.' },
+    ],
     bloki: [],
   },
 
@@ -161,7 +165,6 @@ const SESJE = {
   },
 };
 
-/* Szkic tygodnia (zakładka Plan). 0 = niedziela. */
 const TYDZIEN = { 1: 'A', 2: 'B', 3: 'GORY', 4: 'C', 5: 'REST', 6: 'REST', 0: 'REST' };
 
 const CELE_TYG = { A: 1, B: 1, C: 1, GORY: 1 };
