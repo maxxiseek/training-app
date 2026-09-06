@@ -6,6 +6,8 @@ Aktualna wersja: **1.2.7** · historia zmian w `CHANGELOG.md`.
 
 Osobna wersja dla Olgi: katalog **[`szczyt/`](szczyt/)** — PWA **Szczyt** (bez SKB, plan nóg/pośladków + góry). Deploy: `…/szczyt/`.
 
+Opis obu planów (cele, fazy, sesje, progresje): **[`PLANY.md`](PLANY.md)**.
+
 ---
 
 ## Wdrożenie na GitHub Pages — 5 minut

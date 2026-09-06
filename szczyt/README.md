@@ -4,6 +4,8 @@ Osobna PWA obok głównego planu atletycznego. Bez SKB, z naciskiem na nogi/poś
 
 Aktualna wersja: **1.0.9**.
 
+Pełny opis planu (Twojego i Olgi): **[`../PLANY.md`](../PLANY.md)**.
+
 ## Co jest w środku
 
 - Sesje **A / B / C** — duży overlap z planem wspólnym (te same stanowiska na siłowni)
