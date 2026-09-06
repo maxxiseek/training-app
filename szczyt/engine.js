@@ -54,6 +54,19 @@ function liczTreningi7(){
   const g = przesunDni(DZIS, -6);
   return hist().filter(x => x.k !== 'REST' && !jestDodatek(x.k) && x.d >= g).length;
 }
+function ostatnieTreningi(n){
+  n = n || 5;
+  return hist().filter(x => x.k !== 'REST').slice().reverse().slice(0, n);
+}
+function opisOstatnich(n){
+  const list = ostatnieTreningi(n);
+  if(!list.length) return 'Brak zapisanych treningów.';
+  return 'Ostatnio: ' + list.map(x => {
+    const dt = dniTemu(x.d);
+    const kiedy = dt === 0 ? 'dziś' : dt === 1 ? 'wczoraj' : (dt + ' dn. temu');
+    return etykietaK(x.k) + ' (' + kiedy + ')';
+  }).join(' · ');
+}
 function kluczeOd(offset){
   return hist().filter(x => dniTemu(x.d) === offset).map(x => x.k);
 }
@@ -151,17 +164,23 @@ function sugerujTrybSesji(k){
   return trybSesjiDnia(dzien());
 }
 
+function zKontekstem(res){
+  res.ostatnio = opisOstatnich(5);
+  res.powod = (res.powod || '') + '<br><span style="color:var(--dim2)">' + res.ostatnio + '</span>';
+  return res;
+}
+
 function sugeruj(){
   const b = blokady();
 
   if(kluczeOd(0).includes('REST'))
-    return { k: 'REST', wolne: true,
-      powod: 'Dziś już odpoczynek. Jutro wraca normalny rytm.' + dopisekPropozycja() };
+    return zKontekstem({ k: 'REST', wolne: true,
+      powod: 'Dziś już odpoczynek. Jutro wraca normalny rytm.' + dopisekPropozycja() });
 
   const seriaT = ileZRzedu(ks => ks.some(k => k !== 'REST' && !jestDodatek(k)));
   if(seriaT >= MAX_TRENING_Z_RZEDU)
-    return { k: 'REST', wolne: true,
-      powod: 'Trzy treningi pod rząd. Dziś regeneracja — sen, spacer, bez siłowni.' + dopisekPropozycja() };
+    return zKontekstem({ k: 'REST', wolne: true,
+      powod: 'Trzy treningi pod rząd. Dziś regeneracja — sen, spacer, bez siłowni.' + dopisekPropozycja() });
 
   const seriaC = ileZRzedu(ks => ks.some(k => CIEZKIE.includes(k)));
   if(seriaC >= MAX_CIEZKIE_Z_RZEDU){
@@ -170,13 +189,13 @@ function sugeruj(){
       const k = kluczeOd(i).find(x => CIEZKIE.includes(x));
       if(k) ciezkie.push(nazwaK(k));
     }
-    return { k: 'REST', wolne: true,
-      powod: 'Kolejny ciężki dzień z rzędu (' + ciezkie.join(', ') + '). Dziś regeneracja.' + dopisekPropozycja() };
+    return zKontekstem({ k: 'REST', wolne: true,
+      powod: 'Kolejny ciężki dzień z rzędu (' + ciezkie.join(', ') + '). Dziś regeneracja.' + dopisekPropozycja() });
   }
 
   if(liczTreningi7() >= MAX_SESJE_7)
-    return { k: 'REST', wolne: true,
-      powod: 'W oknie 7 dni jest już ' + MAX_SESJE_7 + ' jednostek — dziś regeneracja.' + dopisekPropozycja() };
+    return zKontekstem({ k: 'REST', wolne: true,
+      powod: 'W oknie 7 dni jest już ' + MAX_SESJE_7 + ' jednostek — dziś regeneracja.' + dopisekPropozycja() });
 
   const kand = PRIORYTET.map(k => ({ k, def: (CELE_TYG[k] || 0) - licz7(k), blok: b[k] }));
   let wolne = kand.filter(x => !x.blok && x.def > 0).sort((x,y) => y.def - x.def);
@@ -190,13 +209,14 @@ function sugeruj(){
     const w = wolne[0];
     const zablokowane = kand.filter(x => x.blok && x.def > 0);
     const brak = wolne.slice(1).map(x => nazwaK(x.k));
-    let p = 'W oknie 7 dni brakuje: <b>' + nazwaK(w.k) + '</b>' +
-            (brak.length ? ', dalej ' + brak.join(', ') : '') + '.';
-    if(zablokowane.length) p += '<br>Dziś odpada: ' + zablokowane.map(x => nazwaK(x.k) + ' — ' + x.blok).join('; ') + '.';
-    return { k: w.k, powod: p };
+    let p = 'Sugerowany trening: <b>' + etykietaK(w.k) + '</b>' +
+            (brak.length ? ' (dalej w kolejce: ' + brak.join(', ') + ')' : '') + '.';
+    if(zablokowane.length) p += '<br>Dziś odpada: ' + zablokowane.map(x => etykietaK(x.k) + ' — ' + x.blok).join('; ') + '.';
+    p += '<br><span style="color:var(--dim2)">Siatkówka, padel i balet odhaczasz osobno — nie wchodzą w tę sugestię.</span>';
+    return zKontekstem({ k: w.k, powod: p });
   }
-  return { k: 'REST', wolne: true,
-    powod: 'Cele tygodnia odhaczone. Odpocznij — jutro wraca normalny rytm.' + dopisekPropozycja() };
+  return zKontekstem({ k: 'REST', wolne: true,
+    powod: 'Cele siłowe (A/B/C/GÓRY) odhaczone. Odpocznij albo odhacz dodatek, jeśli grasz.' + dopisekPropozycja() });
 }
 
 function tally(){
