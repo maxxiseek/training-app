@@ -9,7 +9,7 @@ test('pusta historia: sugeruje A (siłownia), nigdy VB/padel', () => {
   const s = ctx.sugeruj();
   assert.equal(s.k, 'A');
   assert.ok(!['VB', 'PADEL'].includes(s.k));
-  assert.match(s.powod, /Sugerowany trening/i);
+  assert.match(s.powod, /kolejce|zaległości|Siatkówkę i padel/i);
   assert.match(s.powod, /Ostatnio|Brak/i);
 });
 

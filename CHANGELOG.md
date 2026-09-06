@@ -7,6 +7,13 @@ Wersja jest widoczna w stopce aplikacji oraz w zakładce **Więcej → O aplikac
 
 ---
 
+## 1.2.10 — 2026-09-06
+
+**Root: naprawa MINIMUM (puste bloki FULL)**
+- Bloki tylko-FULL nie pokazują już fałszywego komunikatu o żółtym świetle w trybie MINIMUM — są po prostu pomijane.
+- Poprawione etykiety ukrytych ćwiczeń (żółte światło vs tylko w FULL vs rotacja mocy).
+- Sugestia dnia bez zduplikowanego nagłówka; kolejka używa etykiet A/B/C zamiast „sesja C”.
+
 ## 1.2.9 / Szczyt 1.1.1 — 2026-09-06
 
 **Sugestia dnia = siłownia, nie sport**

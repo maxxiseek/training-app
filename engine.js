@@ -183,9 +183,10 @@ function sugeruj(){
   if(wolne.length){
     const w = wolne[0];
     const zablokowane = kand.filter(x => x.blok && x.def > 0);
-    const brak = wolne.slice(1).map(x => nazwaK(x.k));
-    let p = 'Sugerowany trening: <b>' + etykietaK(w.k) + '</b>' +
-            (brak.length ? ' (dalej w kolejce: ' + brak.join(', ') + ')' : '') + '.';
+    const brak = wolne.slice(1).map(x => etykietaK(x.k));
+    let p = brak.length
+      ? 'Dalej w kolejce: ' + brak.join(', ') + '.'
+      : 'To najlepszy wybór z zaległości w oknie 7 dni.';
     if(zablokowane.length) p += '<br>Dziś odpada z siłowni: ' + zablokowane.map(x => etykietaK(x.k) + ' — ' + x.blok).join('; ') + '.';
     p += '<br><span style="color:var(--dim2)">Siatkówkę i padel odhaczasz osobno — nie wchodzą w tę sugestię.</span>';
     return zKontekstem({ k: w.k, powod: p });

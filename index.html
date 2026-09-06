@@ -900,8 +900,6 @@ function renderSession(){
       <button type="button" class="trybBtn ${minOn?'on':''}" onclick="ustawTrybSesji('minimum')"><b>MINIMUM</b>Najważniejsze — mniej objętości</button>
       <button type="button" class="trybBtn ${!minOn?'on':''}" onclick="ustawTrybSesji('full')"><b>FULL</b>Pełna objętość, gdy masz czas i regenerację</button>
     </div>`;
-    if(typeof ciezkiGoryWczoraj === 'function' && ciezkiGoryWczoraj() && (k==='A'||k==='C'))
-      h += `<div class="alert w">Po ciężkim GORY lepiej zostać przy <b>MINIMUM</b> — FULL nadal dostępne, jeśli czujesz się dobrze.</div>`;
   }
 
 
@@ -909,13 +907,24 @@ function renderSession(){
     h += (S.fazy || []).map(f => `<div class="faza"><div class="ft">${f.t}<span class="fc">${f.czas || ''}</span></div><div class="fx">${f.tekst}</div></div>`).join('');
   }
   (S.bloki || []).forEach((b, bi) => {
-    const items = filtrItems((b.items || []).filter(it => !(zolte && it.plyo)), tryb, mocIdx);
-    const ukryte = (b.items || []).length - items.length;
-    h += `<div class="blkh">${b.t}${ukryte ? `<span>${ukryte} ukryte — żółte światło</span>` : ''}</div>`;
+    const surowe = b.items || [];
+    const poSwietle = surowe.filter(it => !(zolte && it.plyo));
+    const items = filtrItems(poSwietle, tryb, mocIdx);
+    const ukryteSwiatlo = surowe.length - poSwietle.length;
+    const ukryteTryb = poSwietle.length - items.length;
     if(!items.length){
-      h += `<div class="alert w" style="margin-bottom:7px">Cały blok wypada przy żółtym świetle. Plyometria wraca, gdy przez pełne 3 dni nie poczujesz napięcia w prawym pośladku.</div>`;
+      // Pusty blok tylko przez żółte światło → komunikat; przez MINIMUM/FULL/moc → pomiń.
+      if(ukryteSwiatlo && !poSwietle.length){
+        h += `<div class="blkh">${b.t}<span>${ukryteSwiatlo} ukryte — żółte światło</span></div>`;
+        h += `<div class="alert w" style="margin-bottom:7px">Cały blok wypada przy żółtym świetle. Plyometria wraca, gdy przez pełne 3 dni nie poczujesz napięcia w prawym pośladku.</div>`;
+      }
       return;
     }
+    let note = '';
+    if(ukryteSwiatlo) note = `${ukryteSwiatlo} ukryte — żółte światło`;
+    else if(ukryteTryb && tryb === 'minimum') note = `${ukryteTryb} tylko w FULL`;
+    else if(ukryteTryb) note = `${ukryteTryb} w rotacji`;
+    h += `<div class="blkh">${b.t}${note ? `<span>${note}</span>` : ''}</div>`;
     if(sport){
       if(S.format === 'fazy' && (S.fazy || []).length){
         h += (S.fazy || []).map(f => `<div class="faza"><div class="ft">${f.t}<span class="fc">${f.czas || ''}</span></div><div class="fx">${f.tekst}</div></div>`).join('');
