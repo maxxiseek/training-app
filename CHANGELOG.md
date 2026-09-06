@@ -7,6 +7,18 @@ Wersja jest widoczna w stopce aplikacji oraz w zakładce **Więcej → O aplikac
 
 ---
 
+## 1.2.8 / Szczyt 1.1.0 — 2026-09-06
+
+**MINIMUM / FULL na A/B/C (root + Szczyt)**
+- Przełącznik trybu sesji: MINIMUM (domyślnie) albo FULL — oba zaliczają ten sam cel tygodnia.
+- Skrócone A/B/C, wspólny overlap A/C pod trening we dwoje.
+- Box jump: stałe **3×3**, progresja tylko wysokości (+5 cm), start 75 cm.
+- C: rotacja jednego ćwiczenia mocy (broad → lateral+stick → MB throw); slam tylko w FULL.
+- Root B: skrócona pełna góra; Szczyt B: góra light + glute (bez OHP).
+- VB/Padel: krótkie **fazy** (rozruszanie → aktywacja → pod grę → schłodzenie) zamiast długiej checklisty.
+- Szczyt: po ciężkim GORY nie sugeruj A/C następnego dnia + podpowiedz MINIMUM; B jako bufor między ciężkimi nogami.
+- Stare wpisy bez `trybSesji` liczą się jak FULL (historyczna pełna objętość).
+
 ## 1.2.7 — 31.08.2026
 
 **Filmy YouTube przy ćwiczeniach**

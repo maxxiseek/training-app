@@ -13,6 +13,9 @@ Opisuje **konteksty, cele, fazy, sesje, progresje i reguły**, bez technicznych 
 
 ---
 
+
+> **Aktualizacja 2026-09-06:** A/B/C mają tryby **MINIMUM** i **FULL** (oba zaliczają cel tygodnia). Poniższe tabele opisują MINIMUM; FULL = MINIMUM + oznaczone dodatki. Box jump: stałe 3×3. Sport VB/Padel: fazy, nie checklista.
+
 ## 1. Twój plan (aplikacja główna)
 
 ### 1.1 Kontekst
@@ -57,21 +60,23 @@ Sugestia dnia jest **adaptacyjna** (zaległości + blokady), nie sztywny kalenda
 
 ### 1.4 Sesje siłowe — skrót
 
-#### A — Dolne / moc pionowa (~70 min)
+#### A — Dolne / moc pionowa (MINIMUM ~40–45 min · FULL ~50–60)
 
-1. **Rozgrzewka** — McKenzie, odwodzenie biodra z gumą (noga **na bok**), mostek, zginacz w półklęku, dead bug, pogo hops.  
-2. **Moc** — box jumps **4×3** (progresja wysokości od **75 cm**); depth drop / stick od tyg. 4.  
-3. **Siła** — trap bar 4×5 →6; hip thrust 4×8→10; bułgarski 3×8/nogę; RDL jednonóż / curl 3×8/nogę.  
-4. **Akcesoria** — łydki jednonóż, Pallof, Copenhagen, hanging knee raises.
+1. **Rozgrzewka** — krótki blok 6–8 min (mobilność biodra, mostek, odwodzenie nogą **na bok**, zginacz, dead bug, lekkie pogo).  
+2. **Moc** — box jumps **3×3** stałe (start **75 cm**; po czystym 3×3 → +5 cm).  
+3. **Siła** — trap bar 3×4–5; hip thrust 3×6–8; RFESS 2×6–8/nogę.  
+4. **Core** — Pallof **lub** dead bug, 2 serie.  
+5. **FULL** — + hamstring (leg curl / SL RDL) 2×8–10; + łydka jednonóż 2×10–15.
 
-#### B — Góra / core / ramiona (~60 min)
+#### B — Góra / core / ramiona (MINIMUM ~40–45 · FULL ~50–55)
 
-Bench DB, podciąganie/ściąganie, OHP siedząc, wiosło hantlem + barki/ramiona + plank / side plank / suitcase.
+MINIMUM: bench DB + pull + OHP + row (po 3 seriach).  
+FULL: + barki/ramiona (1–2) + core.
 
-#### C — Atletyczny FBW (~65 min)
+#### C — Atletyczny FBW (MINIMUM ~45–50 · FULL ~55–60)
 
-Broad jump, **lateral bound + stick** (film YT), **rotational med-ball throw** (film YT), slam; goblet/front squat, zakroki, podciąganie max, pompki feet-elevated; core + farmer’s walk.  
-*Bez sztangi na plecach w fazie 0–1 przy przysiadzie.*
+MINIMUM: **jedno** ćwiczenie mocy w rotacji (broad → lateral+stick → MB throw) 3 serie; goblet 3×6–8; reverse lunge 2×8/nogę; push 2–3×8–12; farmer 2 przejścia.  
+FULL: + step-up 2×8/nogę; + slam 2–3×4; + dead bug; + Pallof z krokiem.
 
 #### D — Rehab / mobilność (~20 min, dom)
 
@@ -79,9 +84,7 @@ McKenzie, zginacz, prosty uda, 90/90, open book, downward dog, child’s pose 3 
 
 #### VB / Padel
 
-Rozgrzewka + schłodzenie jako **rozpiska poglądowa** (jedno zatwierdzenie „zagrane”).  
-Siatkówka: aktywacja bioder/barków + skoki/approach.  
-Padel: drabinka, pachwina, hamowanie, profilaktyka łokcia; po grze roller na przywodziciele.
+Krótkie **fazy** (rozruszanie → aktywacja → pod grę → schłodzenie) zamiast checklisty ćwiczeń. Jedno zatwierdzenie „Zagrane”.
 
 ### 1.5 Progresje (Ty)
 
@@ -114,6 +117,12 @@ w zakresie `[min, max]` — najpierw wszystkie serie na max powtórzeń → pote
 ---
 
 ## 2. Plan Olgi — Szczyt
+
+### Szczyt — różnice po 1.1.0
+
+- **B** = góra light + glute (bez OHP); FULL dokłada frog pump + drugą izolację glute.
+- **GORY** bez MIN/FULL; po ciężkim wyjściu (marsz/plecak ≥60 min albo schody/bieżnia na max czasie) sugestia unika A/C następnego dnia i preferuje MINIMUM.
+- Extra VB/Padel: podgląd faz przy „Dodatkowo dziś”.
 
 ### 2.1 Kontekst
 

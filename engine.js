@@ -98,6 +98,26 @@ function blokady(){
   return b;
 }
 
+
+function sugerujTrybSesji(k){ return 'minimum'; }
+function indeksMocyC(){
+  return hist().filter(x => x.k === 'C').length % 3;
+}
+function trybSesjiDnia(d){
+  if(d && (d.trybSesji === 'full' || d.trybSesji === 'minimum')) return d.trybSesji;
+  return 'minimum';
+}
+function trybSesjiWpisu(w){
+  if(w && (w.trybSesji === 'full' || w.trybSesji === 'minimum')) return w.trybSesji;
+  return 'full'; // stare wpisy = pełna objętość
+}
+function itemWidoczny(it, tryb, mocIdx){
+  if(!it) return false;
+  if(it.poziom === 'full' && tryb !== 'full') return false;
+  if(typeof it.moc === 'number' && it.moc !== mocIdx) return false;
+  return true;
+}
+
 function sugeruj(){
   const b = blokady();
   if(dzien().swiatlo === 'red')
@@ -168,6 +188,7 @@ function wpisHistorii(k, d, extras){
   return Object.assign(base, {
     pct: d.__pct || 0, zrob: extras && extras.zrob || 0, total: extras && extras.total || 0,
     pom: extras && extras.pom || [],
+    trybSesji: trybSesjiDnia(d),
   });
 }
 

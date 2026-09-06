@@ -102,7 +102,53 @@ function blokady(){
   if(skokWczoraj) SKOKI.forEach(k => { if(!b[k]) b[k] = 'wczoraj był dzień skoków (' + nazwaK(skokWczoraj) + ')'; });
   const dzis = hist().filter(x => dniTemu(x.d) === 0).map(x => x.k);
   dzis.forEach(k => { if(!b[k]) b[k] = 'zrobione dziś'; });
+  if(ciezkiGoryWczoraj()){
+    if(!b.A) b.A = 'wczoraj był ciężki GORY';
+    if(!b.C) b.C = 'wczoraj był ciężki GORY';
+  }
   return b;
+}
+
+
+function indeksMocyC(){
+  return hist().filter(x => x.k === 'C').length % 3;
+}
+function trybSesjiDnia(d){
+  if(d && (d.trybSesji === 'full' || d.trybSesji === 'minimum')) return d.trybSesji;
+  return 'minimum';
+}
+function trybSesjiWpisu(w){
+  if(w && (w.trybSesji === 'full' || w.trybSesji === 'minimum')) return w.trybSesji;
+  return 'full'; // stare wpisy = pełna objętość
+}
+function itemWidoczny(it, tryb, mocIdx){
+  if(!it) return false;
+  if(it.poziom === 'full' && tryb !== 'full') return false;
+  if(typeof it.moc === 'number' && it.moc !== mocIdx) return false;
+  return true;
+}
+
+function ciezkiGoryDnia(data){
+  const lifts = (ST.lifty || {});
+  const ciezkie = [
+    { k: 'schody', minMax: 40 },
+    { k: 'bieznia', minMax: 35 },
+    { k: 'marsz', minMax: 60 },
+    { k: 'plecak', minMax: 60 },
+  ];
+  return ciezkie.some(def => {
+    const arr = lifts[def.k] || [];
+    return arr.some(x => x.d === data && Number(x.kg) >= def.minMax);
+  });
+}
+function ciezkiGoryWczoraj(){
+  return ciezkiGoryDnia(przesunDni(DZIS, -1));
+}
+function sugerujTrybSesji(k){
+  if(k === 'A' || k === 'C'){
+    if(ciezkiGoryWczoraj()) return 'minimum';
+  }
+  return trybSesjiDnia(dzien());
 }
 
 function sugeruj(){
@@ -133,8 +179,14 @@ function sugeruj(){
       powod: 'W oknie 7 dni jest już ' + MAX_SESJE_7 + ' jednostek — dziś regeneracja.' + dopisekPropozycja() };
 
   const kand = PRIORYTET.map(k => ({ k, def: (CELE_TYG[k] || 0) - licz7(k), blok: b[k] }));
-  const wolne = kand.filter(x => !x.blok && x.def > 0).sort((x,y) => y.def - x.def);
+  let wolne = kand.filter(x => !x.blok && x.def > 0).sort((x,y) => y.def - x.def);
   if(wolne.length){
+    const wczoraj = kluczeOd(1);
+    const poCiezkichNogach = wczoraj.some(k => k === 'A' || k === 'C') || ciezkiGoryWczoraj();
+    if(poCiezkichNogach){
+      const bBuf = wolne.find(x => x.k === 'B');
+      if(bBuf) wolne = [bBuf].concat(wolne.filter(x => x.k !== 'B'));
+    }
     const w = wolne[0];
     const zablokowane = kand.filter(x => x.blok && x.def > 0);
     const brak = wolne.slice(1).map(x => nazwaK(x.k));
@@ -166,6 +218,7 @@ function wpisHistorii(k, d, extras){
   return Object.assign(base, {
     pct: d.__pct || 0, zrob: extras && extras.zrob || 0, total: extras && extras.total || 0,
     pom: extras && extras.pom || [],
+    trybSesji: trybSesjiDnia(d),
   });
 }
 
