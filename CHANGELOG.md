@@ -7,6 +7,14 @@ Wersja jest widoczna w stopce aplikacji oraz w zakładce **Więcej → O aplikac
 
 ---
 
+## 1.2.11 — 2026-09-06
+
+**Root: bogatsze cue’e + deska na piłce, bez step-up**
+- Przywrócone dłuższe wskazówki techniczne przy ćwiczeniach (jak wcześniej), przy zachowaniu skróconej objętości MINIMUM/FULL.
+- Dawki bez powtórzeń uzupełnione (np. core 2×8–10, farmer 2×30–40 m, moc 3×3 / 3×4 / 3×6).
+- Z powrotem **deska na piłce** w B (MINIMUM); deska boczna z uniesieniem biodra obok.
+- **Step-up usunięty z roota** (zostaje u Olgi w Szczycie).
+
 ## 1.2.10 — 2026-09-06
 
 **Root: naprawa MINIMUM (puste bloki FULL)**
