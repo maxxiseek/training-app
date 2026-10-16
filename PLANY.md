@@ -7,7 +7,7 @@ Opisuje **konteksty, cele, fazy, sesje, progresje i reguły**, bez technicznych 
 |---|---|---|
 | Start planu | 18.08.2026 | 27.08.2026 |
 | Główny cel sportowy | Siła + moc pod **siatkówkę** (i padel) | Nogi/pośladki + dynamika + **pięciotysięcznik (~5000 m)** |
-| Kontrola zdrowia | Światła **SKB** (prawy pośladek) + rehab D | Bez SKB |
+| Kontrola zdrowia | Brak świateł SKB (usunięte w 1.3.0); rehab D jako opcja | Bez SKB |
 | Waga | Cel **85 kg**, kontrola tempa redukcji | Lekka redukcja (`CEL_WAGA` jeszcze nieustawione) |
 | Wspólne | Duży overlap A/C (trap, hip thrust, bułgarski, RDL, box jump…) — da się ćwiczyć razem | |
 
@@ -24,7 +24,7 @@ Opisuje **konteksty, cele, fazy, sesje, progresje i reguły**, bez technicznych 
 ### 1.1 Kontekst
 
 - Plan **atletyczny**: siła dolnych + plyometria + sport (siatkówka ×2, padel ×1).
-- Historia / ograniczenie: **prawy SKB** i okolica L5/S1 — apka ma światła i sesję rehab **D**.
+- Historia: dawna kontuzja prawego SKB / L5/S1 — od 1.3.0 apka **nie śledzi** już statusu SKB; sesja rehab **D** zostaje jako opcja ręczna.
 - Padel jest **lekki** (nie liczy się jako „ciężki dzień”) — można grać po siłowni.
 - Siatkówka jest **ciężka i skokowa** — nigdy dzień po A/C (i odwrotnie).
 
@@ -39,7 +39,7 @@ Opisuje **konteksty, cele, fazy, sesje, progresje i reguły**, bez technicznych 
 | C — Atletyczny FBW | 1× |
 | Siatkówka (VB) | 2× |
 | Padel | 1× |
-| D — Rehab | nie jest celem tygodnia (wchodzi przy SKB) |
+| D — Rehab | nie jest celem tygodnia (opcja ręczna) |
 | REST | sugestia, nie „cel do odhaczenia” |
 
 **Długoterminowe (fazy):**
@@ -111,8 +111,6 @@ w zakresie `[min, max]` — najpierw wszystkie serie na max powtórzeń → pote
 
 **Box jump:** po czystym 4×5 → +5 cm, wracasz do 3 powt. Zejście **krokiem**, nigdy zeskokiem.
 
-**Żółte SKB:** chowa plyo; bez podbijania ciężaru.  
-**Czerwone SKB:** sugestia / nacisk na **D**.
 
 **Hamulce sugestii (nie blokują chipów):** max 3 treningi z rzędu; max 2 ciężkie (A/C/VB) z rzędu; max 6 jednostek / 7 dni; nie dwa dni skoków pod rząd (A, C, VB).
 
@@ -226,7 +224,7 @@ Dodatkowo **progresja czasu** na GORY (kg w store = minuty, p = wznios).
 | B | pełna góra | góra light + glute volume |
 | Sport | VB+padel jako pełne jednostki tygodnia | VB/padel/balet jako extra |
 | Góry | — | dedykowany TG 1×/tydz. |
-| SKB / D | tak | nie |
+| D (rehab/mobilność) | tak, opcjonalnie | nie |
 | Box jump start | 75 cm | 75 cm |
 | Filmy YT | lateral bound, med-ball throw | to samo |
 
@@ -236,13 +234,12 @@ Dodatkowo **progresja czasu** na GORY (kg w store = minuty, p = wznios).
 
 ## 4. Bezpieczeństwo (skrót z apki)
 
-**Ty — L5/S1 i prawy SKB**
+**Ty**
 
-- Żółte: bez plyo, bez gonienia ciężaru.  
-- Czerwone: D / odpoczynek.  
-- Nie roluj bezpośrednio lędźwi / SKB — wokół.  
-- Czerwone flagi: ból SKB >48 h po treningu, ból w nocy, neurologia → fizjo/lekarz.  
-- Przy ≥6 dniach z objawami / 30 dni apka traktuje to jako wzorzec.
+- Plyo na świeżych nogach (blok mocy na początku).  
+- Trap bar zamiast klasycznego martwego ciągu; przysiad ze sztangą na plecach dopiero po fazie 0–1.  
+- Wyciskanie nad głowę siedząc, z oparciem.  
+- Od 1.3.0 brak świateł SKB i czerwonych flag w apce.
 
 **Olga**
 

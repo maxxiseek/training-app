@@ -13,14 +13,6 @@ test('pusta historia: sugeruje A (siłownia), nigdy VB/padel', () => {
   assert.match(s.powod, /Ostatnio|Brak/i);
 });
 
-test('czerwone SKB → D, niezależnie od zaległości', () => {
-  const ctx = boot();
-  setHist(ctx, []);
-  ctx.ST.dni['2026-08-22'] = { sesja:null, zrobione:[], swiatlo:'red', pominiete:[], notatka:'' };
-  assert.equal(ctx.sugeruj().k, 'D');
-  assert.equal(ctx.sugeruj().wolne, undefined);
-});
-
 test('trzy treningi pod rząd → REST (sugestia)', () => {
   const ctx = boot();
   setHist(ctx, [
@@ -104,45 +96,12 @@ test('REST i sport nie liczą się do limitu sesji siłowych', () => {
   assert.equal(ctx.sugeruj().k, 'C');
 });
 
-test('żółte SKB po treningu → D (gdy nie było rehabu)', () => {
-  const ctx = boot();
-  setHist(ctx, [{ d:'2026-08-21', k:'B' }]);
-  ctx.ST.dni['2026-08-22'] = { sesja:null, zrobione:[], swiatlo:'yellow', pominiete:[], notatka:'' };
-  assert.equal(ctx.sugeruj().k, 'D');
-});
-
-test('żółte SKB po treningu, D już w oknie → REST', () => {
-  const ctx = boot();
-  setHist(ctx, [
-    { d:'2026-08-21', k:'B' },
-    { d:'2026-08-20', k:'D' },
-  ]);
-  ctx.ST.dni['2026-08-22'] = { sesja:null, zrobione:[], swiatlo:'yellow', pominiete:[], notatka:'' };
-  const s = ctx.sugeruj();
-  assert.equal(s.k, 'REST');
-  assert.equal(s.wolne, true);
-});
-
-test('żółte SKB po reście nie wymusza wolnego', () => {
-  const ctx = boot();
-  setHist(ctx, [{ d:'2026-08-21', k:'REST', rest:true }]);
-  ctx.ST.dni['2026-08-22'] = { sesja:null, zrobione:[], swiatlo:'yellow', pominiete:[], notatka:'' };
-  assert.notEqual(ctx.sugeruj().k, 'REST');
-});
-
 test('REST już zapisany dziś → zostaje REST, nie pcha kolejnej sesji', () => {
   const ctx = boot();
   setHist(ctx, [{ d:'2026-08-22', k:'REST', rest:true }]);
   const s = ctx.sugeruj();
   assert.equal(s.k, 'REST');
   assert.match(s.powod, /już odpoczynek/);
-});
-
-test('czerwone SKB wygrywa z zapisanym REST', () => {
-  const ctx = boot();
-  setHist(ctx, [{ d:'2026-08-22', k:'REST', rest:true }]);
-  ctx.ST.dni['2026-08-22'] = { sesja:null, zrobione:[], swiatlo:'red', pominiete:[], notatka:'' };
-  assert.equal(ctx.sugeruj().k, 'D');
 });
 
 test('blokady: A i C nie dzień po dniu', () => {

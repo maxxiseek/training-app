@@ -53,22 +53,6 @@ h2:first-of-type{margin-top:4px}
 .muted{color:var(--dim);font-size:14px;margin:0}
 .small{font-size:12.5px;color:var(--dim2);line-height:1.45}
 
-/* ---------- światła SKB ---------- */
-.lights{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
-.light{background:var(--s1);border:1.5px solid var(--line);border-radius:var(--r2);
-  padding:13px 6px;text-align:center;cursor:pointer;font-size:13px;color:var(--dim);
-  font-family:inherit;line-height:1.35;font-weight:600;transition:.15s;box-shadow:var(--sh)}
-.light .dot{width:12px;height:12px;border-radius:50%;margin:0 auto 7px;background:var(--dim2);transition:.15s}
-.light[data-v=green] .dot{background:var(--ok)}
-.light[data-v=yellow] .dot{background:var(--warn)}
-.light[data-v=red] .dot{background:var(--bad)}
-.light .small{display:block;font-weight:500;margin-top:2px}
-.light.on{color:var(--txt);background:var(--s3)}
-.light.on .dot{transform:scale(1.25);box-shadow:0 0 0 5px rgba(255,255,255,.06)}
-.light.on[data-v=green]{border-color:var(--ok)}
-.light.on[data-v=yellow]{border-color:var(--warn)}
-.light.on[data-v=red]{border-color:var(--bad)}
-
 /* ---------- alerty ---------- */
 .alert{border-left:3px solid var(--data1);background:rgba(57,135,229,.09);padding:12px 14px;
   border-radius:0 var(--r2) var(--r2) 0;font-size:13.5px;color:var(--dim);margin-bottom:12px;line-height:1.5}
@@ -211,18 +195,7 @@ svg.spark{width:100%;height:96px;display:block;margin-top:8px}
 .bars div b{display:block;font-size:19px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .bars div span{font-size:10.5px;color:var(--dim2);font-weight:600}
 
-/* pasek SKB — wysokość koduje nasilenie, nie tylko kolor */
-.strip{display:flex;gap:3px;flex-wrap:wrap;align-items:flex-end;height:22px}
-.strip i{width:9px;border-radius:2px;background:var(--s3);display:block;height:5px}
-.strip i.green{background:var(--ok);height:7px}
-.strip i.yellow{background:var(--warn);height:14px}
-.strip i.red{background:var(--bad);height:21px}
-
 /* jak często grasz */
-.lg{display:inline-flex;align-items:flex-end;gap:5px;margin-right:14px}
-.lg i{display:block;width:8px;border-radius:2px}
-.lg i.green{background:var(--ok);height:7px} .lg i.yellow{background:var(--warn);height:12px}
-.lg i.red{background:var(--bad);height:16px}
 .graw{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:15px}
 .graw:last-of-type{border-bottom:none}
 .gral{width:64px;flex:0 0 auto;font-size:11.5px;color:var(--dim2);font-weight:600}
@@ -237,9 +210,6 @@ td.r{text-align:right;color:var(--txt);font-weight:650;font-variant-numeric:tabu
 td.g{text-align:right;color:var(--dim2);white-space:nowrap;font-size:12px;font-weight:500}
 .histr{cursor:pointer}
 .histr:active{background:var(--s2)}
-.kropka{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;
-  vertical-align:1px;background:var(--dim2)}
-.kropka.green{background:var(--ok)} .kropka.yellow{background:var(--warn)} .kropka.red{background:var(--bad)}
 
 details{background:var(--s1);border:1px solid var(--line);border-radius:var(--r2);padding:14px 16px;
   margin-bottom:9px;box-shadow:var(--sh)}
@@ -321,14 +291,6 @@ section.on{display:block}
   <div id="editBox"></div>
   <div id="przypomnienia"></div>
 
-  <h2>Jak się czujesz — SKB</h2>
-  <div class="lights">
-    <button class="light" data-v="green"><div class="dot"></div>Zielone<br><span class="small">bez bólu</span></button>
-    <button class="light" data-v="yellow"><div class="dot"></div>Żółte<br><span class="small">lekkie napięcie</span></button>
-    <button class="light" data-v="red"><div class="dot"></div>Czerwone<br><span class="small">ból</span></button>
-  </div>
-  <div id="lightMsg"></div>
-
   <h2>Jednostka na dziś</h2>
   <div id="sugBox"></div>
   <div class="chips" id="chips"></div>
@@ -341,10 +303,9 @@ section.on{display:block}
   <h2>Jak często grasz</h2>
   <div class="card" id="graBox"></div>
 
-  <h2>Regularność i SKB</h2>
+  <h2>Regularność</h2>
   <div class="card">
     <div id="adher"></div>
-    <div id="swTrend" style="margin-top:14px"></div>
   </div>
 
   <h2>Historia treningów</h2>
@@ -413,33 +374,12 @@ section.on{display:block}
 
 <!-- ================= WIĘCEJ ================= -->
 <section id="s-wiecej">
-  <h2>Bezpieczeństwo — L5/S1 i prawy SKB</h2>
-  <details><summary>Czego unikać</summary>
-    <ul>
-      <li><b>Klasyczny martwy ciąg ze sztangi z podłogi</b> — trap bar zamiast niego</li>
-      <li><b>Przysiad ze sztangą na plecach</b> w fazie 0–1</li>
-      <li><b>Brzuszki, skłony, rosyjskie skręty</b> — fleksja i rotacja pod obciążeniem</li>
-      <li><b>Wyciskanie żołnierskie stojąc</b> — siadaj z oparciem</li>
-      <li><b>Fleksja kręgosłupa w pierwszej godzinie po wstaniu</b></li>
-      <li><b>Plyometria na zmęczonych nogach</b> — blok mocy zawsze na początku</li>
-      <li><b>Rolowanie lędźwi i okolicy SKB</b> — roluj wokół, nie na</li>
-    </ul>
-  </details>
-  <details><summary>Czerwone flagi — przerwij i dzwoń do fizjo</summary>
-    <ul>
-      <li>Powrót „prądu" do stopy lub promieniowania poniżej kolana — natychmiast</li>
-      <li>Drętwienie, mrowienie lub osłabienie siły w nodze</li>
-      <li>Ból SKB utrzymujący się <b>ponad 48 h</b> po treningu</li>
-      <li>Sztywność poranna <b>ponad 15 min</b> przez 3 dni z rzędu</li>
-      <li>Ból narastający w trakcie sesji zamiast ustępować po rozgrzewce</li>
-      <li><b>Pilne medycznie:</b> objawy pęcherza lub jelit, drętwienie krocza, obustronne osłabienie nóg</li>
-    </ul>
-  </details>
-  <details><summary>Biuro — 10 h dziennie</summary>
+  <h2>Biuro</h2>
+  <details><summary>10 h dziennie przy biurku</summary>
     <ul>
       <li>Wstawaj co <b>45–60 min</b>, ustaw timer</li>
       <li>Kobra ×5 przy każdej przerwie — 30 sekund</li>
-      <li>Nieprzerwane siedzenie powyżej 90 min to główny czynnik nawrotów</li>
+      <li>Nieprzerwane siedzenie powyżej 90 min to główny czynnik bólów pleców</li>
     </ul>
   </details>
 
@@ -527,7 +467,7 @@ function zakonczTrening(){
   const pominiete = widoczne.filter(x => (d.pominiete || []).includes(x.id)).map(x => x.n);
   const zrobione = widoczne.filter(x => d.zrobione.includes(x.id)).length;
   ST.historia = (ST.historia || []).filter(x => !(x.d === TODAY && x.k === k));
-  ST.historia.push(wpisHistorii(k, { d: TODAY, swiatlo: d.swiatlo, notatka: d.notatka, __pct: d.__pct },
+  ST.historia.push(wpisHistorii(k, { d: TODAY, notatka: d.notatka, __pct: d.__pct },
     { zrob: zrobione, total: widoczne.length, pom: pominiete }));
   save();
   if(navigator.vibrate) navigator.vibrate([20,50,20]);
@@ -557,26 +497,10 @@ function renderHead(){
   document.getElementById('hPhase').innerHTML = `<b>Tydzień ${t}</b>${f.nazwa.split('—')[0].trim()}${dl}`;
 }
 
-/* ============ światła ============ */
-document.querySelectorAll('.light').forEach(b => b.onclick = () => {
-  const d = dzien();
-  d.swiatlo = (d.swiatlo === b.dataset.v) ? null : b.dataset.v;
-  save(); renderLights(); renderChips(); renderSession();
-});
-function renderLights(){
-  const v = dzien().swiatlo;
-  document.querySelectorAll('.light').forEach(b => b.classList.toggle('on', b.dataset.v === v));
-  const m = document.getElementById('lightMsg');
-  if(v === 'yellow') m.innerHTML = '<div class="alert w"><b>Żółte światło.</b> Trenujesz, ale bez plyometrii i bez progresji ciężaru w tym tygodniu. Skoki są ukryte poniżej. Podwój dawkę odwodzenia z gumą i Pallof press.</div>';
-  else if(v === 'red') m.innerHTML = '<div class="alert d"><b>Czerwone światło.</b> Dziś tylko sesja D i kobra. Sport wypada. Jeśli tak jest trzeci dzień z rzędu albo ból promieniuje poniżej kolana — kontakt z fizjoterapeutą.</div>';
-  else if(v === 'green') m.innerHTML = '<div class="alert g"><b>Zielone.</b> Trenujesz zgodnie z planem, progresujesz ciężary.</div>';
-  else m.innerHTML = '<div class="alert">Zaznacz status, zanim zaczniesz — dostosuję plan na dziś.</div>';
-}
-
 /* ============ wybór sesji ============ */
 function sugestia(){ return sugeruj().k; }
 function renderChips(){
-  const d = dzien(), red = d.swiatlo === 'red';
+  const d = dzien();
   let sug;
   if(edycja()){
     const wpis = (ST.historia || []).find(x => x.d === TODAY);
@@ -590,7 +514,7 @@ function renderChips(){
         <b>${wolne ? 'Sugestia: dzień wolny' : 'Sugerowany trening: ' + etykietaK(sug)}</b><br>${s.powod}
         <div style="margin-top:9px;font-size:12.5px">Cele 7 dni — ${tally()}</div></div>`;
   }
-  const wyb = d.sesja || (red ? 'D' : sug);
+  const wyb = d.sesja || sug;
   document.getElementById('chips').innerHTML = Object.keys(SESJE).map(k =>
     `<button class="chip ${k===wyb?'on':''} ${k===sug?'sug':''}" data-k="${k}">${etykietaK(k)}</button>`).join('');
   document.querySelectorAll('.chip').forEach(b => b.onclick = () => {
@@ -665,7 +589,6 @@ function analiza(it){
   const serie = it.serie || 3, zak = it.zakres || [8, 10], krok = it.krok || 2.5;
   const h = dniLiftu(kl).filter(x => x.d < TODAY);
   const deload = DELOADY.includes(tydzien());
-  const zolte = dzien().swiatlo === 'yellow';
 
   if(!h.length) return { kg: L.start || null, powt: zak[0], serie, tekst:
     L.start ? `Start: <b>${pl0(L.start)} kg</b> — ${serie} × ${zak[0]}, zostaw 2 powt. zapasu.`
@@ -678,8 +601,6 @@ function analiza(it){
     const kg = Math.round(ost.kg * 0.6 / 2.5) * 2.5;
     return { kg, powt: zak[0], serie, tekst: `${opis}<br>Tydzień deload — <b>${pl0(kg)} kg</b> (60%), bez szukania maksów.` };
   }
-  if(zolte) return { kg: ost.kg, powt: Math.max(zak[0], ost.min), serie, tekst:
-    `${opis}<br>Żółte światło — zostań na <b>${pl0(ost.kg)} kg</b>, bez podbijania.` };
 
   let stag = 0;
   for(let i = h.length - 1; i >= 0; i--){
@@ -709,7 +630,6 @@ function analizaWysokosc(it){
   const startCm = it.startCm != null ? it.startCm : (L.start || 75);
   const h = dniLiftu(kl).filter(x => x.d < TODAY);
   const deload = DELOADY.includes(tydzien());
-  const zolte = dzien().swiatlo === 'yellow';
 
   if(!h.length) return { kg: startCm, powt: zak[0], serie, tryb: 'wysokosc', tekst:
     `Start: skrzynia <b>${startCm} cm</b> — ${serie} × ${zak[0]}. Zejście krokiem. Jak ${serie} × ${zak[1]} czysto — podbiję wysokość o ${krok} cm.` };
@@ -722,8 +642,6 @@ function analizaWysokosc(it){
     return { kg: cm, powt: zak[0], serie, tryb: 'wysokosc', tekst:
       `${opis}<br>Deload — skrzynia <b>${cm} cm</b>, bez szukania maksów.` };
   }
-  if(zolte) return { kg: ost.kg, powt: Math.max(zak[0], ost.min), serie, tryb: 'wysokosc', tekst:
-    `${opis}<br>Żółte światło — zostań na <b>${pl0(ost.kg)} cm</b>, bez podbijania.` };
 
   let stag = 0;
   for(let i = h.length - 1; i >= 0; i--){
@@ -849,15 +767,13 @@ function renderSession(){
   d.pominiete = d.pominiete || [];
   odtworzPominiete(d);
   const wpisDnia = (ST.historia || []).find(x => x.d === TODAY);
-  const k = d.sesja || (edycja() ? (wpisDnia ? wpisDnia.k : 'A')
-                                 : (d.swiatlo === 'red' ? 'D' : sugeruj().k));
+  const k = d.sesja || (edycja() ? (wpisDnia ? wpisDnia.k : 'A') : sugeruj().k);
   const S = SESJE[k];
   const box = document.getElementById('sessBody');
   if(!S){
     box.innerHTML = `<div class="alert w" style="margin-top:14px">Nieznana jednostka (${k}). Wybierz inną z listy powyżej — stary wpis zostaje w historii.</div>`;
     return;
   }
-  const zolte = d.swiatlo === 'yellow';
   const sport = S.typ === 'sport';
   const rest = S.typ === 'rest';
   const lekki = sport || rest;
@@ -883,9 +799,6 @@ function renderSession(){
     if(komplet && !jest) d.zrobione.push(id);
   }));
 
-  if(d.swiatlo === 'red' && k !== 'D')
-    h += '<div class="alert d" style="margin-top:14px"><b>Uwaga:</b> przy czerwonym świetle ta jednostka nie powinna się dziś odbyć. Przełącz na D.</div>';
-
   if(rest){
     h += `<div class="card" style="margin-top:12px">
       <p style="margin:0 0 8px">Sen, spacer, ewentualnie kobra jeśli kręci biodro. Bez siłowni i bez gry.</p>
@@ -908,21 +821,11 @@ function renderSession(){
   }
   (S.bloki || []).forEach((b, bi) => {
     const surowe = b.items || [];
-    const poSwietle = surowe.filter(it => !(zolte && it.plyo));
-    const items = filtrItems(poSwietle, tryb, mocIdx);
-    const ukryteSwiatlo = surowe.length - poSwietle.length;
-    const ukryteTryb = poSwietle.length - items.length;
-    if(!items.length){
-      // Pusty blok tylko przez żółte światło → komunikat; przez MINIMUM/FULL/moc → pomiń.
-      if(ukryteSwiatlo && !poSwietle.length){
-        h += `<div class="blkh">${b.t}<span>${ukryteSwiatlo} ukryte — żółte światło</span></div>`;
-        h += `<div class="alert w" style="margin-bottom:7px">Cały blok wypada przy żółtym świetle. Plyometria wraca, gdy przez pełne 3 dni nie poczujesz napięcia w prawym pośladku.</div>`;
-      }
-      return;
-    }
+    const items = filtrItems(surowe, tryb, mocIdx);
+    const ukryteTryb = surowe.length - items.length;
+    if(!items.length) return; // pusty przez MINIMUM/FULL/rotację mocy → pomiń
     let note = '';
-    if(ukryteSwiatlo) note = `${ukryteSwiatlo} ukryte — żółte światło`;
-    else if(ukryteTryb && tryb === 'minimum') note = `${ukryteTryb} tylko w FULL`;
+    if(ukryteTryb && tryb === 'minimum') note = `${ukryteTryb} tylko w FULL`;
     else if(ukryteTryb) note = `${ukryteTryb} w rotacji`;
     h += `<div class="blkh">${b.t}${note ? `<span>${note}</span>` : ''}</div>`;
     if(sport){
@@ -1182,10 +1085,9 @@ function renderHistoria(){
     const pom = (x.pom && x.pom.length)
       ? `<br><span class="small" style="color:var(--warn)">pominięte: ${x.pom.join(', ')}</span>` : '';
     const licz = (x.sport || jestRest(x)) ? '✓' : (x.total ? `${x.zrob}/${x.total}` : `${x.pct}%`);
-    const kropka = x.sw ? `<span class="kropka ${x.sw}"></span>` : '';
     const nota = x.notka ? `<br><span class="small" style="color:var(--dim)">„${x.notka.replace(/</g,'&lt;')}"</span>` : '';
     return `<tr class="histr" onclick="ustawDate('${x.d}')">
-            <td>${kropka}${nazwaSesji(x.k)}<br><span class="small">${x.d} · ${kiedy} · <span style="color:var(--info)">edytuj</span></span>${pom}${nota}</td>
+            <td>${nazwaSesji(x.k)}<br><span class="small">${x.d} · ${kiedy} · <span style="color:var(--info)">edytuj</span></span>${pom}${nota}</td>
             <td class="r">${licz}${(x.sport || jestRest(x)) ? '' : `<br><span class="g">${x.pct}%</span>`}</td></tr>`;
   }).join('');
 }
@@ -1293,7 +1195,7 @@ function dedup(a){
 }
 
 
-/* ============ regularność, światła, tempo ============ */
+/* ============ regularność, tempo ============ */
 
 function renderGra(){
   const el = document.getElementById('graBox'); if(!el) return;
@@ -1357,26 +1259,6 @@ function renderAdher(){
       `<div><b style="color:${x.pct>=80?'var(--ok)':x.pct>=50?'var(--warn)':'var(--bad)'}">${x.pct}%</b><span>${x.etyk}</span></div>`).join('')}</div>`;
 }
 
-function renderSwTrend(){
-  const el = document.getElementById('swTrend'); if(!el) return;
-  const dni = [], licz = { green:0, yellow:0, red:0 };
-  for(let i = 29; i >= 0; i--){
-    const d = przesunDni(DZIS, -i);
-    const w = (ST.dni[d] || {}).swiatlo || (hist().find(x => x.d === d) || {}).sw || '';
-    if(w) licz[w] = (licz[w] || 0) + 1;
-    dni.push(w);
-  }
-  const suma = licz.green + licz.yellow + licz.red;
-  el.innerHTML = `<div class="small" style="margin-bottom:7px">Status SKB — ostatnie 30 dni</div>
-    <div class="strip">${dni.map(w => `<i class="${w}"></i>`).join('')}</div>
-    <div class="small" style="margin-top:8px">
-      <span class="lg"><i class="green"></i>${licz.green} zielonych</span>
-      <span class="lg"><i class="yellow"></i>${licz.yellow} żółtych</span>
-      <span class="lg"><i class="red"></i>${licz.red} czerwonych</span>${suma < 10 ? ' · za mało danych na wnioski' : ''}</div>` +
-    ((licz.yellow + licz.red) >= 6 && suma >= 10
-      ? `<div class="alert w" style="margin-top:10px"><b>${licz.yellow + licz.red} dni z objawami w miesiącu.</b> To już wzorzec, nie pojedynczy gorszy dzień — warto pokazać to fizjoterapeucie zamiast czekać, aż samo przejdzie.</div>` : '');
-}
-
 function renderTempo(){
   const el = document.getElementById('tempoBox'); if(!el) return;
   const p = ST.pomiary.filter(x => x.kg).sort((a,b) => a.d < b.d ? -1 : 1);
@@ -1432,7 +1314,6 @@ function doCsv(){
     L.push(`seria;${x.d};${k};${String(x.kg).replace('.', ',')};${x.p};${x.i}`)));
   ST.pomiary.forEach(x => L.push(`pomiar;${x.d};waga;${x.kg != null ? String(x.kg).replace('.', ',') : ''};${x.pas != null ? String(x.pas).replace('.', ',') : ''};`));
   ST.testy.forEach(x => TESTY.forEach(t => { if(x[t.k] != null) L.push(`test;${x.d};${t.k};${String(x[t.k]).replace('.', ',')};;`); }));
-  Object.keys(ST.dni || {}).forEach(d => { const w = ST.dni[d].swiatlo; if(w) L.push(`skb;${d};${w};;;${(ST.dni[d].notatka||'').replace(/[;\n]/g,' ')}`); });
   const blob = new Blob(['﻿' + L.join('\n')], { type: 'text/csv;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = `trening-${DZIS}.csv`; a.click();
@@ -1457,8 +1338,8 @@ document.getElementById('dPick').onchange = e => ustawDate(e.target.value);
 /* ============ start ============ */
 migrujLifty();
 function renderAll(){
-  renderHead(); renderPrzypomnienia(); renderLights(); renderChips(); renderSession();
-  renderPostep(); renderTempo(); renderGra(); renderAdher(); renderSwTrend(); renderHistoria();
+  renderHead(); renderPrzypomnienia(); renderChips(); renderSession();
+  renderPostep(); renderTempo(); renderGra(); renderAdher(); renderHistoria();
   renderPlan(); renderBackupInfo(); renderWersja();
 }
 renderAll();

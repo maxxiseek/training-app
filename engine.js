@@ -32,7 +32,7 @@ function scalStan(o){
 }
 
 function dzien(){
-  if(!ST.dni[TODAY]) ST.dni[TODAY] = { sesja:null, zrobione:[], swiatlo:null, pominiete:[], notatka:'' };
+  if(!ST.dni[TODAY]) ST.dni[TODAY] = { sesja:null, zrobione:[], pominiete:[], notatka:'' };
   return ST.dni[TODAY];
 }
 
@@ -143,9 +143,6 @@ function zKontekstem(res){
 
 function sugeruj(){
   const b = blokady();
-  if(dzien().swiatlo === 'red')
-    return zKontekstem({ k: 'D', powod: 'Czerwone światło — dziś tylko rehab; siłownia wypada. Siatkówkę/padel odhaczysz osobno, jeśli grasz.' });
-
   if(kluczeOd(0).includes('REST'))
     return zKontekstem({ k: 'REST', wolne: true,
       powod: 'Dziś już odpoczynek. Jutro wraca normalny rytm.' + dopisekPropozycja() });
@@ -170,13 +167,6 @@ function sugeruj(){
   if(liczTreningi7() >= MAX_SESJE_7)
     return zKontekstem({ k: 'REST', wolne: true,
       powod: 'W oknie 7 dni jest już ' + MAX_SESJE_7 + ' sesji siłowych/rehab — dziś regeneracja.' + dopisekPropozycja() });
-
-  if(dzien().swiatlo === 'yellow' && kluczeOd(1).some(k => k !== 'REST' && !jestSport(k))){
-    if(licz7('D') < 1 && !b['D'])
-      return zKontekstem({ k: 'D', powod: 'Żółte światło po dniu treningowym — dziś rehab, bez siłowni.' + dopisekPropozycja() });
-    return zKontekstem({ k: 'REST', wolne: true,
-      powod: 'Żółte światło po dniu treningowym — dziś regeneracja.' + dopisekPropozycja() });
-  }
 
   const kand = PRIORYTET.map(k => ({ k, def: (CELE_TYG[k] || 0) - licz7(k), blok: b[k] }));
   const wolne = kand.filter(x => !x.blok && x.def > 0).sort((x,y) => y.def - x.def);
@@ -210,7 +200,7 @@ function tally(){
 function wpisHistorii(k, d, extras){
   const typ = typSesji(k);
   const lekki = typ === 'sport' || typ === 'rest';
-  const base = { d: d.d, k, sw: d.swiatlo || null, notka: (d.notatka || '').slice(0, 300) };
+  const base = { d: d.d, k, notka: (d.notatka || '').slice(0, 300) };
   if(lekki) return Object.assign(base, { pct: 100 }, typ === 'sport' ? { sport: true } : { rest: true });
   return Object.assign(base, {
     pct: d.__pct || 0, zrob: extras && extras.zrob || 0, total: extras && extras.total || 0,

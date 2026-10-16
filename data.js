@@ -3,7 +3,7 @@
    Edytuj ten plik, jeśli chcesz zmienić plan. Reszta apki się dostosuje.
 ----------------------------------------------------------------*/
 
-const APP = { wersja: '1.2.11', data: '2026-09-06' };
+const APP = { wersja: '1.3.0', data: '2026-10-16' };
 
 const PLAN_START = '2026-08-18'; // poniedziałek startu programu
 
@@ -29,7 +29,7 @@ const DELOADY = [8, 16];
      zakres: [min, max] powtórzeń — podwójna progresja:
              najpierw dochodzisz do max powtórzeń we WSZYSTKICH seriach,
              dopiero potem apka podbija ciężar i wracasz do min,
-     plyo:   true → ukrywane przy żółtym świetle
+     plyo:   true → ćwiczenie plyometryczne (skoki)
      yt:     opcjonalny link YouTube (technika)
      poziom: 'min'|'full' (brak = zawsze; 'full' = tylko tryb FULL)
      moc:    0|1|2 — rotacja mocy w C (widać tylko aktualny indeks)
@@ -92,7 +92,7 @@ const SESJE = {
       ]},
       { t: 'Moc · 1 ćwiczenie (rotacja) · przerwy 90 s', items: [
         { n: 'Skok w dal z miejsca (standing broad jump)', d: '3 × 3', u: 'Mierz odległość. Miękkie lądowanie. Rotacja mocy — tylko to ćwiczenie dziś.', plyo: true, moc: 0 },
-        { n: 'Skok boczny + lądowanie (lateral bound + stick)', d: '3 × 4 na każdą stronę', u: '3 × 4/str, hold 2 s na lądowaniu. Kluczowe pod padel i SKB. Rotacja mocy.', plyo: true, moc: 1, yt: 'https://www.youtube.com/shorts/IyMLKJX4MRU' },
+        { n: 'Skok boczny + lądowanie (lateral bound + stick)', d: '3 × 4 na każdą stronę', u: '3 × 4/str, hold 2 s na lądowaniu. Kluczowe pod padel. Rotacja mocy.', plyo: true, moc: 1, yt: 'https://www.youtube.com/shorts/IyMLKJX4MRU' },
         { n: 'Rzut piłką rotacyjnie (rotational med-ball throw)', d: '3 × 6 na każdą stronę', u: 'Rotacja z bioder i klatki, nie z lędźwi. Rotacja mocy.', moc: 2, yt: 'https://www.youtube.com/shorts/02c2YLgF8iE' },
         { n: 'Slam piłką o podłoże (medicine ball slam)', d: '2–3 × 4–6', u: 'Tylko w FULL — dołożenie do aktualnej mocy. Pełny wyprost bioder, piłka w podłogę.', poziom: 'full' },
       ]},

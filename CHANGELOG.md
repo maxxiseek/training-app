@@ -7,6 +7,15 @@ Wersja jest widoczna w stopce aplikacji oraz w zakładce **Więcej → O aplikac
 
 ---
 
+## 1.3.0 — 2026-10-16
+
+**Root: usunięta sekcja SKB**
+- Zniknęły światła SKB (zielone/żółte/czerwone) z ekranu Dziś, trend SKB z Postępu oraz sekcja „Bezpieczeństwo — L5/S1 i prawy SKB” z Więcej (zostały wskazówki dla pracy przy biurku).
+- Sugestia dnia i podpowiedź ciężarów nie zależą już od światła: bez wymuszania D, bez chowania plyometrii i bez blokady progresji.
+- Eksport CSV bez wierszy `skb`. Stare kopie z polem `swiatlo` wczytują się normalnie (pole jest ignorowane).
+- Sesja D (rehab/mobilność) zostaje jako zwykła jednostka do ręcznego wyboru.
+- Nowy dokument `TRENING-ZASADY.md` — pełny opis treningu i progresji do omówienia z asystentem.
+
 ## 1.2.11 — 2026-09-06
 
 **Root: bogatsze cue’e + deska na piłce, bez step-up**

@@ -13,7 +13,7 @@ test('blank ma komplet kluczy store', () => {
 test('scalStan: stary eksport 1.1.0 (bez REST) przechodzi i nic nie kasuje', () => {
   const ctx = boot();
   const stary = {
-    dni: { '2026-08-20': { sesja:'A', zrobione:['x'], swiatlo:'green', pominiete:[], notatka:'ok' } },
+    dni: { '2026-08-20': { sesja:'A', zrobione:['x'], pominiete:[], notatka:'ok' } },
     lifty: { trapbar: [{ d:'2026-08-20', i:0, kg:80, p:5 }] },
     pomiary: [{ d:'2026-08-20', kg:90.4, pas:null }],
     testy: [],
@@ -56,7 +56,7 @@ test('scalStan naprawia zepsute tablice', () => {
 
 test('wpisHistorii REST jest additive (rest:true, bez zrob/total)', () => {
   const ctx = boot();
-  const w = ctx.wpisHistorii('REST', { d:'2026-08-22', swiatlo:'green', notatka:'sen' }, {});
+  const w = ctx.wpisHistorii('REST', { d:'2026-08-22', notatka:'sen' }, {});
   assert.equal(w.k, 'REST');
   assert.equal(w.rest, true);
   assert.equal(w.sport, undefined);
@@ -67,9 +67,9 @@ test('wpisHistorii REST jest additive (rest:true, bez zrob/total)', () => {
 
 test('wpisHistorii sport ma sport:true, siłownia ma zrob/total', () => {
   const ctx = boot();
-  const sport = ctx.wpisHistorii('VB', { d:'2026-08-22', swiatlo:null, notatka:'' }, {});
+  const sport = ctx.wpisHistorii('VB', { d:'2026-08-22', notatka:'' }, {});
   assert.equal(sport.sport, true);
-  const gym = ctx.wpisHistorii('A', { d:'2026-08-22', swiatlo:'yellow', notatka:'', __pct:50 },
+  const gym = ctx.wpisHistorii('A', { d:'2026-08-22', notatka:'', __pct:50 },
     { zrob:4, total:8, pom:['Pallof press'] });
   assert.equal(gym.rest, undefined);
   assert.equal(gym.zrob, 4);
