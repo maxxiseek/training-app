@@ -1,122 +1,168 @@
 # Plany treningowe — Ty i Olga
 
-Dokument wyjęty z aplikacji (stan kodu na `main`, wrzesień 2026).  
-Opisuje **konteksty, cele, fazy, sesje, progresje i reguły**, bez technicznych szczegółów UI.
+Dokument opisuje **konteksty, cele, sesje, progresje i reguły**, bez technicznych szczegółów UI.  
+Sekcja 1 (Twój plan) jest zgodna z `data.js` / `engine.js` w wersji **1.4.0**. Sekcja 2 (Olga — Szczyt) opisuje osobną aplikację w `szczyt/`, która **nie zmieniła się w 1.4.0**.
 
 | | Ty (root PWA) | Olga — **Szczyt** (`szczyt/`) |
 |---|---|---|
-| Start planu | 18.08.2026 | 27.08.2026 |
-| Główny cel sportowy | Siła + moc pod **siatkówkę** (i padel) | Nogi/pośladki + dynamika + **pięciotysięcznik (~5000 m)** |
-| Kontrola zdrowia | Światła **SKB** (prawy pośladek) + rehab D | Bez SKB |
-| Waga | Cel **85 kg**, kontrola tempa redukcji | Lekka redukcja (`CEL_WAGA` jeszcze nieustawione) |
-| Wspólne | Duży overlap A/C (trap, hip thrust, bułgarski, RDL, box jump…) — da się ćwiczyć razem | |
+| Start | cykl od 19.10.2026 | 27.08.2026 |
+| Główny cel sportowy | Eksplozywność + siła pod **siatkówkę** (i padel) | Nogi/pośladki + dynamika + **pięciotysięcznik (~5000 m)** |
+| Waga | Cel **85 kg**, kontrola tempa redukcji | Lekka redukcja |
+| Wspólne | Od 1.4.0 plany A/C **nie pokrywają się** już z planem Olgi | |
 
 ---
 
+## 1. Twój plan (aplikacja główna, v1.4.0)
 
-> 
-> **Sugestia dnia bez VB/padla (1.2.9):** apka proponuje A/B/C (lub REST/D). Sport zostaje na chipach; w karcie widać ostatnie treningi.
+### 1.1 Cele przebudowy
 
-**Aktualizacja 2026-09-06:** A/B/C mają tryby **MINIMUM** i **FULL** (oba zaliczają cel tygodnia). Poniższe tabele opisują MINIMUM; FULL = MINIMUM + oznaczone dodatki. Box jump: stałe 3×3. Sport VB/Padel: fazy, nie checklista.
+- Sesje ~50 min, jedna wersja (zamiast MIN/FULL); gorszy dzień → przycisk **Skrót** (tylko bloki 1–3).
+- Mniej obciążenia nóg (siatkówka i padel też je obciążają), więcej eksplozywności pod siatkówkę.
+- **Core w każdej sesji**, równy rozwój górnej części ciała.
 
-## 1. Twój plan (aplikacja główna)
-
-### 1.1 Kontekst
-
-- Plan **atletyczny**: siła dolnych + plyometria + sport (siatkówka ×2, padel ×1).
-- Historia / ograniczenie: **prawy SKB** i okolica L5/S1 — apka ma światła i sesję rehab **D**.
-- Padel jest **lekki** (nie liczy się jako „ciężki dzień”) — można grać po siłowni.
-- Siatkówka jest **ciężka i skokowa** — nigdy dzień po A/C (i odwrotnie).
-
-### 1.2 Cele
-
-**Tygodniowe (okno 7 dni, suma 6 → zostaje slot na rest):**
+### 1.2 Cele tygodniowe (okno 7 dni, ruchome)
 
 | Jednostka | Cel |
 |---|---|
-| A — Dolne / moc pionowa | 1× |
-| B — Góra / core / ramiona | 1× |
-| C — Atletyczny FBW | 1× |
-| Siatkówka (VB) | 2× |
-| Padel | 1× |
-| D — Rehab | nie jest celem tygodnia (wchodzi przy SKB) |
-| REST | sugestia, nie „cel do odhaczenia” |
+| A — Nogi + wyskok | 1× |
+| B — Góra | 1× |
+| C — Atletyczny | 1× |
+| Siatkówka / padel („gra”) | bez celu, logowane ręcznie |
+| D — rehab/mobilność | opcjonalna, ręcznie |
+| REST | sugestia |
 
-**Długoterminowe (fazy):**
+**Szkic tygodnia:** Pn **A** · Wt – · Śr **C** · Cz – · Pt **B** · So **gra** · Nd wolne.  
+Wolne dni to sloty na gry z doskoku. **Gra w dniu planowanej A/C zastępuje sesję — przesuń, nie rób obu.**
 
-| Tygodnie | Faza | Kalorie (orient.) | Akcent |
-|---|---|---|---|
-| 1–3 | 0 — Kalibracja | ~2600 | 2–3 RIR; plyo tylko lądowania / pogo |
-| 4–11 | 1 — Baza siły + redukcja | ~2500 | Pełna plyo, max ~40 kontaktów/sesję; **tyg. 8 = deload** |
-| 12–19 | 2 — Konwersja na moc | ~2650 | Trap bar prędkościowo (kierunek 4×3); depth jumps; **tyg. 16 = deload** |
-| 20+ | 3 — Podtrzymanie w sezonie | ~2900 | 2 siłowe + D w razie potrzeby; objętość ~60% fazy 2 |
+### 1.3 Sugestia dnia (`sugeruj()`)
 
-**Waga:** trend w kierunku **85 kg**; alert jeśli spadek > ~0,8 kg/tydzień.
+Ustawienie **stała gra** = dzień tygodnia (domyślnie sobota, edytowalne w Więcej → Ustawienia).
 
-**Testy co ~4 tygodnie:** wyskok dosiężny z rozbiegu, CMJ, skok w dal z miejsca, side plank L/P, plank na piłce.
+Blokady:
 
-### 1.3 Szkic tygodnia (tylko podpowiedź w Planie)
+| Jednostka | Blokada |
+|---|---|
+| **A** | nie dzień po grze; nie, gdy do najbliższej stałej gry jest < 48 h (przy sobocie: nie w piątek i sobotę); min. 48 h od C |
+| **C** | nie dzień przed stałą grą; min. 48 h od A (nie dzień po A) |
+| **B** | tylko „już zrobione dziś” |
 
-Pn **A** · Wt **VB** · Śr **B** · Cz **VB** · Pt **C** · So **Padel** · Nd **REST**
+Kolejność decyzji:
 
-Sugestia dnia jest **adaptacyjna** (zaległości + blokady), nie sztywny kalendarz.
+1. Dziś zapisano REST → REST.
+2. 3 dni z rzędu jakakolwiek aktywność (siłownia, rehab, gry) → sugeruj REST.
+3. Spośród niezablokowanych jednostek z zaległością wybierz według priorytetu **A > B > C**.
+4. Brak kandydatów → REST.
 
-### 1.4 Sesje siłowe — skrót
+Chipy zawsze można stuknąć ręcznie. Usunięte w 1.4.0: reguła „nigdy dwa dni skoków z rzędu”, limity ciężkich dni z rzędu i 4 sesji na 7 dni.
 
-#### A — Dolne / moc pionowa (MINIMUM ~40–45 min · FULL ~50–60)
+### 1.4 Cykl 4-tygodniowy
 
-1. **Rozgrzewka** — krótki blok 6–8 min (mobilność biodra, mostek, odwodzenie nogą **na bok**, zginacz, dead bug, lekkie pogo).  
-2. **Moc** — box jumps **3×3** stałe (start **75 cm**; po czystym 3×3 → +5 cm).  
-3. **Siła** — trap bar 3×4–5; hip thrust 3×6–8; RFESS 2×6–8/nogę.  
-4. **Core** — Pallof **lub** dead bug, 2 × 8–10.  
-5. **FULL** — + hamstring (leg curl / SL RDL) 2×8–10; + łydka jednonóż 2×10–15.
+- Start cyklu: `START_CYKLU` = **19.10.2026** (poniedziałek), zmienialny w Więcej → Ustawienia. UI: „Cykl N, tydzień X/4”.
+- Tygodnie 1–3: normalna progresja.
+- **Tydzień 4 lżejszy:** ciężar = 90% ostatniego (zaokrąglony do kroku), −1 seria, bez podbijania, bloki mocy w połowie objętości. Sesje z tygodnia lżejszego nie wyznaczają progresji (po nim wraca się do ostatniej normalnej sesji).
+- Przed startem cyklu: normalna progresja, bez tygodnia lżejszego.
+- Fazy 0–3 i deload w tyg. 8/16 usunięte.
 
-#### B — Góra / core / ramiona (MINIMUM ~40–45 · FULL ~50–55)
+**Żywienie (jedno źródło, zakładka Plan):** dzień treningowy 2700 kcal · dzień wolny 2250 kcal · białko 180 g · kreatyna 5 g. Tempo redukcji −0,4 do −0,5 kg/tydz.
 
-MINIMUM: bench DB + pull + OHP + row (po 3 seriach) + **deska na piłce** 2–3×45–60 s + deska boczna 2×8–10/str.  
-FULL: + barki/ramiona (wznosy, curls+triceps).
+### 1.5 Sesje
 
-#### C — Atletyczny FBW (MINIMUM ~45–50 · FULL ~55–60)
+Każda sesja: rozgrzewka (bez logowania) + bloki 1–5. Bloki 1–3 = **rdzeń** (widoczne w trybie Skrót). „+” = superseria; „w przerwie” = osobny wiersz logu w tym samym bloku. Dawki podają liczbę serii × zakres.
 
-MINIMUM: **jedno** ćwiczenie mocy w rotacji (broad 3×3 → lateral+stick 3×4/str → MB throw 3×6/str); goblet 3×6–8; reverse lunge 2×8/nogę; push 2–3×8–12; farmer 2×30–40 m.  
-FULL: + slam 2–3×4–6; + dead bug z gumą 2×8–10/str; + Pallof z krokiem 2×8/str.  
-(Step-up tylko u Olgi w Szczycie — nie w root.)
+#### A — Nogi + wyskok (~50 min)
 
-#### D — Rehab / mobilność (~20 min, dom)
+Rozgrzewka: odwodzenie z gumą 15/str. · zginacz biodra w półklęku 30 s/str. · monster walk 2×10/str. · pogo 2×15 · 2 lekkie rozbiegi.
+
+| Blok | Ćwiczenie | Serie × zakres | Krok | Progresja |
+|---|---|---|---|---|
+| 1 *(moc, rdzeń)* | Wyskok z rozbiegu (2–3 kroki, max dosięg) | 4×2 | — | tylko odhaczenie |
+| 2 *(moc, rdzeń)* | Trap bar jump (pusty / +10–20 kg) | 3×3 | — | log kg, bez auto-progresji |
+| 3 *(rdzeń)* | Trap bar deadlift + | 3×4–5 | 5 kg | podwójna |
+| 3 | Pallof press | 3×10/str. | 2,5 kg | podwójna |
+| 4 | Bułgarski przysiad + | 2×6–8/nogę | 2,5 kg | podwójna |
+| 4 | Wspięcia jednonóż | 2×10–15/nogę | 2,5 kg | podwójna |
+| 5 | Hip thrust + | 3×6–8 | 5 kg | podwójna |
+| 5 | Nordic (negatyw) **lub** uginanie nóg | 2×4–6 / 2×8–10 | — / 2,5 kg | drabinka / podwójna |
+
+#### B — Góra (~50 min, bez nóg)
+
+Rozgrzewka: band pull-apart 2×15 · rotacja zewnętrzna barku z gumą 2×12/str.
+
+| Blok | Ćwiczenie | Serie × zakres | Krok | Progresja |
+|---|---|---|---|---|
+| 1 *(moc, rdzeń)* | Slam piłką | 3×5 | — | tylko odhaczenie |
+| 2 *(rdzeń)* | Landmine press w półklęku + | 3×8–10/str. | 2,5 kg | podwójna |
+| 2 | Podciąganie **lub** ściąganie drążka | 3×6–10 | 2,5 kg | podwójna; osobne klucze `pullup` (dodatkowy ciężar, 0 = masa ciała) i `pulldown` |
+| 3 *(rdzeń)* | Wyciskanie hantli, skos 30° + | 3×8–10 | 2,5 kg | podwójna |
+| 3 | Wiosłowanie hantlem + | 3×8–10/str. | 2,5 kg | podwójna |
+| 3 | Dead bug (w przerwie) | 3×8–12/str. | — | drabinka |
+| 4 | Wznosy bokiem + | 3×12–15 | 1 kg | podwójna |
+| 4 | Face pull | 2×12–15 | 2,5 kg | podwójna |
+| 5 | Uginanie ramion + wyprosty (superseria) | 3×10–12 | 2,5 kg | podwójna (osobne klucze `curl`, `pushdown`) |
+
+#### C — Atletyczny (~45–50 min)
+
+Rozgrzewka: skipy A · karioka · krok odstawno-dostawny 2×12 m · 90/90 2×6/str. · monster walk 2×10/str.
+
+| Blok | Ćwiczenie | Serie × zakres | Krok | Progresja |
+|---|---|---|---|---|
+| 1 *(moc, rdzeń)* | Lateral bound + stick 2 s + | 3×3/str. | — | tylko odhaczenie |
+| 1 | Rzut piłką rotacyjnie o ścianę | 3×5/str. | — | tylko odhaczenie |
+| 2 *(rdzeń)* | Landmine rotational press (eksplozywnie) + | 3×5/str. | — | log kg, bez auto-progresji |
+| 2 | Podciąganie podchwytem | 3×6–8 | 2,5 kg | podwójna (`chinup`) |
+| 3 *(rdzeń)* | RDL jednonóż z hantlem + | 3×8–10/str. | 2,5 kg | podwójna (`slrdl`, start 16 kg) |
+| 3 | Pompki z obciążeniem **lub** dipy + | 3×8–12 | 2,5 kg | podwójna (`pushupw` / `dips`) |
+| 3 | Deska boczna (w przerwie) | 3×30–45 s/str. | — | drabinka |
+| 4 | Ab wheel + | 3×8–12 | — | drabinka |
+| 4 | Suitcase carry | 2×30 m/str. | 2 kg | podwójna (kg; po 2×30 m → +krok) |
+| 5 *(opcjonalny)* | Uginanie młotkowe + wyprosty na wyciągu | 2×12 | 2,5 kg | podwójna; nie wpływa na zaliczenie sesji |
+
+#### D — Rehab / mobilność (~20 min, dom) — bez zmian
 
 McKenzie, zginacz, prosty uda, 90/90, open book, downward dog, child’s pose 3 kierunki, dead bug, side plank, abduction + kickback z gumą.
 
-#### VB / Padel
+#### Siatkówka / padel
 
-Krótkie **fazy** (rozruszanie → aktywacja → pod grę → schłodzenie) zamiast checklisty ćwiczeń. Jedno zatwierdzenie „Zagrane”.
+Opisowe fazy (rozruszanie → aktywacja → pod grę → schłodzenie) z jednym zatwierdzeniem „Zagrane”. Rozgrzewka padla: w aktywacji dodany **Copenhagen plank 2×20 s/str.**
 
-### 1.5 Progresje (Ty)
+### 1.6 Progresje
 
-**Podwójna progresja ciężaru (siła):**  
-w zakresie `[min, max]` — najpierw wszystkie serie na max powtórzeń → potem podbicie o `krok` kg i powrót do min.
+**Podwójna progresja** (ćwiczenia z `zakres` i `krok`): najpierw wszystkie serie na górnym zakresie → potem ciężar + `krok`, powrót do dolnego zakresu. Podpowiedź liczy się z **poprzedniej sesji** (najcięższy ciężar, liczba serii na nim, najmniej powtórzeń); dzisiejsze serie jej nie zmieniają. Kolejność reguł:
 
-| Lift (klucz) | Krok | Serie | Zakres | Start / cele w Postępie |
-|---|---|---|---|---|
-| trapbar | 5 kg | 4 | 5–6 | cele f1/f2: 110 / 130 |
-| hipthrust | 5 | 4 | 8–10 | start 15; 90 / 120 |
-| rfess | 2.5 | 3 | 8–10 | f1/f2: 20 / 26 |
-| rdl | 2.5 | 3 | 8–10 | — |
-| squat | 2.5 | 3 | 8–10 | — |
-| lunge | 2.5 | 3 | 10–12 | start 16 |
-| benchdb | 2.5 | 4 | 8–10 | 22.5 → 27.5 / 30 |
-| row | 2.5 | 3 | 10–12 | 20 → 27.5 / 32.5 |
-| ohp | 2.5 | 3 | 10–12 | — |
-| pullup | 2.5 | 4 | 8–10 | start 55 (ściąganie) |
-| boxjump | **5 cm** | 4 | 3–5 powt. | start **75 cm** (pole = cm, nie kg) |
+1. brak historii → start (`LIFTY.start`) albo „dobierz z 2 powt. zapasu”,
+2. `progresja: 'brak'` → pokazuje ostatni ciężar, bez podbijania,
+3. **powrót po przerwie** (ostatnia sesja > 14 dni) → 90% ostatniego ciężaru (zaokrąglone do kroku), cel = dolny zakres; przez kolejne 2 sesje tego ćwiczenia bez podbijania, potem normalnie,
+4. **tydzień lżejszy** → 90% ostatniego, −1 seria, bez podbijania,
+5. **stagnacja** (3 sesje na tym samym ciężarze bez zaliczenia) → ~10% niżej,
+6. normalnie: zaliczone → +krok; brak serii → ten sam ciężar; inaczej ten sam ciężar, cel +1 powt.
 
-**Box jump:** po czystym 4×5 → +5 cm, wracasz do 3 powt. Zejście **krokiem**, nigdy zeskokiem.
+Ćwiczenia z masą ciała (`pullup`, `chinup`, `pushupw`, `dips`, `trapjump`) mają start **0 kg** (dodatkowy ciężar); zapis 0 kg jest dozwolony.
 
-**Żółte SKB:** chowa plyo; bez podbijania ciężaru.  
-**Czerwone SKB:** sugestia / nacisk na **D**.
+**Drabinka wariantów** (ćwiczenia bez ciężaru; `ladder` w `data.js`): wszystkie serie na górnym zakresie → następny wariant od dolnego zakresu; inaczej ten sam wariant, cel +1 powt. lub +5 s. Stagnacja → wariant niżej; tydzień lżejszy → −1 seria, bez awansu; po przerwie → ten sam wariant, dolny zakres.
 
-**Hamulce sugestii (nie blokują chipów):** max 3 treningi z rzędu; max 2 ciężkie (A/C/VB) z rzędu; max 6 jednostek / 7 dni; nie dwa dni skoków pod rząd (A, C, VB).
+| Ćwiczenie | Drabinka |
+|---|---|
+| Dead bug | bez obciążenia 8–12 → z gumą nad głową 8–12 → z hantlem 4–6 kg 8–12 |
+| Deska boczna | zwykła 30–45 s → z odwodzeniem górnej nogi 30–45 s → z mini-gumą na kolanach 30–45 s |
+| Ab wheel | z kolan, krótki zasięg 8–12 → z kolan, pełny zasięg 8–12 → z kolan, pauza 1 s na dole 8–12 |
+| Nordic | negatyw 4–6 → negatyw wolniej (5 s) 4–6 → negatyw + odbicie z dołu 4–6 |
 
-**Priorytet zaległości:** A → C → VB → B → Padel.
+**Zapis serii:** ćwiczenie z kluczem logu odhaczone bez wpisanego ciężaru → przy zapisie jedno zbiorcze przypomnienie „Brak ciężaru: X, Y — uzupełnić?” (bez blokowania zapisu).
+
+### 1.7 Migracja danych (1.4.0)
+
+Historia zostaje w całości; ćwiczenia usunięte z planu (`benchdb`, `ohp`, `squat`, `lunge`, `boxjump`) zostają w danych i CSV, tylko nie są pokazywane w sesjach (w Postępie → Rekordy mają dopisek „archiwum”).
+
+| Stary klucz | Nowy klucz |
+|---|---|
+| trapbar, hipthrust, rfess, row | bez zmian |
+| rdl | `legcurl` (historia = uginanie nóg); nowy `slrdl` (C) od zera, start 16 kg |
+| pullup | `pulldown` (logowane w kg ściągania); nowy `pullup` = podciąganie, start 0 kg |
+| benchdb | archiwum; nowy `inclinedb`, start 22,5 kg |
+| ohp | archiwum; nowy `landminepress`, start 5 kg (+ gryf) |
+| squat, lunge, boxjump | archiwum |
+
+Migracja uruchamia się raz (pole `schema: 2`), także przy wczytaniu starej kopii JSON. Porządki: dni z `sesja: null` i niepustym `zrobione` dostają sesję z prefiksu ID; gdy `dni[d].sesja` różni się od wpisu w `historia`, wygrywa `historia`; pole `trybSesji` jest ignorowane.
 
 ---
 
@@ -219,30 +265,27 @@ Dodatkowo **progresja czasu** na GORY (kg w store = minuty, p = wznios).
 
 ## 3. Co jest wspólne / jak trenować razem
 
+Od 1.4.0 **plany A i C nie pokrywają się** z planem Olgi (Szczyt nie został zmieniony) — wspólne treningi na tych samych stanowiskach nie są już zakładane. Sprzęt i kroki ciężarów są niezależne.
+
 | Element | Ty | Olga |
 |---|---|---|
-| A: trap, hip thrust, RFESS, RDL, box jump | tak | tak (te same lifty) |
-| C: plyo + goblet + lunges | tak | tak (+ step-up zamiast ciężkiego podciągania) |
-| B | pełna góra | góra light + glute volume |
-| Sport | VB+padel jako pełne jednostki tygodnia | VB/padel/balet jako extra |
+| A | nogi + wyskok | dolne / moc (stary plan) |
+| C | atletyczny | atletyczny + nogi (stary plan) |
+| B | góra | góra light + glute |
+| Sport | gry bez celu tygodniowego | VB/padel/balet jako extra |
 | Góry | — | dedykowany TG 1×/tydz. |
-| SKB / D | tak | nie |
-| Box jump start | 75 cm | 75 cm |
-| Filmy YT | lateral bound, med-ball throw | to samo |
-
-**Praktycznie:** dni A i C da się robić równolegle na tych samych stanowiskach; różnice są w B i w „górskim / sportowym” slotcie.
+| D (rehab/mobilność) | opcjonalnie | nie |
 
 ---
 
 ## 4. Bezpieczeństwo (skrót z apki)
 
-**Ty — L5/S1 i prawy SKB**
+**Ty**
 
-- Żółte: bez plyo, bez gonienia ciężaru.  
-- Czerwone: D / odpoczynek.  
-- Nie roluj bezpośrednio lędźwi / SKB — wokół.  
-- Czerwone flagi: ból SKB >48 h po treningu, ból w nocy, neurologia → fizjo/lekarz.  
-- Przy ≥6 dniach z objawami / 30 dni apka traktuje to jako wzorzec.
+- Plyo na świeżych nogach (blok mocy na początku).  
+- Trap bar zamiast klasycznego martwego ciągu; przysiad ze sztangą na plecach dopiero po fazie 0–1.  
+- Wyciskanie nad głowę siedząc, z oparciem.  
+- Od 1.3.0 brak świateł SKB i czerwonych flag w apce.
 
 **Olga**
 
