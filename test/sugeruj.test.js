@@ -3,22 +3,111 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { boot, setHist } = require('./harness');
 
-test('pusta historia: sugeruje A (siłownia), nigdy VB/padel', () => {
+// DZIS domyślnie: środa 2026-10-14. Stała gra: sobota (6).
+const FRI = '2026-10-16', SAT = '2026-10-17', SUN = '2026-10-18';
+
+test('pusta historia, środa: sugeruje A (priorytet A > B > C), nigdy gry', () => {
   const ctx = boot();
   setHist(ctx, []);
   const s = ctx.sugeruj();
   assert.equal(s.k, 'A');
-  assert.ok(!['VB', 'PADEL'].includes(s.k));
-  assert.match(s.powod, /kolejce|zaległości|Siatkówkę i padel/i);
   assert.match(s.powod, /Ostatnio|Brak/i);
 });
 
-test('trzy treningi pod rząd → REST (sugestia)', () => {
+test('PRIORYTET to A, B, C; gry poza sugestią', () => {
+  const ctx = boot();
+  assert.deepEqual([...ctx.PRIORYTET], ['A', 'B', 'C']);
+  assert.deepEqual({ ...ctx.CELE_TYG }, { A: 1, B: 1, C: 1 });
+  assert.deepEqual([...ctx.GRY], ['VB', 'PADEL']);
+});
+
+test('stała gra = sobota: w piątek i sobotę A nigdy nie jest sugerowane', () => {
+  [FRI, SAT].forEach(dzis => {
+    const ctx = boot({ DZIS: dzis, TODAY: dzis });
+    setHist(ctx, []);
+    assert.ok(ctx.blokady().A, 'A powinno być zablokowane ' + dzis);
+    assert.notEqual(ctx.sugeruj().k, 'A');
+  });
+});
+
+test('stała gra = sobota: w piątek C nie jest sugerowane (dzień przed grą)', () => {
+  const ctx = boot({ DZIS: FRI, TODAY: FRI });
+  setHist(ctx, []);
+  assert.ok(ctx.blokady().C);
+  assert.match(ctx.blokady().C, /stała gra/);
+  assert.equal(ctx.sugeruj().k, 'B');
+});
+
+test('stała gra = sobota: w sobotę C nie jest blokowane regułą „dzień przed”', () => {
+  const ctx = boot({ DZIS: SAT, TODAY: SAT });
+  setHist(ctx, []);
+  assert.equal(ctx.blokady().C, undefined);
+});
+
+test('czwartek (48 h do gry): A dozwolone', () => {
+  const ctx = boot({ DZIS: '2026-10-15', TODAY: '2026-10-15' });
+  setHist(ctx, []);
+  assert.equal(ctx.blokady().A, undefined);
+  assert.equal(ctx.sugeruj().k, 'A');
+});
+
+test('ustawienie stalaGra (niedziela): sobota blokuje A i C, piątek tylko... nic', () => {
+  const ctx = boot({ DZIS: SAT, TODAY: SAT });
+  ctx.ST.ustawienia = { stalaGra: 0 };
+  setHist(ctx, []);
+  assert.ok(ctx.blokady().A);   // 24 h do gry
+  assert.ok(ctx.blokady().C);   // dzień przed grą
+  const ctx2 = boot({ DZIS: FRI, TODAY: FRI });
+  ctx2.ST.ustawienia = { stalaGra: 0 };
+  setHist(ctx2, []);
+  assert.equal(ctx2.blokady().A, undefined);   // 48 h do gry
+  assert.equal(ctx2.blokady().C, undefined);
+});
+
+test('gra wczoraj: A nie jest sugerowane, B jest', () => {
+  const ctx = boot();
+  setHist(ctx, [{ d: '2026-10-13', k: 'VB', sport: true }]);
+  assert.ok(ctx.blokady().A);
+  assert.match(ctx.blokady().A, /gra/);
+  assert.equal(ctx.sugeruj().k, 'B');
+});
+
+test('padel liczy się jako gra tak samo jak siatkówka', () => {
+  const ctx = boot();
+  setHist(ctx, [{ d: '2026-10-13', k: 'PADEL', sport: true }]);
+  assert.ok(ctx.blokady().A);
+  assert.equal(ctx.sugeruj().k, 'B');
+});
+
+test('gra wczoraj nie blokuje C ani B (reguła „dni skoków” usunięta)', () => {
+  const ctx = boot();
+  setHist(ctx, [{ d: '2026-10-13', k: 'VB', sport: true }]);
+  assert.equal(ctx.blokady().C, undefined);
+  assert.equal(ctx.blokady().B, undefined);
+});
+
+test('A i C: min. 48 h od siebie (obie strony)', () => {
+  const ctx = boot();
+  setHist(ctx, [{ d: '2026-10-13', k: 'A' }]);
+  assert.match(ctx.blokady().C, /48 h/);
+  setHist(ctx, [{ d: '2026-10-13', k: 'C' }]);
+  assert.match(ctx.blokady().A, /48 h/);
+});
+
+test('B nie ma blokad poza „zrobione dziś”', () => {
+  const ctx = boot();
+  setHist(ctx, [{ d: '2026-10-13', k: 'A' }, { d: '2026-10-12', k: 'C' }]);
+  assert.equal(ctx.blokady().B, undefined);
+  setHist(ctx, [{ d: '2026-10-14', k: 'B' }]);
+  assert.equal(ctx.blokady().B, 'zrobione dziś');
+});
+
+test('trzy dni aktywności z rzędu (siłownia + gra) → REST', () => {
   const ctx = boot();
   setHist(ctx, [
-    { d:'2026-08-21', k:'B' },
-    { d:'2026-08-20', k:'A' },
-    { d:'2026-08-19', k:'C' },
+    { d: '2026-10-13', k: 'VB', sport: true },
+    { d: '2026-10-12', k: 'B' },
+    { d: '2026-10-11', k: 'PADEL', sport: true },
   ]);
   const s = ctx.sugeruj();
   assert.equal(s.k, 'REST');
@@ -26,149 +115,82 @@ test('trzy treningi pod rząd → REST (sugestia)', () => {
   assert.match(s.powod, /propozycja/i);
 });
 
-test('dwa ciężkie dni z rzędu (A, VB) → REST', () => {
+test('dwa dni z rzędu to jeszcze nie REST', () => {
   const ctx = boot();
-  setHist(ctx, [
-    { d:'2026-08-21', k:'VB' },
-    { d:'2026-08-20', k:'A' },
-  ]);
-  assert.equal(ctx.sugeruj().k, 'REST');
-});
-
-test('padel nie jest ciężki — po VB nie wymusza REST', () => {
-  const ctx = boot();
-  setHist(ctx, [
-    { d:'2026-08-21', k:'PADEL' },
-    { d:'2026-08-20', k:'VB' },
-  ]);
+  setHist(ctx, [{ d: '2026-10-13', k: 'VB', sport: true }, { d: '2026-10-12', k: 'B' }]);
   assert.notEqual(ctx.sugeruj().k, 'REST');
 });
 
-test('REST wczoraj przerywa serię — wraca trening (gdy A/B/C nie domknięte)', () => {
+test('REST wczoraj przerywa serię', () => {
   const ctx = boot();
   setHist(ctx, [
-    { d:'2026-08-21', k:'REST', rest:true },
-    { d:'2026-08-20', k:'A' },
-    { d:'2026-08-19', k:'B' },
-    // C jeszcze nie w oknie → sugestia C, nie REST
+    { d: '2026-10-13', k: 'REST', rest: true },
+    { d: '2026-10-12', k: 'A' },
+    { d: '2026-10-11', k: 'B' },
   ]);
   assert.equal(ctx.sugeruj().k, 'C');
 });
 
-test('pusta dziura w kalendarzu przerywa serię (wraca siłownia)', () => {
+test('brak kandydatów (cele A/B/C odhaczone) → REST', () => {
   const ctx = boot();
   setHist(ctx, [
-    { d:'2026-08-19', k:'A' },
-    { d:'2026-08-17', k:'B' },
-    // przerwa + brak C → sugeruj C
+    { d: '2026-10-12', k: 'C' },
+    { d: '2026-10-10', k: 'B' },
+    { d: '2026-10-09', k: 'A' },
   ]);
-  assert.equal(ctx.sugeruj().k, 'C');
-});
-
-test('4 sesje siłowe/rehab w oknie 7 dni → REST (sport nie liczy się do limitu)', () => {
-  const ctx = boot();
-  // Daty z lukami — bez serii 3 dni z rzędu; liczy się limit objętości.
-  setHist(ctx, [
-    { d:'2026-08-22', k:'A' },
-    { d:'2026-08-20', k:'B' },
-    { d:'2026-08-18', k:'C' },
-    { d:'2026-08-16', k:'D' },
-    { d:'2026-08-21', k:'VB' },
-    { d:'2026-08-19', k:'PADEL' },
-  ]);
-  assert.equal(ctx.liczTreningi7(), 4);
   const s = ctx.sugeruj();
   assert.equal(s.k, 'REST');
-  assert.match(s.powod, /4 sesji siłowych\/rehab|już 4/i);
+  assert.equal(s.wolne, true);
 });
 
-test('REST i sport nie liczą się do limitu sesji siłowych', () => {
-  const ctx = boot();
-  setHist(ctx, [
-    { d:'2026-08-21', k:'REST', rest:true },
-    { d:'2026-08-20', k:'A' },
-    { d:'2026-08-18', k:'B' }, // luka — bez serii 3
-    // C jeszcze nie → sugestia C
-    { d:'2026-08-17', k:'VB' },
-    { d:'2026-08-16', k:'PADEL' },
-  ]);
-  assert.equal(ctx.liczTreningi7(), 2);
-  assert.equal(ctx.sugeruj().k, 'C');
+test('zaległości są, ale wszystkie zablokowane → REST (np. piątek po A)', () => {
+  const ctx = boot({ DZIS: FRI, TODAY: FRI });
+  setHist(ctx, [{ d: '2026-10-15', k: 'B' }, { d: '2026-10-14', k: 'A' }]);
+  // zostaje C: dzień przed grą → zablokowane
+  const s = ctx.sugeruj();
+  assert.equal(s.k, 'REST');
+  assert.match(s.powod, /zablokowane/);
 });
 
-test('REST już zapisany dziś → zostaje REST, nie pcha kolejnej sesji', () => {
+test('REST już zapisany dziś → zostaje REST', () => {
   const ctx = boot();
-  setHist(ctx, [{ d:'2026-08-22', k:'REST', rest:true }]);
+  setHist(ctx, [{ d: '2026-10-14', k: 'REST', rest: true }]);
   const s = ctx.sugeruj();
   assert.equal(s.k, 'REST');
   assert.match(s.powod, /już odpoczynek/);
 });
 
-test('blokady: A i C nie dzień po dniu', () => {
+test('D (rehab) liczy się do serii dni z rzędu, ale nie jest sugerowane', () => {
   const ctx = boot();
-  setHist(ctx, [{ d:'2026-08-21', k:'A' }]);
-  const b = ctx.blokady();
-  assert.ok(b.C);
-  assert.match(b.C, /48 h/);
-  assert.ok(b.A);
-});
-
-test('blokady: dwa dni skoków z rzędu (VB blokuje A i C)', () => {
-  const ctx = boot();
-  setHist(ctx, [{ d:'2026-08-21', k:'VB' }]);
-  const b = ctx.blokady();
-  assert.ok(b.A);
-  assert.ok(b.C);
-  assert.ok(b.VB);
-  assert.equal(b.PADEL, undefined);
+  setHist(ctx, [{ d: '2026-10-13', k: 'D' }, { d: '2026-10-12', k: 'D' }, { d: '2026-10-11', k: 'D' }]);
+  assert.equal(ctx.sugeruj().k, 'REST');
+  setHist(ctx, []);
+  assert.notEqual(ctx.sugeruj().k, 'D');
 });
 
 test('stary wpis A bez pola rest nadal działa', () => {
   const ctx = boot();
-  setHist(ctx, [{ d:'2026-08-21', k:'A', pct:80, zrob:10, total:12 }]);
+  setHist(ctx, [{ d: '2026-10-11', k: 'A', pct: 80, zrob: 10, total: 12, sw: 'green', trybSesji: 'full' }]);
   assert.ok(ctx.sugeruj().k);
-  assert.equal(ctx.jestRest({ d:'2026-08-21', k:'A' }), false);
+  assert.equal(ctx.jestRest({ d: '2026-10-11', k: 'A' }), false);
 });
 
-test('chipy: REST w SESJE; sugestia bez VB/PADEL; cele sportu zostają w CELE_TYG', () => {
+test('chipy: REST w SESJE, bez VB/PADEL/D w priorytecie', () => {
   const ctx = boot();
   assert.equal(ctx.SESJE.REST.typ, 'rest');
-  assert.ok(!ctx.PRIORYTET.includes('REST'));
-  assert.ok(!ctx.PRIORYTET.includes('D'));
-  assert.ok(!ctx.PRIORYTET.includes('VB'));
-  assert.ok(!ctx.PRIORYTET.includes('PADEL'));
-  assert.deepEqual([...(ctx.PRIORYTET || [])], ['A', 'C', 'B']);
-  assert.equal(Object.values(ctx.CELE_TYG).reduce((a,b)=>a+b, 0), 6);
-  assert.equal(ctx.CELE_TYG.VB, 2);
-  assert.equal(ctx.TYDZIEN[0], 'REST');
+  ['REST', 'D', 'VB', 'PADEL'].forEach(k => assert.ok(!ctx.PRIORYTET.includes(k)));
 });
 
-test('nazwa nieznanego k nie wywala UI', () => {
+test('sugestia nie zależy od świateł: pole swiatlo w starych dniach jest ignorowane', () => {
   const ctx = boot();
-  assert.equal(ctx.nazwaSesji('NOPE'), 'NOPE');
-  assert.equal(ctx.typSesji('NOPE'), '');
-  assert.equal(ctx.etykietaK('REST'), 'Wolne');
+  setHist(ctx, []);
+  ctx.ST.dni['2026-10-14'] = { sesja: null, zrobione: [], swiatlo: 'red', pominiete: [], notatka: '' };
+  assert.equal(ctx.sugeruj().k, 'A');
 });
 
-test('sugestia nigdy nie wybiera VB/PADEL — tylko A/B/C/D/REST', () => {
+test('opisOstatnich etykietuje A/B/C i gry', () => {
   const ctx = boot();
-  setHist(ctx, [
-    { d:'2026-08-21', k:'A' },
-  ]);
-  const s = ctx.sugeruj();
-  assert.ok(['B', 'C', 'D', 'REST'].includes(s.k), s.k);
-  assert.ok(!['VB', 'PADEL'].includes(s.k));
-  assert.match(s.ostatnio || s.powod, /Ostatnio:.*A|A \(/);
-});
-
-test('sama siatkówka/padel nie buduje serii 3 treningów siłowych', () => {
-  const ctx = boot();
-  setHist(ctx, [
-    { d:'2026-08-21', k:'VB' },
-    { d:'2026-08-20', k:'PADEL' },
-    { d:'2026-08-19', k:'VB' },
-  ]);
-  assert.notEqual(ctx.sugeruj().k, 'REST');
-  // VB blokuje A/C (skoki) → zostaje B
-  assert.equal(ctx.sugeruj().k, 'B');
+  setHist(ctx, [{ d: '2026-10-13', k: 'A' }, { d: '2026-10-12', k: 'PADEL', sport: true }]);
+  assert.match(ctx.opisOstatnich(5), /A \(wczoraj\)/);
+  assert.match(ctx.opisOstatnich(5), /Padel/);
 });

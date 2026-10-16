@@ -7,6 +7,45 @@ Wersja jest widoczna w stopce aplikacji oraz w zakładce **Więcej → O aplikac
 
 ---
 
+## 1.4.0 — 2026-10-16
+
+**Root: przebudowa planu** (sesje ~50 min w jednej wersji, mniej obciążenia nóg, więcej eksplozywności, core w każdej sesji, równy rozwój góry)
+
+*Usunięte*
+- Tryb MIN/FULL (pole `tryb`, `poziom`) i rotacja bloku mocy w C. Stare wpisy z `trybSesji` są ignorowane.
+- Ćwiczenia: wskoki na skrzynię (z progresją wysokości), przysiad goblet/przedni, zakroki tyłem, spacer farmera, deska na piłce, stara deska boczna z unoszeniem biodra. Historia zostaje w danych i w CSV (w Rekordach z dopiskiem „archiwum”).
+- Fazy 0–3 i deload w tygodniach 8 i 16 (zastąpione cyklem). Kalorie per faza — jedno źródło w zakładce Plan.
+- Komentarze „Jak często grasz” zależne od starego celu 2×/tydz. siatkówki.
+
+*Nowe sesje A / B / C / D*
+- Rozgrzewka (bez logowania) + bloki 1–5. Bloki 1–3 to rdzeń: przycisk **Skrót** pokazuje tylko je i zalicza cel tygodnia tak samo. Blok 5 w C jest opcjonalny.
+- A — Nogi + wyskok, B — Góra (bez nóg), C — Atletyczny; core w każdej sesji (Pallof / dead bug / deska boczna + ab wheel). D bez zmian.
+- Superserie („+”), ćwiczenia w przerwie, pozycje „X lub Y” z osobnymi kluczami logu (`pullup`/`pulldown`, `pushupw`/`dips`, `nordic`/`legcurl`).
+- Podciąganie i inne ćwiczenia z masą ciała logują dodatkowy ciężar; **0 kg jest dozwolone**.
+- Rozgrzewka padla: Copenhagen plank 2×20 s/str. w aktywacji.
+
+*Nowa progresja*
+- **Drabinka wariantów** dla core i nordic: dead bug, deska boczna, ab wheel, nordic (`ladder` w `data.js`).
+- **Powrót po przerwie:** ostatnia sesja z ćwiczeniem > 14 dni → 90% ciężaru (zaokrąglone do kroku), dolny zakres; 2 kolejne sesje bez podbijania.
+- Log ciężaru bez auto-progresji dla trap bar jump i landmine rotational press.
+
+*Nowa sugestia dnia*
+- Cele 7 dni: A1, B1, C1. Siatkówka i padel to „gra” — bez celu, ręcznie.
+- Ustawienie **stała gra** (domyślnie sobota): A nie dzień po grze, nie w piątek/sobotę (< 48 h do gry), min. 48 h od C; C nie dzień przed grą i nie dzień po A; B bez blokad.
+- Priorytet A > B > C; 3 dni z rzędu dowolnej aktywności → sugestia dnia wolnego. Usunięte: „nigdy dwa dni skoków z rzędu”, limity ciężkich dni i 4 sesji / 7 dni.
+- Szkic tygodnia: Pn A · Śr C · Pt B · So gra · Nd wolne.
+
+*Cykl 4-tygodniowy*
+- „Cykl N, tydzień X/4” (start 19.10.2026, zmienialny w Więcej → Ustawienia). Tydzień 4 lżejszy: ~90% ciężaru, −1 seria, bez podbijania, moc w połowie objętości; sesje z tego tygodnia nie wyznaczają progresji.
+
+*Dane i migracja (schema 2)*
+- `rdl` → `legcurl`, `pullup` → `pulldown` (stare logowane w kg ściągania); nowe klucze startują od zera. Migracja jest jednorazowa, także przy wczytaniu starej kopii.
+- Porządki: dni z `sesja: null` dostają sesję z prefiksu ID; przy rozbieżności z historią wygrywa historia.
+- Zapis treningu: zbiorcze przypomnienie „Brak ciężaru: …” (bez blokowania).
+- Eksport CSV: wiersze `seria` dla drabinek mają w polu wartości numer wariantu (`w1`, `w2`, `w3`).
+- `TRENING-ZASADY.md` (z 1.3.0) usunięty — opis planu i reguł jest teraz w `PLANY.md`, zgodny z `data.js`.
+- Logika progresji (`analiza`, `dniLiftu`) przeniesiona z `index.html` do `engine.js` — pokryta testami.
+
 ## 1.3.0 — 2026-10-16
 
 **Root: usunięta sekcja SKB**

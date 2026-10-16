@@ -2,11 +2,11 @@
 
 Aplikacja treningowa na telefon. Instaluje się na ekranie głównym Androida jak zwykła apka, działa offline, zapisuje dane lokalnie w telefonie.
 
-Aktualna wersja: **1.3.0** · historia zmian w `CHANGELOG.md`.
+Aktualna wersja: **1.4.0** · historia zmian w `CHANGELOG.md`.
 
 Osobna wersja dla Olgi: katalog **[`szczyt/`](szczyt/)** — PWA **Szczyt** (plan nóg/pośladków + góry). Deploy: `…/szczyt/`.
 
-Opis obu planów (cele, fazy, sesje, progresje): **[`PLANY.md`](PLANY.md)**.
+Opis obu planów (cele, cykl, sesje, progresje): **[`PLANY.md`](PLANY.md)** — sekcja 1 (Twój plan) jest zgodna z `data.js`.
 
 ---
 
@@ -70,6 +70,10 @@ Konto założysz później, jeśli będziesz chciał zmienić nazwę adresu.
 **Dziś**
 - **Adaptacyjna sugestia treningu siłowego (A/B/C)** — bez siatkówki/padla (te odhaczasz osobno); w karcie widać też ostatnie treningi.
 - Wybór jednostki: A, B, C, D, siatkówka, padel, **dzień wolny**. Kropka przy chipie = dzisiejsza sugestia — zawsze możesz stuknąć inną.
+- **Skrót** — przycisk na górze sesji siłowej. Pokazuje tylko bloki 1–3 (rdzeń); używasz go na gorszy dzień, domyślnie sesja jest pełna. Zalicza cel tygodnia tak samo. Blok 5 w C jest opcjonalny i nie wpływa na zaliczenie sesji.
+- **Superserie i „lub”** — pozycje z „+” robisz w parze; przy „X lub Y” (np. podciąganie / ściąganie drążka) wybierasz wariant, każdy ma własny log.
+- **Drabinka wariantów** przy ćwiczeniach bez ciężaru (dead bug, deska boczna, ab wheel, nordic) — apka podpowiada, kiedy przejść na trudniejszy wariant.
+- **Cykl 4-tygodniowy** — w nagłówku „Cykl N, tydzień X/4”; tydzień 4 jest lżejszy (~90% ciężaru, −1 seria, moc w połowie objętości).
 - Checklista z odznaczaniem, pasek postępu, wibracja przy odznaczeniu.
 - Przy ćwiczeniach siłowych **wszystkie serie z planu są od razu otwarte**, z wpisanym z góry sugerowanym ciężarem. Wpisujesz tylko powtórzenia; ciężar zmieniasz, jeśli bierzesz inny. Komplet serii = ćwiczenie odhacza się samo.
 - **Siatkówka i padel działają inaczej niż siłownia** — patrz niżej.
@@ -99,7 +103,7 @@ Na dole jest jeden przycisk: **Zagrane — zapisz w historii**. Wpis idzie do hi
 
 Dzięki temu widzisz potem, **jak często realnie grasz**: Postęp → *Jak często grasz* pokazuje średnią siatkówek i padli na tydzień (z **max 4 pełnych tygodni**, od pierwszego wpisu — bez pustych tygodni sprzed startu), liczbę gier w 30 dniach i rozkład tygodni (● siatkówka, ▪ padel).
 
-Ta karta też komentuje wynik: jeśli siatkówka wychodzi poniżej ~1,5×/tydz., apka przypomni, że plan siłowy zakłada więcej skoków z gry i warto przesunąć trochę plyometrii z powrotem na siłownię. Jeśli wychodzi powyżej ~3,2×/tydz. — że blok mocy w sesji A można ciąć o połowę, bo objętość skokową masz już z boiska.
+Siatkówka i padel nie mają celu tygodniowego — liczy się to, kiedy grasz (wpływa na blokady A/C, patrz niżej).
 
 Chcesz, żeby jakaś jednostka działała w tym trybie? Ustaw jej `typ: 'sport'` w `data.js`. Dzień wolny (`typ: 'rest'`) zapisuje się tak samo — jednym przyciskiem, bez checklisty.
 
@@ -126,27 +130,17 @@ Jeśli wpis w historii istnieje, ale szczegółowe odhaczenia z tamtego dnia nie
 
 ## Jak działa sugestia kolejnego treningu
 
-Apka nie trzyma się kalendarza. Patrzy na **ruchome okno 7 dni** i liczy, czego brakuje:
+Apka nie trzyma się kalendarza. Patrzy na **ruchome okno 7 dni** i liczy, czego brakuje: **A, B, C po 1×**. Siatkówka i padel nie mają celu — logujesz je ręcznie jako „grę”. Rehab/mobilność (D) jest opcjonalna i zostaje na chipie.
 
-| Jednostka | Cel / 7 dni |
-|---|---|
-| A — dolne / moc | 1 |
-| B — góra / core | 1 |
-| C — atletyczny | 1 |
-| Siatkówka | 2 |
-| Padel | 1 |
+Ustawienie **stała gra** (Więcej → Ustawienia, domyślnie sobota) steruje blokadami:
 
-Suma celów to **6**, nie 7 — zostaje slot na regenerację. Rehab/mobilność (D) nie jest tygodniowym celem — zostaje na chipie do ręcznego wyboru.
+- **A:** nie dzień po grze; nie, gdy do najbliższej stałej gry jest mniej niż 48 h (przy sobocie: nie w piątek i sobotę); min. 48 h od C
+- **C:** nie dzień przed stałą grą; nie dzień po A
+- **B:** brak blokad (poza „już zrobione dziś”)
 
-Na to nakłada twarde reguły bezpieczeństwa i **sugestie** restu:
+Kolejność decyzji: (1) dziś zapisano wolne → wolne; (2) 3 dni z rzędu jakakolwiek aktywność (siłownia, rehab, gra) → sugestia dnia wolnego; (3) spośród niezablokowanych jednostek z zaległością — priorytet **A > B > C**; (4) brak kandydatów → wolne. W karcie widzisz **dlaczego**. Chipy zawsze możesz stuknąć ręcznie. Gra w dniu planowanej A/C zastępuje sesję — przesuń, nie rób obu.
 
-- **A i C nigdy bliżej niż 48 h od siebie**
-- **Nigdy dwa dni skoków z rzędu** — A, C i siatkówka liczą się jako dni skoków
-- **Dzień wolny (sugestia, nie nakaz)** — kropka na chipie Wolne, gdy: już 6 jednostek w 7 dniach, trzy treningi pod rząd, albo dwa ciężkie dni z rzędu (A, C, siatkówka). Padel nie liczy się jako ciężki — można grać po siłowni.  Zawsze możesz stuknąć inną jednostkę.
-
-Wybiera jednostkę z największą zaległością, która nie łamie żadnej reguły. W karcie widzisz **dlaczego** — co brakuje, co dziś odpada i czemu apka proponuje wolne. Jak pojedziesz w tygodniu inaczej niż planowałeś, wystarczy odhaczyć co zrobiłeś, a kolejne sugestie same się przestawią.
-
-Cele i reguły zmienisz w `data.js`: stałe `CELE_TYG`, `SKOKI`, `PRIORYTET`, `CIEZKIE`, `MAX_TRENING_Z_RZEDU`, `MAX_CIEZKIE_Z_RZEDU`, `MAX_SESJE_7`.
+Cele i reguły zmienisz w `data.js`: `CELE_TYG`, `PRIORYTET`, `GRY`, `MAX_AKTYWNOSC_Z_RZEDU`, `STALA_GRA`.
 
 **Plan** — tydzień, fazy, zasady przy rozsypanym tygodniu, makro.
 
@@ -174,7 +168,8 @@ Apka patrzy na **całą historię ćwiczenia**, nie tylko ostatni wpis, i rozpoz
 | Zaliczone, ale nie górny zakres | *Zostań na 60 kg, celuj w 4 × 9* |
 | Za mało serii na tym ciężarze | *Brakuje serii do 4* |
 | **3 sesje w miejscu na tym samym ciężarze** | *Zejdź do 65 kg, zrób 4 × 10 czysto i wracaj w górę* |
-| Tydzień deload (8 i 16) | *Weź 60% = 40 kg, bez szukania maksów* |
+| Tydzień 4 cyklu | *90% ostatniego ciężaru, −1 seria, bez podbijania* |
+| Przerwa > 14 dni od ostatniej sesji z tym ćwiczeniem | *Wracasz od 90% ciężaru, dolny zakres; 2 sesje bez podbijania* |
 
 Automatyczny **reset przy stagnacji** to nie kaprys: trzy sesje bez postępu przy twojej objętości treningowej i deficycie kalorycznym oznaczają zwykle, że ciężar wyprzedził technikę albo regenerację, a nie że trzeba mocniej cisnąć. Cofnięcie o 10% i czyste dojście z powrotem daje zwykle nowy rekord w 3–4 tygodnie.
 
@@ -228,8 +223,8 @@ Przy każdej zmianie podbij **dwa** miejsca:
 
 | Plik | Co |
 |---|---|
-| `data.js` | `const APP = { wersja: '1.2.9', data: '2026-09-06' }` |
-| `sw.js` | `const CACHE = 'trening-1.2.9'` |
+| `data.js` | `const APP = { wersja: '1.4.0', data: '2026-10-16' }` |
+| `sw.js` | `const CACHE = 'trening-1.4.0'` |
 
 Bez podbicia `CACHE` service worker może dalej serwować starą wersję z pamięci offline. Po podbiciu apka wykrywa aktualizację i pokazuje na dole toast **„Dostępna nowa wersja — Odśwież"**.
 
@@ -273,15 +268,17 @@ Cały plan siedzi w **`data.js`** — czytelny, opisany plik. Chcesz zmienić ć
 Struktura pojedynczego ćwiczenia:
 ```js
 { n: 'Hip thrust ze sztangą',   // nazwa
-  d: '4 × 8',                   // dawka
+  d: '3 × 6–8',                 // dawka
   u: 'Żebra w dół',             // uwaga (opcjonalnie)
   lift: 'hipthrust',            // klucz loga ciężarów (opcjonalnie)
-  krok: 5,                      // ile kg dokładać przy progresji
-  cel: 8,                       // górny próg powtórzeń → wtedy sugeruje więcej kg
-  plyo: true }                  // ukrywane przy żółtym świetle
+  serie: 3, zakres: [6, 8],     // podwójna progresja: najpierw powtórzenia, potem ciężar
+  krok: 5,                      // ile kg dokładać
+  ss: true }                    // superseria z następną pozycją
+// ćwiczenia bez ciężaru: ladder: [{ wariant, zakres, jednostka }, ...] zamiast krok/zakres
+// pozycja „X lub Y”: warianty: [ {...}, {...} ]   · blok: rdzen / opcjonalny / moc
 ```
 
-Data startu programu: stała `PLAN_START` na górze `data.js` — od niej liczy się numer tygodnia i faza.
+Start cyklu 4-tygodniowego: stała `START_CYKLU` na górze `data.js` (albo Więcej → Ustawienia) — od niej liczy się „Cykl N, tydzień X/4” i tydzień lżejszy.
 
 ---
 

@@ -17,12 +17,37 @@ test('przesunDni i dniTemu liczą pełne dni lokalne', () => {
   assert.equal(ctx.dniTemu('2026-08-16'), 6);
 });
 
-test('tydzień programu od PLAN_START (lokalnie, z zaokrągleniem DST)', () => {
-  const ctx = boot({ TODAY: '2026-08-18', DZIS: '2026-08-18' });
-  assert.equal(ctx.PLAN_START, '2026-08-18');
-  assert.equal(ctx.tydzienNr('2026-08-18'), 1);
-  assert.equal(ctx.tydzienNr('2026-08-24'), 1);
-  assert.equal(ctx.tydzienNr('2026-08-25'), 2);
+test('cykl 4-tygodniowy od START_CYKLU (poniedziałek 19.10.2026)', () => {
+  const ctx = boot();
+  assert.equal(ctx.START_CYKLU, '2026-10-19');
+  assert.deepEqual(JSON.parse(JSON.stringify(ctx.cyklInfo('2026-10-19'))), { przed: false, cykl: 1, tydz: 1, lekki: false });
+  assert.equal(ctx.cyklInfo('2026-10-25').tydz, 1);
+  assert.equal(ctx.cyklInfo('2026-10-26').tydz, 2);
+  assert.equal(ctx.cyklInfo('2026-11-02').tydz, 3);
+  const t4 = ctx.cyklInfo('2026-11-09');
+  assert.equal(t4.tydz, 4);
+  assert.equal(t4.lekki, true);
+  assert.equal(ctx.cyklInfo('2026-11-15').lekki, true);
+  const n = ctx.cyklInfo('2026-11-16');
+  assert.equal(n.cykl, 2);
+  assert.equal(n.tydz, 1);
+  assert.equal(n.lekki, false);
+});
+
+test('przed startem cyklu: bez numeru i bez tygodnia lżejszego', () => {
+  const ctx = boot();
+  const c = ctx.cyklInfo('2026-10-16');
+  assert.equal(c.przed, true);
+  assert.equal(c.lekki, false);
+  assert.equal(ctx.etykietaCyklu('2026-10-16'), 'Przed startem cyklu');
+  assert.equal(ctx.etykietaCyklu('2026-11-10'), 'Cykl 1, tydzień 4/4');
+});
+
+test('startCyklu można nadpisać w ustawieniach', () => {
+  const ctx = boot();
+  ctx.ST.ustawienia = { startCyklu: '2026-10-12' };
+  assert.equal(ctx.cyklInfo('2026-10-12').tydz, 1);
+  assert.equal(ctx.cyklInfo('2026-11-02').lekki, true);
 });
 
 test('parseDay nie przesuwa dnia względem UTC', () => {
